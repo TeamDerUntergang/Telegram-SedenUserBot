@@ -1,0 +1,85 @@
+{
+    "name": "Telegram SedenBot",
+    "description": "Python3 ile çalışan modüler Telegram botu olan Seden UserBot.",
+    "logo": "https://i.imgur.com/ZLi4nDP.jpg",
+    "keywords": [
+      "telegram",
+      "userbot",
+      "python",
+      "seden",
+      "module"
+    ],
+    "repository": "https://github.com/NaytSeyd/denemebot",
+    "website": "https://devotag.com",
+    "success_url": "https://t.me/SedenUserBotSupport",
+    "stack": "container",
+    "env": {
+        "API_ID": {
+            "description": "Bu değeri https://my.telegram.org adresinden alın.",
+            "required": true
+        },
+        "API_HASH": {
+            "description": "Bu değeri https://my.telegram.org adresinden alın.",
+            "required": true
+        },
+        "SESSION": {
+            "description": "python3 SedenStringSession.py dosyasını yerel olarak çalıştırarak bu değeri alın.",
+            "required": true
+        },
+        "HEROKU_APPNAME": {
+            "description": "Heroku uygulama adınızı buraya ekleyin. Güncellemeler için zorunludur.",
+            "required": true
+        },
+        "HEROKU_KEY": {
+            "description": "Heroku API Key, 'https://dashboard.heroku.com/account' adresinden alın. Güncellemeler için zorunludur.",
+            "required": true
+        },
+        "REPO_URL": {
+            "description": "Güncelleme yapmak için gerekli olan değişkendir. Varsayılan olarak kendi repo adresimiz eklidir.",
+            "value": "https://github.com/TeamDerUntergang/Telegram-SedenUserBot",
+            "required": true
+        },
+        "TZ": {
+            "description": "Bunun ne işe yaradığı hakkında fikrin yoksa kurcalama :)",
+            "value": "Europe/Istanbul",
+            "required": true  
+        },
+        "LOG_ID": {
+            "description": "Log grubu için grup ID",
+            "value": "0",
+            "required": true
+        },
+        "CHROME_DRIVER": {
+            "description": "Selenium tabanlı modüller için ChromeDriver konumu.",
+            "value": "/usr/bin/chromedriver",
+            "required": false  
+        },
+        "GENIUS_TOKEN": {
+            "description": "Genius API Key, 'https://genius.com/developers' adresinden alın.",
+            "required": false     
+        },
+        "LOG_VERBOSE": {
+            "description": "Konsol günlüğünde ayrıntıya ihtiyacınız varsa, bunu True olarak ayarlayın.",
+            "value": "False",
+            "required": false
+        },
+        "OCR_APIKEY": {
+            "description": ".ocr komutu için OCR API Key. https://ocr.space/ocrapi adresinden alın.",
+            "required": false,
+            "required": false
+        },
+        "DOWNLOAD_DIRECTORY": {
+            "description": "Birçok modül için indirme konumu (GDrive, .download vb..)",
+            "value": "./downloads/",
+            "required": false
+        },
+        "WEATHER": {
+            "description": "Seden UserBot'un hava durumu modülü için varsayılan şehri ayarlayın.",
+            "required": false,
+            "required": false
+        }
+    },
+    "addons": [{
+        "plan": "heroku-postgresql"
+    }]
+}
