@@ -15,6 +15,7 @@ python-dotenv
 requests
 removebg
 selenium
+speedtest-cli
 sqlalchemy
 tgcrypto
 urbandict

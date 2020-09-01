@@ -42,9 +42,8 @@
             "required": true
         },
         "LOG_ID": {
-            "description": "Log grubu için grup ID",
-            "value": "0",
-            "required": true
+            "description": "Log grubu için grup ID. Değeri 0 yaparsanız botunuz log tutmaz. Değeri boş bırakırsanız kayıtlı mesajlara log gönderir.",
+            "required": false
         },
         "ALIVE_MESAJI": {
             "description": "Botunuzun .alive komutunda yazdığı mesajı değiştermeye yarar. Varsayılan olarak kendi mesajımız mevcuttur.",
