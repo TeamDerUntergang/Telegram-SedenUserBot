@@ -14,8 +14,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from sedenbot import KOMUT
 from sedenecem.conv import PyroConversation
-from sedenecem.events import sedenify, edit, reply_sticker, send
+from sedenecem.core import sedenify, edit
 
 @sedenify(pattern='^.sangmata$', compat=False)
 def sangmata(client, message):
@@ -23,23 +24,30 @@ def sangmata(client, message):
     if not reply or not reply.text:
         edit(message, '`Bir mesaja yanıt verin.`')
         return
-    
+
     chat = 'SangMataInfo_bot'
     edit(message, '`İşleniyor ...`')
-    
+
     with PyroConversation(client, chat) as conv:
         response = None
         try:
             msg = conv.forward_msg(reply)
             response = conv.recv_msg()
-        except:
-            edit(message, '`Bottan yanıt alamadım. Muhtemelen bu gruba ekli veya botu engelledin.`')
+        except: # pylint: disable=W0702
+            edit(message, '`Bottan yanıt alamadım. Muhtemelen botu engelledin.`')
             return
-        
+
         if response.text and response.text.startswith('Forward'):
             edit(message, '`Gizlilik ayarları bunu yapmama engel oldu.`')
             return
-        
+
         response.forward(message.chat.id, as_copy=True)
-    
+
     message.delete()
+
+
+KOMUT.update({
+    "sangmata":
+    ".sangmata \
+    \nKullanım: Belirtilen kullanıcının isim geçmişini görüntüleyin.\n"
+})

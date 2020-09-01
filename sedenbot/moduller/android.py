@@ -15,14 +15,14 @@
 #
 
 from re import sub
-import json
-
-from requests import get
-from bs4 import BeautifulSoup
+from json import loads
 from urllib.parse import urlencode
+from time import sleep
+from bs4 import BeautifulSoup
+from requests import get
 
 from sedenbot import KOMUT, VALID_PROXY_URL
-from sedenecem.events import edit, extract_args, extract_args_arr, sedenify
+from sedenecem.core import edit, extract_args, sedenify, get_webdriver
 
 GITHUB = 'https://github.com'
 
@@ -33,8 +33,6 @@ def magisk(message):
         "https://raw.githubusercontent.com/topjohnwu/magisk_files/master/stable.json",
         "Beta":
         "https://raw.githubusercontent.com/topjohnwu/magisk_files/master/beta.json",
-        "Canary (Release)":
-        "https://raw.githubusercontent.com/topjohnwu/magisk_files/canary/release.json",
         "Canary (Debug)":
         "https://raw.githubusercontent.com/topjohnwu/magisk_files/canary/debug.json"
     }
@@ -57,8 +55,8 @@ def device(message):
     else:
         edit(message, '`Kullanım: .device <kod adı> Örnek: .device raphael`')
         return
-    data = json.loads(get("https://raw.githubusercontent.com/androidtrackers/"
-                          "certified-android-devices/master/by_device.json").text)
+    data = loads(get('https://raw.githubusercontent.com/androidtrackers/'
+                     'certified-android-devices/master/by_device.json').text)
     results = data.get(codename)
     if results:
         reply = f'**{codename} için arama sonuçları**:\n\n'
@@ -86,9 +84,9 @@ def codename(message):
     else:
         edit(message, '`Kullanım: .codename <marka> <cihaz> Örnek: .codename Xiaomi Mi 9T Pro`')
         return
-    data = json.loads(get('https://raw.githubusercontent.com/androidtrackers/'
-                          'certified-android-devices/master/by_brand.json').text)
-    devices_lower = {k.lower():v for k,v in data.items()}
+    data = loads(get('https://raw.githubusercontent.com/androidtrackers/'
+                     'certified-android-devices/master/by_brand.json').text)
+    devices_lower = {k.lower():v for k, v in data.items()}
     devices = devices_lower.get(brand)
     if not devices:
         reply = f'`{device} bulunamadı`\n'
@@ -133,41 +131,86 @@ def twrp(message):
         f'**Güncelleme tarihi:** __{date}__\n'
     edit(message, reply)
 
-@sedenify(pattern=r'^.o(rangef|f)(ox|rp)')
+@sedenify(pattern=r'^.o(range|)f(ox|rp)')
 def ofox(message):
     if len(args := extract_args(message)) < 1:
         edit(message, '`Kullanım: .orangefox <kod adı> Örnek: .orangefox raphael`')
         return
 
-    edit(message, '`Resmi cihaz listesi kontrol ediliyor ...`')
-    OFOX_REPO = 'https://sourceforge.net/projects/orangefox/files'
-    req = get(OFOX_REPO)
-    soup = BeautifulSoup(req.text, 'html.parser')
-    folders = [i['title'] for i in soup.findAll('tr',{'class':['folder']}) 
-               if i['title'] not in ['untested', 'test_builds']]
 
-    if not args in folders:
-        edit(message, f'`{args} kod adı muhtemelen resmi bir cihaza ait değil. `{OFOX_REPO}` adresinden kontrol edebilirsiniz.`')
+    OFOX_REPO = 'https://orangefox.download/tr-TR'
+    OFOX_URL = f'{OFOX_REPO}/device/{args}'
+
+    edit(message, '`OrangeFox sunucularına bağlanılıyor ...`')
+
+    driver = get_webdriver()
+    driver.get(OFOX_URL)
+
+    notfound = driver.find_elements_by_xpath('//img[contains(@alt,"Not Found")]')
+
+    if len(notfound) > 0:
+        edit(message, f'`{args} kod adı muhtemelen resmi bir cihaza ait değil.` {OFOX_REPO} `adresinden kontrol edebilirsiniz.`', preview=False)
         return
 
-    req = get(f'{OFOX_REPO}/{args}')
-    soup = BeautifulSoup(req.text, 'html.parser')
-    files = soup.findAll('tr', {'class':['file']})
-    out = ""
-    for f in files:
-        if f['title'][-3:] == 'zip':
-            title = f['title']
-            version = sub(f'OrangeFox-|-{args}(.*).zip','',title)
-            date = f.find('td', {'headers': ['files_date_h']}).text
-            count = f.find('span', {'class': ['count']})
-            count = count.text if count else 0
-            dlink = f"https://master.dl.sourceforge.net/project/orangefox/{args}/{title}"
-            out += f"[{version}]({dlink}) {date} ({count} defa indirildi)\n"
-            
+    try:
+        beta = driver.find_element_by_xpath('//div[contains(@id, "release-beta-header")]')
+        if beta:
+            beta.click()
+    except:
+        pass
+
+    sleep(1)
+
+    ofrp_map = {}
+
+    for i in driver.find_elements_by_xpath('//div[contains(@class, "MuiAccordionDetails-root")]'):
+        version = i.find_elements_by_xpath('.//p[contains(@class, "MuiTypography-body1")]')
+
+        if len(version) < 1:
+            continue
+
+        clcks = i.find_elements_by_xpath('.//div[contains(@class, "MuiPaper-root MuiAccordion-root jss66 MuiAccordion-rounded MuiPaper-elevation1 MuiPaper-rounded")]')
+        lists = i.find_elements_by_xpath('.//li[contains(@class, "MuiListItem-root MuiListItem-gutters")]')
+        for g in range(len(version)):
+            if g < len(clcks):
+                try:
+                    clcks[g].click()
+                except:
+                    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                    sleep(1)
+                    try:
+                        clcks[g].click()
+                    except:
+                        pass
+
+            frow = lists[g*2]
+            srow = lists[(g*2)+1]
+
+            while len(name_str := frow.find_elements_by_xpath('.//span[contains(@class, "MuiListItemText-primary")]')) < 1:
+                sleep(1)
+
+            # dummy but don't delete
+            _ = srow.find_elements_by_xpath('.//p[contains(@class, "MuiListItemText-secondary")]')
+
+            date_str = frow.find_elements_by_xpath('.//p[contains(@class, "MuiListItemText-secondary")]')
+
+            link = f"https://files.orangefox.tech/OrangeFox-{'Stable' if '-Stable-' in name_str else 'Beta'}/{args}/{name_str[0].text}"
+
+            ofrp_map[version[g].text] = [date_str[0].text, link]
+
+    driver.quit()
+
+    out = ''
+
+    for key in ofrp_map.keys():
+        item = ofrp_map[key]
+        out += f"[{key}{' (Beta)' if not '-Stable-' in item[1] else ''}]({item[1]})\n"
+        out += f"{item[0] if len(item[0].strip()) > 0 else 'Tarih bilgisi çekilemedi'}\n\n"
+
     if len(out) < 1:
         edit(message, '`Muhtemelen bu liste boş.`')
         return
-    
+
     edit(message, f'**OrangeFox Recovery ({args}):**\n{out}')
 
 # Copyright (c) @frknkrc44 | 2020
@@ -177,7 +220,7 @@ def specs(message):
     if len(args) < 1:
         edit(message, '`Kullanım: .specs <cihaz>`')
         return
-    
+
     edit(message, '`Proxy getiriliyor ...`')
     proxy = get_random_proxy()
     edit(message, '`Proxy bağlantısı sağlanıyor ...`')
@@ -187,16 +230,16 @@ def specs(message):
         edit(message, '`Bu cihaza dair bir bilgi bulunamadı veya '
                       'çok fazla istek attınız.`')
         return
-    
+
     req = get(link,
               {'User-Agent':'Mozilla/5.0 (compatible; Googlebot/2.1; '
                             '+http://www.google.com/bot.html)'},
               proxies=proxy)
     soup = BeautifulSoup(req.text, features='html.parser')
-        
+
     def get_spec(query, key='data-spec', cls='td'):
         try:
-            result = soup.find(cls,{key:query.split()}).text.strip()
+            result = soup.find(cls, {key:query.split()}).text.strip()
             result = "Bilgi alınamadı" if len(result) < 1 else result
             return result
         except:
@@ -204,7 +247,7 @@ def specs(message):
 
     title = get_spec('specs-phone-name-title', 'class', 'h1')
     launch = get_spec('released-hl', cls='span')
-    body = sub(', ','g, ', get_spec('body-hl', cls='span'))
+    body = sub(', ', 'g, ', get_spec('body-hl', cls='span'))
     os = get_spec('os-hl', cls='span')
     storage = get_spec('internalmemory')
     stortyp = get_spec('memoryother')
@@ -225,9 +268,9 @@ def specs(message):
     gps = get_spec('gps')
     usb = get_spec('usb')
     sensors = get_spec('sensors')
-    sarus = sub('\s\s+',', ',get_spec('sar-us'))
-    sareu = sub('\s\s+',', ',get_spec('sar-eu'))
-    
+    sarus = sub(r'\s\s+', ', ', get_spec('sar-us'))
+    sareu = sub(r'\s\s+', ', ', get_spec('sar-eu'))
+
     edit(message, f'**{title}**\n\n'
                   f'**Çıkış tarihi:** `{launch}\n`'
                   f'**Ağırlık ve kalınlık:** `{body}`\n'
@@ -271,17 +314,17 @@ def find_device(query, proxy):
     if 'Too' in soup.find('title').text: # GSMArena geçici ban atarsa
         return None
 
-    res = soup.findAll('div',{'class':['makers']})
-    
+    res = soup.findAll('div', {'class':['makers']})
+
     if not res or len(res) < 1: # hiçbir cihaz bulunamazsa
         return None
-    
+
     res = res[0].findAll('li')
 
     for item in res:
         name = str(item.find('span'))
-        name = sub('(<|</)span>','',name)
-        if name[name.find('>')+1:].lower() == raw_query or sub('<br(>|/>)',' ', name).lower() == raw_query:
+        name = sub('(<|</)span>', '', name)
+        if name[name.find('>')+1:].lower() == raw_query or sub('<br(>|/>)', ' ', name).lower() == raw_query:
             link = f"https://www.gsmarena.com/{item.find('a')['href']}"
             return link
     return None
@@ -292,7 +335,7 @@ def _xget_random_proxy():
         valid = _try_proxy(try_valid)
         if valid[0] == 200 and "<title>Too" not in valid[1]:
             return try_valid
-        
+
     head = {
         "Accept-Encoding":"gzip, deflate, sdch",
         "Accept-Language":"en-US,en;q=0.8",
@@ -311,16 +354,16 @@ def _xget_random_proxy():
         proxy = (ip, port)
         if _try_proxy(proxy)[0] == 200:
             return proxy
-            
+
     return None
 
- 
+
 def _try_proxy(proxy):
     try:
         prxy = f"{proxy[0]}:{proxy[1]}"
-        req = get('https://www.gsmarena.com/', proxies={"http":prxy,"https":prxy}, timeout=1)
+        req = get('https://www.gsmarena.com/', proxies={"http":prxy, "https":prxy}, timeout=1)
         if req.status_code == 200:
-           return (200, req.text)
+            return (200, req.text)
         raise Exception
     except:
         return (404, None)

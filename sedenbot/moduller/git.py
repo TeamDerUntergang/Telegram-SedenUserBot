@@ -14,16 +14,17 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from requests import get
 from json import loads
+from requests import get
+
 from sedenbot import KOMUT
-from sedenecem.events import sedenify, edit, extract_args
+from sedenecem.core import sedenify, edit, extract_args
 
 # Copyright (c) @frknkrc44 | 2020
 @sedenify(pattern='^.github')
 def github(message):
     args = extract_args(message)
-    
+
     if len(args) < 1:
         edit(message, '`Kullanım: .github <kullanıcı-adı>`')
         return
@@ -31,10 +32,10 @@ def github(message):
     try:
         user_info = get(f'https://api.github.com/users/{args}')
         json = loads(user_info.text)
-    except:
+    except: # pylint: disable=W0702
         edit(message, '`Sanırım GitHub beni sevmiyor.`')
         return
-        
+
     login = json.get('login', None)
     if not login:
         edit(message, '`Kullanıcı bulunamadı.`')
@@ -76,18 +77,18 @@ def github(message):
             repos.append(f'[{item["name"]}]({item["html_url"]})')
     except:
         pass
-    
+
     def format_info(key, value):
         return f'**{key}:** `{value}`\n'
-    
+
     def get_repos():
         if not repos or len(repos) < 1:
             return '`Depo bulunamadı.`'
         out = ''
         for i in repos:
             out += f'{i}\n'
-        return out 
-        
+        return out
+
     edit(message, f'**{login} GitHub bilgileri**\n\n' +
                   format_info('Kullanıcı ID', user_id) +
                   format_info('Kullanıcı tipi', acc_type) +
@@ -101,9 +102,15 @@ def github(message):
                   format_info('Toplam depo', repo_count) +
                   format_info('Toplam gist', gist_count) +
                   ((format_info('Takipçiler', followers) +
-                  format_info('Takip edilen', following)) 
-                  if acc_type == 'User' 
-                  else '') +
+                    format_info('Takip edilen', following))
+                   if acc_type == 'User'
+                   else '') +
                   format_info('Oluşturulma tarihi', created) +
                   format_info('Güncelleme tarihi', updated) +
                   f'\nDepolar:\n{get_repos()}', preview=False)
+
+KOMUT.update({
+    "git":
+    ".github \
+    \nKullanım: Hedeflenen kişinin GitHub bilgilerini gösterir.\n"
+})

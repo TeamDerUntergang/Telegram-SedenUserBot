@@ -17,18 +17,18 @@
 from random import choice
 
 from sedenbot import KOMUT
-from sedenecem.events import edit, sedenify
+from sedenecem.core import edit, sedenify
 # ================= CONSTANT =================
 XDA_STRINGS = [
     "sur",
     "Sir",
-    "bro", 
+    "bro",
     "yes",
     "no",
     "bolte",
     "bolit",
     "bholit",
-    "volit",    
+    "volit",
     "mustah",
     "fap",
     "lit",

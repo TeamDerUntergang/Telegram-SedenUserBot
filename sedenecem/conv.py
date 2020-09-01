@@ -14,11 +14,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from pyrogram import Filters, MessageHandler
-from sedenbot import CONVERSATION
 from time import sleep
 from os import remove
-
+from sedenbot import CONVERSATION
 
 class PyroConversation:
 
@@ -44,7 +42,7 @@ class PyroConversation:
         while len(conv) == self.count and count < 100:
             count += 1
             sleep(0.2)
-        
+
         if count > 99:
             raise Exception
 
@@ -53,7 +51,7 @@ class PyroConversation:
         if read:
             self.client.read_history(chat_id=self.chat_id)
         return msg
-        
+
     def forward_msg(self, msg):
         return msg.forward(self.chat_id)
 

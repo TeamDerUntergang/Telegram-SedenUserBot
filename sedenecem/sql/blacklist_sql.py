@@ -1,9 +1,6 @@
-import threading
-
+from threading import RLock
 from sqlalchemy import func, distinct, Column, String, UnicodeText
-
 from sedenecem.sql import SESSION, BASE
-
 
 class BlackListFilters(BASE):
     __tablename__ = "blacklist"
@@ -25,7 +22,7 @@ class BlackListFilters(BASE):
 
 BlackListFilters.__table__.create(checkfirst=True)
 
-BLACKLIST_FILTER_INSERTION_LOCK = threading.RLock()
+BLACKLIST_FILTER_INSERTION_LOCK = RLock()
 
 CHAT_BLACKLISTS = {}
 

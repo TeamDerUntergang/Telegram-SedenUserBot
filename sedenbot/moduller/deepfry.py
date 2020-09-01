@@ -17,15 +17,14 @@
 #
 
 from os import remove
-
 from random import randint, uniform
 from PIL import Image, ImageEnhance, ImageOps
 
 from sedenbot import KOMUT
-from sedenecem.events import edit, reply_img, extract_args, sedenify, download_media
+from sedenecem.core import edit, reply_img, sedenify, download_media
 
 # Copyright (c) @NaytSeyd, @frknkrc44 | 2020
-@sedenify(pattern='^.(deepf|f)ry', compat=False) 
+@sedenify(pattern='^.(deepf|f)ry', compat=False)
 def deepfry(client, message):
 
     text = message.text.split(' ', 1)
@@ -35,7 +34,7 @@ def deepfry(client, message):
         frycount = int(text[1])
         if frycount < 1:
             raise ValueError
-    except:
+    except: # pylint: disable=W0702
         frycount = 1
 
     MAX_LIMIT = 5
@@ -47,7 +46,7 @@ def deepfry(client, message):
     if reply:
         data = check_media(reply)
 
-        if isinstance(data, bool):
+        if not data:
             edit(message, '`Bunu deepfry yapamam!`')
             return
     else:
@@ -106,8 +105,8 @@ def deepfry(img: Image, fry: bool) -> Image:
     overlay = ImageEnhance.Brightness(overlay).enhance(temp_num)
 
     overlay = ImageOps.colorize(
-        overlay, 
-        colors[0] if fry else (254, 0, 2), 
+        overlay,
+        colors[0] if fry else (254, 0, 2),
         colors[1] if fry else (255, 255, 15)
     )
 
@@ -121,20 +120,19 @@ def deepfry(img: Image, fry: bool) -> Image:
     return img
 
 def check_media(reply_message):
-    data = None
+    data = False
 
     if reply_message and reply_message.media:
         if reply_message.photo:
-            data = reply_message.photo
+            data = True
         elif reply_message.sticker and not reply_message.sticker.is_animated:
-            data = reply_message.sticker.thumbs[0]
+            data = True
         elif reply_message.document:
-            doc = reply_message.document
-            name = doc.file_name
-            if name and '.' in name and name[name.find('.')+1:] in ['png','jpg','jpeg','webp']:
-                data = doc
+            name = reply_message.document.file_name
+            if name and '.' in name and name[name.find('.')+1:] in ['png', 'jpg', 'jpeg', 'webp']:
+                data = True
 
-    return data if data else False
+    return data
 
 KOMUT.update({
     "deepfry":

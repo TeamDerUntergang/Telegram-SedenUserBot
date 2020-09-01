@@ -17,7 +17,7 @@
 from random import choice
 
 from sedenbot import KOMUT, SUPPORT_GROUP
-from sedenecem.events import edit, extract_args, sedenify
+from sedenecem.core import edit, extract_args, sedenify
 
 @sedenify(pattern='^.random')
 def random(message):
@@ -36,11 +36,11 @@ def support(message):
 @sedenify(pattern='^.founder')
 def founder(message):
     edit(message, '`=======================================`\n\n'
-                 '`Bu bot;`\n'
-                 '[NaytSeyd](https://t.me/NightShade) `ve` [frknkrc44](https://t.me/KaldirimMuhendisi) `tarafından geliştirilmektedir.`\n'
-                 '`Ek olarak`\n'
-                 '[Sedenogen](https://t.me/CiyanogenOneTeams) `tarafından sevgi ile düzenlenmiştir.`\n\n'
-                 '`=======================================`', preview=False)
+                  '`Bu bot;`\n'
+                  '[NaytSeyd](https://t.me/NightShade) `ve` [frknkrc44](https://t.me/KaldirimMuhendisi) `tarafından geliştirilmektedir.`\n'
+                  '`Ek olarak`\n'
+                  '[Sedenogen](https://t.me/CiyanogenOneTeams) `tarafından sevgi ile düzenlenmiştir.`\n\n'
+                  '`=======================================`', preview=False)
 
 @sedenify(pattern='^.readme$')
 def readme(message):

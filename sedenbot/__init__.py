@@ -14,23 +14,23 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from sqlite3 import connect
 from sys import version_info
+from os.path import isfile
+from os import environ, listdir, path, remove
+from re import search as resr
+from distutils.util import strtobool as sb
+from importlib import import_module
+from logging import basicConfig, getLogger, INFO, DEBUG, CRITICAL
+from requests import get
+from pyrogram import Client, Filters, MessageHandler
+from dotenv import load_dotenv
+load_dotenv("config.env")
+
 if version_info[0] < 3 or version_info[1] < 8:
     LOGS.warn("En az python 3.8 sürümüne sahip olmanız gerekir. "
               "Birden fazla özellik buna bağlıdır. Bot kapatılıyor.")
     quit(1)
-
-from sqlite3 import connect
-from os.path import isfile
-from os import environ, listdir, path, remove
-from re import search as resr
-from requests import get
-from logging import basicConfig, getLogger, INFO, DEBUG, CRITICAL
-from distutils.util import strtobool as sb
-from importlib import import_module
-from pyrogram import Client, Filters, MessageHandler
-from dotenv import load_dotenv
-load_dotenv("config.env")
 
 KOMUT = {}
 BRAIN_CHECKER = []
@@ -83,11 +83,12 @@ if not API_HASH:
 
 BOT_VERSION = "1.0 Beta"
 SUPPORT_GROUP = "SedenUserBotSupport"
+CHANNEL = "SedenUserBot"
 
 # Hava durumu varsayılan şehir
 WEATHER = environ.get("WEATHER", None)
 
-# Genius modülünün çalışması için buradan değeri alın https://genius.com/developers her ikisi de aynı değerlere sahiptir
+# Genius modülü
 GENIUS_TOKEN = environ.get("GENIUS_TOKEN", None) or environ.get("GENIUS", None)
 
 # Alive Mesajını değiştirme
@@ -98,6 +99,9 @@ CHROME_DRIVER = environ.get("CHROME_DRIVER", "chromedriver")
 
 # OCR API key
 OCR_APIKEY = environ.get("OCR_APIKEY", None)
+
+# RBG API key
+RBG_APIKEY = environ.get("RBG_APIKEY", None)
 
 # SQL Veritabanı
 DATABASE_URL = environ.get("DATABASE_URL", None)
@@ -117,7 +121,7 @@ HEROKU_APPNAME = environ.get("HEROKU_APPNAME", None)
 
 # Bot kayıtları için sohbet numarası
 LOG_ID = environ.get("LOG_ID", None)
-LOG_ID = int(LOG_ID) if LOG_ID and resr('^-?\d+$', LOG_ID) else None
+LOG_ID = int(LOG_ID) if LOG_ID and resr(r'^-?\d+$', LOG_ID) else None
 
 # Test sunucusuna bağlantı kur
 #
@@ -177,20 +181,20 @@ class PyroClient(Client):
         except:
             pass
         message.continue_propagation()
-    
+
     def __init__(self, session, **args):
         super().__init__(session, **args)
         self.add_handler(MessageHandler(PyroClient.store_msg, Filters.incoming))
 
 app = PyroClient(
     SESSION,
-    api_id = API_ID,
-    api_hash = API_HASH,
-    app_version = f"Seden v{BOT_VERSION}",
-    device_model = "Der Untergang",
-    system_version = f"v{BOT_VERSION}",
-    lang_code = "tr",
-    test_mode = DEEPGRAM,
+    api_id=API_ID,
+    api_hash=API_HASH,
+    app_version=f"Seden v{BOT_VERSION}",
+    device_model="Der Untergang",
+    system_version=f"v{BOT_VERSION}",
+    lang_code="tr",
+    test_mode=DEEPGRAM,
 )
 
 def __get_modules():
@@ -217,5 +221,5 @@ __import_modules()
 
 LOGS.info("Botun çalışıyor! Herhangi bir sohbete .alive yazarak test edebilirsin, "
           ".seden yazarak modüllerin listesini alabilirsin. "
-          f"Yardıma ihtiyacın varsa, destek grubumuza bakabilirsin https://telegram.dog/{SUPPORT_GROUP}")
+          f"Yardıma ihtiyacın varsa, destek grubumuza bakabilirsin https://t.me/{SUPPORT_GROUP}")
 LOGS.info(f"Bot sürümü; Seden v{BOT_VERSION}")

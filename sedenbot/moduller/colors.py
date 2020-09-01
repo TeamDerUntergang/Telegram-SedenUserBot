@@ -16,11 +16,11 @@
 # @NaytSeyd tarafından portlanmıştır
 #
 
-import os
+from os import remove
 from PIL import Image, ImageColor
 
 from sedenbot import KOMUT
-from sedenecem.events import edit, reply_img, extract_args, sedenify
+from sedenecem.core import edit, reply_img, extract_args, sedenify
 
 @sedenify(pattern='^.color')
 def color(message):
@@ -39,11 +39,11 @@ def color(message):
             im.save('sedencik.png', 'PNG')
             input_str = input_str.replace('#', '#RENK_')
             reply_img(message, 'sedencik.png', caption=input_str)
-            os.remove('sedencik.png')
+            remove('sedencik.png')
             message.delete()
     else:
         edit(message, "Belki burayı okuyarak bir şeyler öğrenebilirsin.. \
-                      `.color <renk kodu>  | Örnek: .color #330066`")
+             `.color <renk kodu>  | Örnek: .color #330066`")
 
 KOMUT.update({
     'color': ".color <renk kodu> \

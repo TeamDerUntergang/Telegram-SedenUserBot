@@ -18,7 +18,7 @@ from pyrogram.errors import UsernameOccupied
 from pyrogram.api import functions
 
 from sedenbot import KOMUT
-from sedenecem.events import edit, extract_args, sedenify
+from sedenecem.core import edit, extract_args, sedenify
 # ====================== CONSTANT ===============================
 BIO_SUCCESS = "```Biyografi başarıyla değiştirildi.```"
 

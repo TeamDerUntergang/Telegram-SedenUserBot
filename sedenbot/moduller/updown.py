@@ -15,8 +15,9 @@
 #
 
 from os.path import isfile
-from sedenecem.events import (download_media_wc, sedenify, edit, 
-                              extract_args, reply_doc)
+from sedenbot import KOMUT
+from sedenecem.core import (download_media_wc, sedenify, edit,
+                            extract_args, reply_doc)
 
 # Copyright (c) @frknkrc44 | 2020
 @sedenify(pattern='^.download$')
@@ -28,16 +29,16 @@ def download(message):
 
     def progress(current, total):
         edit(message, '`İndiriliyor ... ' +
-                      '(%{:.2f})`'.format(current * 100 / total))
+             '(%{:.2f})`'.format(current * 100 / total))
 
     edit(message, '`İndiriliyor ...`')
     media = download_media_wc(reply, progress=progress)
-    
+
     if not media:
         edit(message, '`Henüz yapımcılarım bu türde bir medyayı'
-                      ' indirmem için beni ayarlamamış.`')
+             ' indirmem için beni ayarlamamış.`')
         return
-    
+
     edit(message, f'`{media}` konumuna başarıyla indirildi.')
 
 
@@ -51,8 +52,8 @@ def upload(message):
 
     def progress(current, total):
         edit(message, '`Yükleniyor ... ' +
-                      '(%{:.2f})`'.format(current * 100 / total) +
-                      f'\n{args}')
+             '(%{:.2f})`'.format(current * 100 / total) +
+             f'\n{args}')
 
     if isfile(args):
         try:
@@ -66,3 +67,11 @@ def upload(message):
         return
 
     edit(message, '`Dosya bulunamadı.`')
+
+KOMUT.update({
+    "download":
+    ".download <bağlantı-dosya adı> (ya da bir şeye cevap vererek)\
+\nKullanım: Sunucuya dosyayı indirir.\
+\n\n.upload <sunucudaki dosya yolu>\
+\nKullanım: Sunucunuzdaki bir dosyayı sohbete upload eder."
+})

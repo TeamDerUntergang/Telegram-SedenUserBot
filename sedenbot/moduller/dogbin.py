@@ -14,12 +14,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-import os
-
+from os import remove
 from requests import get, post, exceptions
 
 from sedenbot import KOMUT, DOWNLOAD_DIRECTORY
-from sedenecem.events import edit, extract_args, sedenify
+from sedenecem.core import edit, extract_args, sedenify
 
 DOGBIN_URL = 'https://del.dog/'
 
@@ -48,7 +47,7 @@ def paste(client, message):
             dogbin = ''
             for m in m_list:
                 dogbin += m.decode('UTF-8') + '\r'
-            os.remove(downloaded_file_name)
+            remove(downloaded_file_name)
         else:
             dogbin = dogbin.dogbin
 
@@ -101,15 +100,15 @@ def getpaste(message):
         resp.raise_for_status()
     except exceptions.HTTPError as HTTPErr:
         edit(message,
-            'İstek başarısız bir durum kodu döndürdü.\n\n' + str(HTTPErr))
+             'İstek başarısız bir durum kodu döndürdü.\n\n' + str(HTTPErr))
         return
     except exceptions.Timeout as TimeoutErr:
         edit(message, 'İstek zaman aşımına uğradı.' + str(TimeoutErr))
         return
     except exceptions.TooManyRedirects as RedirectsErr:
         edit(message,
-            'İstek, yapılandırılmış en fazla yönlendirme sayısını aştı.' +
-            str(RedirectsErr))
+             'İstek, yapılandırılmış en fazla yönlendirme sayısını aştı.' +
+             str(RedirectsErr))
         return
 
     reply_text = '`Dogbin URL içeriği başarıyla getirildi!`\n\n`İçerik:` ' + resp.text

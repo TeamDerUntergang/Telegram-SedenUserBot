@@ -14,18 +14,17 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-import re
-import json
-import requests
-import urllib.parse
-
+from re import findall, search, sub
+from json import loads, JSONDecodeError, decoder
+from urllib.parse import unquote, urlparse
 from os import popen, path, mkdir, chmod
 from random import choice
 from bs4 import BeautifulSoup
 from humanize import naturalsize
+from requests import get, Session
 
 from sedenbot import KOMUT
-from sedenecem.events import edit, extract_args, sedenify
+from sedenecem.core import edit, extract_args, sedenify, get_webdriver
 
 def load_bins():
     # CloudMail.ru ve MEGA.nz ayarlama
@@ -41,7 +40,7 @@ def load_bins():
 
     for binary, pth in binaries.items():
         with open(pth, 'wb') as load:
-            load.write(requests.get(binary).content)
+            load.write(get(binary).content)
         chmod(pth, 0o755)
 
 load_bins()
@@ -58,118 +57,75 @@ def direct(message):
     else:
         edit(message, '`Kullanım: .direct <link>`')
         return
-    reply = ''
-    links = re.findall(r'\bhttps?://.*\.\S+', direct)
-    if not links:
-        reply = '`Link bulunamadı!`'
-        edit(message, reply)
-    for link in links:
-        if 'drive.google.com' in link:
-            reply += gdrive(link)
-        elif 'zippyshare.com' in link:
-            reply += zippy_share(link)
-        elif 'mega.' in link:
-            reply += mega_dl(link)            
-        elif 'yadi.sk' in link:
-            reply += yandex_disk(link)
-        elif 'cloud.mail.ru' in link:
-            reply += cm_ru(link)
-        elif 'mediafire.com' in link:
-            reply += mediafire(link)
-        elif 'sourceforge.net' in link:
-            reply += sourceforge(link)
-        elif 'osdn.net' in link:
-            reply += osdn(link)
-        elif 'github.com' in link:
-            reply += github(link)
-        elif 'androidfilehost.com' in link:
-            reply += androidfilehost(link)
-        else:
-            reply += re.findall(r"\bhttps?://(.*?[^/]+)",
-                                link)[0] + 'desteklenmiyor'
-    edit(message, reply)
 
-def gdrive(url: str) -> str:
-    """ gdrive doğrudan bağlantı oluşturma """
-    drive = 'https://drive.google.com'
-    try:
-        link = re.findall(r'\bhttps?://drive\.google\.com\S+', url)[0]
-    except IndexError:
-        reply = "`Google Drive linki bulunamadı`\n"
-        return reply
-    file_id = ''
     reply = ''
-    if link.find("view") != -1:
-        file_id = link.split('/')[-2]
-    elif link.find("open?id=") != -1:
-        file_id = link.split("open?id=")[1].strip()
-    elif link.find("uc?id=") != -1:
-        file_id = link.split("uc?id=")[1].strip()
-    url = f'{drive}/uc?export=download&id={file_id}'
-    download = requests.get(url, stream=True, allow_redirects=False)
-    cookies = download.cookies
-    try:
-        # Küçük dosya boyutu durumunda, Google doğrudan indirir
-        dl_url = download.headers["location"]
-        if 'accounts.google.com' in dl_url:  # Gizli dosya
-            reply += '`Link herkese açık değil!`\n'
-            return reply
-        name = 'Doğrudan İndirme Linki'
-    except KeyError:
-        page = BeautifulSoup(download.content, 'html.parser')
-        export = drive + page.find('a', {'id': 'uc-download-link'}).get('href')
-        name = page.find('span', {'class': 'uc-name-size'}).text
-        response = requests.get(export,
-                                stream=True,
-                                allow_redirects=False,
-                                cookies=cookies)
-        dl_url = response.headers['location']
-        if 'accounts.google.com' in dl_url:
-            reply += 'Link herkese açık değil!'
-            return reply
-    reply += f'[{name}]({dl_url})\n'
-    return reply
+    
+    def check(url, items, starts=False):
+        if isinstance(items, str):
+            return url.startswith(items) if starts else items in url
+        
+        for item in items:
+            if (url.startswith(item) if starts else item in url):
+                return True
+        return False
 
-def zippy_share(url: str) -> str:
-    """ ZippyShare doğrudan link oluşturma
-    https://github.com/LameLemon/ziggy taban alınmıştır """
+    for link in direct.replace('\n', ' ').split():
+        try:
+            if not check(link, ['http://', 'https://'], starts=True):
+                raise Exception
+
+            result = urlparse(link)
+            all([result.scheme, result.netloc, result.path])
+        except:
+            reply += '`Link bulunamadı`\n'
+            continue
+        try:
+            if check(link, 'zippyshare.com'):
+                reply += zippy_share(link)
+            elif check(link, ['mega.nz', 'mega.co.nz']):
+                reply += mega_dl(link)
+            elif check(link, 'yadi.sk'):
+                reply += yandex_disk(link)
+            elif check(link, 'cloud.mail.ru'):
+                reply += cm_ru(link)
+            elif check(link, 'mediafire.com'):
+                reply += mediafire(link)
+            elif check(link, 'sourceforge.net'):
+                reply += sourceforge(link)
+            elif check(link, 'osdn.net'):
+                reply += osdn(link)
+            elif check(link, 'github.com'):
+                reply += github(link)
+            elif check(link, 'androidfilehost.com'):
+                reply += androidfilehost(link)
+            else:
+                reply += f'{link}` desteklenmiyor`\n'
+        except:
+            reply += f'{link}` işlenirken hata oluştu`\n'
+    edit(message, reply, preview=False)
+
+def zippy_share(link: str) -> str:
     reply = ''
     dl_url = ''
-    try:
-        link = re.findall(r'\bhttps?://.*zippyshare\.com\S+', url)[0]
-    except IndexError:
-        reply = "`ZippyShare linki bulunamadı`\n"
-        return reply
-    session = requests.Session()
-    base_url = re.search('http.+.com', link).group()
-    response = session.get(link)
-    page_soup = BeautifulSoup(response.content, 'html.parser')
-    scripts = page_soup.find_all("script", {"type": "text/javascript"})
-    for script in scripts:
-        if "getElementById('dlbutton')" in script.text:
-            url_raw = re.search(r'= (?P<url>\".+\" \+ (?P<math>\(.+\)) .+);',
-                                script.text).group('url')
-            math = re.search(r'= (?P<url>\".+\" \+ (?P<math>\(.+\)) .+);',
-                             script.text).group('math')
-            dl_url = url_raw.replace(math, '"' + str(eval(math)) + '"')
-            break
-    dl_url = base_url + eval(dl_url)
-    name = urllib.parse.unquote(dl_url.split('/')[-1])
-    reply += f'[{name}]({dl_url})\n'
+    session = Session()
+    base_url = search('http.+.com', link).group()
+    driver = get_webdriver()
+    driver.get(link)
+    left = driver.find_element_by_xpath('//div[contains(@class, "left")]')
+    font = left.find_elements_by_xpath('.//font')
+    name = font[2].text
+    size = font[4].text
+    button = driver.find_element_by_xpath('//a[contains(@id, "dlbutton")]')
+    link = button.get_attribute('href')
+    reply += f'{name} ({size})\n[İndir]({link})\n'
+    driver.quit()
     return reply
 
-def yandex_disk(url: str) -> str:
-    """ Yandex.Disk doğrudan link oluşturma
-    https://github.com/wldhx/yadisk-direct taban alınmıştır """
+def yandex_disk(link: str) -> str:
     reply = ''
-    try:
-        link = re.findall(r'\bhttps?://.*yadi\.sk\S+', url)[0]
-    except IndexError:
-        reply = "`Yandex.Disk linki bulunamadı`\n"
-        return reply
     api = 'https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key={}'
     try:
-        dl_url = requests.get(api.format(link)).json()['href']
+        dl_url = get(api.format(link)).json()['href']
         name = dl_url.split('filename=')[1].split('&disposition')[0]
         reply += f'[{name}]({dl_url})\n'
     except KeyError:
@@ -177,20 +133,13 @@ def yandex_disk(url: str) -> str:
         return reply
     return reply
 
-def mega_dl(url: str) -> str:
-    """ MEGA.nz direct doğrudan link oluşturma
-    https://github.com/tonikelope/megadown taban alınmıştır """
+def mega_dl(link: str) -> str:
     reply = ''
-    try:
-        link = re.findall(r'\bhttps?://.*mega.*\.nz\S+', url)[0]
-    except IndexError:
-        reply = "`MEGA.nz linki bulunamadı`\n"
-        return reply
     command = f'bin/megadown -q -m {link}'
     result = popen(command).read()
     try:
-        data = json.loads(result)
-    except json.JSONDecodeError:
+        data = loads(result)
+    except JSONDecodeError:
         reply += "`Hata: link çıkarılamıyor`\n"
         return reply
     dl_url = data['url']
@@ -199,21 +148,14 @@ def mega_dl(url: str) -> str:
     reply += f'[{name} ({size})]({dl_url})\n'
     return reply
 
-def cm_ru(url: str) -> str:
-    """ cloud.mail.ru doğrudan link oluşturma
-    https://github.com/JrMasterModelBuilder/cmrudl.py taban alınmıştır """
+def cm_ru(link: str) -> str:
     reply = ''
-    try:
-        link = re.findall(r'\bhttps?://.*cloud\.mail\.ru\S+', url)[0]
-    except IndexError:
-        reply = "`cloud.mail.ru linki bulunamadı`\n"
-        return reply
     command = f'bin/cmrudl -s {link}'
     result = popen(command).read()
     result = result.splitlines()[-1]
     try:
-        data = json.loads(result)
-    except json.decoder.JSONDecodeError:
+        data = loads(result)
+    except decoder.JSONDecodeError:
         reply += "`Hata: link çıkarılamıyor`\n"
         return reply
     dl_url = data['download']
@@ -222,73 +164,49 @@ def cm_ru(url: str) -> str:
     reply += f'[{name} ({size})]({dl_url})\n'
     return reply
 
-def mediafire(url: str) -> str:
-    """ MediaFire doğrudan link oluşturma """
-    try:
-        link = re.findall(r'\bhttps?://.*mediafire\.com\S+', url)[0]
-    except IndexError:
-        reply = "`MediaFire linki bulunamadı`\n"
-        return reply
+def mediafire(link: str) -> str:
     reply = ''
-    page = BeautifulSoup(requests.get(link).content, 'html.parser')
+    page = BeautifulSoup(get(link).content, 'html.parser')
     info = page.find('a', {'aria-label': 'Download file'})
     dl_url = info.get('href')
-    size = re.findall(r'\(.*\)', info.text)[0]
+    size = findall(r'\(.*\)', info.text)[0]
     name = page.find('div', {'class': 'filename'}).text
     reply += f'[{name} {size}]({dl_url})\n'
     return reply
 
-def sourceforge(url: str) -> str:
-    """ SourceForge doğrudan link oluşturma """
-    try:
-        link = re.findall(r'\bhttps?://.*sourceforge\.net\S+', url)[0]
-    except IndexError:
-        reply = "`SourceForge linki bulunamadı`\n"
-        return reply
-    file_path = re.findall(r'files(.*)/download', link)[0]
+def sourceforge(link: str) -> str:
+    file_path = findall(r'files(.*)/download', link)[0]
     reply = f"Mirrors for __{file_path.split('/')[-1]}__\n"
-    project = re.findall(r'projects?/(.*?)/files', link)[0]
+    project = findall(r'projects?/(.*?)/files', link)[0]
     mirrors = f'https://sourceforge.net/settings/mirror_choices?' \
         f'projectname={project}&filename={file_path}'
-    page = BeautifulSoup(requests.get(mirrors).content, 'html.parser')
+    page = BeautifulSoup(get(mirrors).content, 'html.parser')
     info = page.find('ul', {'id': 'mirrorList'}).findAll('li')
     for mirror in info[1:]:
-        name = re.findall(r'\((.*)\)', mirror.text.strip())[0]
+        name = findall(r'\((.*)\)', mirror.text.strip())[0]
         dl_url = f'https://{mirror["id"]}.dl.sourceforge.net/project/{project}/{file_path}'
         reply += f'[{name}]({dl_url}) '
     return reply
 
-def osdn(url: str) -> str:
-    """ OSDN doğrudan link oluşturma """
+def osdn(link: str) -> str:
     osdn_link = 'https://osdn.net'
-    try:
-        link = re.findall(r'\bhttps?://.*osdn\.net\S+', url)[0]
-    except IndexError:
-        reply = "`OSDN linki bulunamadı`\n"
-        return reply
     page = BeautifulSoup(
-        requests.get(link, allow_redirects=True).content, 'html.parser')
+        get(link, allow_redirects=True).content, 'html.parser')
     info = page.find('a', {'class': 'mirror_link'})
-    link = urllib.parse.unquote(osdn_link + info['href'])
+    link = unquote(osdn_link + info['href'])
     reply = f"Mirrors for __{link.split('/')[-1]}__\n"
     mirrors = page.find('form', {'id': 'mirror-select-form'}).findAll('tr')
     for data in mirrors[1:]:
         mirror = data.find('input')['value']
-        name = re.findall(r'\((.*)\)', data.findAll('td')[-1].text.strip())[0]
-        dl_url = re.sub(r'm=(.*)&f', f'm={mirror}&f', link)
+        name = findall(r'\((.*)\)', data.findAll('td')[-1].text.strip())[0]
+        dl_url = sub(r'm=(.*)&f', f'm={mirror}&f', link)
         reply += f'[{name}]({dl_url}) '
     return reply
 
-def github(url: str) -> str:
-    """ GitHub doğrudan link oluşturma """
-    try:
-        link = re.findall(r'\bhttps?://.*github\.com.*releases\S+', url)[0]
-    except IndexError:
-        reply = "`GitHub linki bulunamadı`\n"
-        return reply
+def github(link: str) -> str:
     reply = ''
     dl_url = ''
-    download = requests.get(url, stream=True, allow_redirects=False)
+    download = get(url, stream=True, allow_redirects=False)
     try:
         dl_url = download.headers["location"]
     except KeyError:
@@ -297,21 +215,14 @@ def github(url: str) -> str:
     reply += f'[{name}]({dl_url}) '
     return reply
 
-def androidfilehost(url: str) -> str:
-    """ AFH doğrudan link oluşturma """
-    try:
-        link = re.findall(r'\bhttps?://.*androidfilehost.*fid.*\S+', url)[0]
-    except IndexError:
-        reply = "`AFH linki bulanamadı`\n"
-        return reply
-    fid = re.findall(r'\?fid=(.*)', link)[0]
-    session = requests.Session()
+def androidfilehost(link: str) -> str:
+    fid = findall(r'\?fid=[0-9]+', link)[0]
+    session = Session()
     user_agent = useragent()
     headers = {'user-agent': user_agent}
     res = session.get(link, headers=headers, allow_redirects=True)
     headers = {
         'origin': 'https://androidfilehost.com',
-        'accept-encoding': 'gzip, deflate, br',
         'accept-language': 'en-US,en;q=0.9',
         'user-agent': user_agent,
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -327,7 +238,7 @@ def androidfilehost(url: str) -> str:
         'fid': f'{fid}'
     }
     mirrors = None
-    reply = ''
+    reply = f'Link: {link}\n'
     error = "`Hata: link için farklı mirror bulunamadı`\n"
     try:
         req = session.post(
@@ -336,28 +247,28 @@ def androidfilehost(url: str) -> str:
             data=data,
             cookies=res.cookies)
         mirrors = req.json()['MIRRORS']
-    except (json.decoder.JSONDecodeError, TypeError):
+    except (decoder.JSONDecodeError, TypeError):
         reply += error
-    if not mirrors:
+    if not mirrors or len(mirrors) < 1:
         reply += error
         return reply
     for item in mirrors:
         name = item['name']
         dl_url = item['url']
-        reply += f'[{name}]({dl_url}) '
+        reply += f'[{name}]({dl_url})\n'
     return reply
 
 def useragent():
-    """
-    useragent rastgele ayarlayıcı
-    """
-    useragents = BeautifulSoup(
-        requests.get(
-            'https://developers.whatismybrowser.com/'
-            'useragents/explore/operating_system_name/android/').content,
-        'html.parser').findAll('td', {'class': 'useragent'})
-    user_agent = choice(useragents)
-    return user_agent.text
+    req = get('https://user-agents.net/random')
+    soup = BeautifulSoup(req.text, 'html.parser')
+    agent = soup.find('article')
+    if agent:
+        agent = agent.find('li')
+        if agent:
+            return agent.find('a').text.replace('"', '')
+
+    return 'Googlebot/2.1 (+http://www.google.com/bot.html)'
+
 
 KOMUT.update({
     "direct":

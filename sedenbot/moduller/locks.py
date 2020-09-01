@@ -17,9 +17,9 @@
 from pyrogram import ChatPermissions
 
 from sedenbot import KOMUT
-from sedenecem.events import edit, extract_args, sedenify
+from sedenecem.core import edit, extract_args, sedenify
 
-@sedenify(pattern=r'^.(un)?lock', compat=False)
+@sedenify(pattern=r'^.(un)?lock', compat=False, private=False)
 def lock(client, message):
     text = message.text
     unlock = text[1:3] == 'un'

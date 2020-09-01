@@ -19,7 +19,7 @@ from requests import get
 
 from sedenbot import me
 from sedenecem.conv import PyroConversation
-from sedenecem.events import edit, sedenify, download_media, extract_args, sticker_resize as resizer
+from sedenecem.core import edit, sedenify, download_media, extract_args, sticker_resize as resizer
 # ================= CONSTANT =================
 DIZCILIK = [
     "Çıkartmayı dızlıyorum...",
@@ -73,15 +73,15 @@ def kang(client, message):
 
     pname = f'a{myacc.id}_by_{myacc.username}_{pack}'
     pnick = f"{kanger}'s UserBot pack {pack}"
-    
+
     limit = '50' if anim else '120'
-    
+
     def pack_created():
         created = get(f'https://telegram.me/addstickers/{pname}')
         created = (('A <strong>Telegram</strong> user has created the '
                     '<strong>Sticker&nbsp;Set</strong>') not in created.text)
         return created
-    
+
     def create_new(conv):
         cmd = f'/new{"animated" if anim else "pack"}'
 
@@ -90,7 +90,7 @@ def kang(client, message):
         except Exception as e:
             raise e
         msg = send_recv(conv, pnick)
-        if 'Invalid pack selected.' == msg.text:
+        if msg.text == 'Invalid pack selected.':
             pack += 1
             return create_new(conv)
         send_recv(conv, media, doc=True)
@@ -108,11 +108,11 @@ def kang(client, message):
             raise e
 
         status = send_recv(conv, pname)
-        
+
         if limit in status.text:
             edit(message, f'`{pack} numaralı paket dolu.`')
             return False
-        
+
         send_recv(conv, media, doc=True)
         send_recv(conv, emoji)
         send_recv(conv, '/done')

@@ -14,19 +14,18 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from pyrogram import Client, Filters, MessageHandler, Chat
-from sedenbot.seden_main import app
-from sedenbot import SUPPORT_GROUP, LOG_ID, BLACKLIST, BRAIN_CHECKER, CHROME_DRIVER, me
+from sys import executable, exc_info
 from re import sub
 from time import gmtime, strftime
 from subprocess import Popen, PIPE
 from os import execl, remove
 from math import floor
 from traceback import format_exc
-import sys
 from selenium.webdriver import Chrome
 from selenium.webdriver import ChromeOptions
 from PIL import Image
+from pyrogram import Filters, MessageHandler, Chat, ContinuePropagation, StopPropagation
+from sedenbot import SUPPORT_GROUP, LOG_ID, BLACKLIST, BRAIN_CHECKER, CHROME_DRIVER, me, app
 
 MARKDOWN_FIX_CHAR = '\u2064'
 
@@ -42,7 +41,7 @@ def sedenify(**args):
     group = args.get('group', True)
 
     if pattern and '.' in pattern[:2]:
-        args['pattern'] = pattern = pattern.replace('.','[.?]')
+        args['pattern'] = pattern = pattern.replace('.', '[.?]')
 
     def msg_decorator(func):
         def wrap(client, message):
@@ -74,7 +73,9 @@ def sedenify(**args):
                     app.terminate()
                 except:
                     pass
-                execl(sys.executable, 'killall', sys.executable)
+                execl(executable, 'killall', executable)
+            except ContinuePropagation as c:
+                raise c
             except Exception as e:
                 try:
                     date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
@@ -82,11 +83,11 @@ def sedenify(**args):
                     if '.crash' == f'{message.text}':
                         text = 'Bu bir test raporudur, LOG_ID kontrolü içindir.'
                     else:
-                        edit(message, '`Bir sorun oluştu, kayıtları log grubundan gönderiyorum ...`')
+                        edit(message, '`Bir sorun oluştu, kayıtları log grubuna gönderiyorum ...`')
                         link = f'[Seden Destek Grubu](https://telegram.dog/{SUPPORT_GROUP})'
                         text = ('**SEDENBOT HATA RAPORU**\n'
                                 'İsterseniz, bunu rapor edebilirsiniz '
-                               f'- sadece bu mesajı buraya iletin {link}.\n'
+                                f'- sadece bu mesajı buraya iletin {link}.\n'
                                 'Hata ve Tarih dışında hiçbir şey kaydedilmez\n')
 
                     ftext = ('========== UYARI =========='
@@ -97,16 +98,16 @@ def sedenify(**args):
                              '\nbu hata raporu olmayabilir, kimse verilerinize ulaşamaz.\n'
                              '================================\n\n'
                              '--------SEDENBOT HATA GUNLUGU--------\n'
-                            f'\nTarih: {date}'
-                            f'\nGrup ID: {message.chat.id}'
-                            f'\nGönderen kişinin ID: {message.from_user.id}'
-                            f'\n\nOlay Tetikleyici:\n{message.text}'
-                            f'\n\nGeri izleme bilgisi:\n{format_exc()}'
-                            f'\n\nHata metni:\n{sys.exc_info()[1]}'
+                             f'\nTarih: {date}'
+                             f'\nGrup ID: {message.chat.id}'
+                             f'\nGönderen kişinin ID: {message.from_user.id}'
+                             f'\n\nOlay Tetikleyici:\n{message.text}'
+                             f'\n\nGeri izleme bilgisi:\n{format_exc()}'
+                             f'\n\nHata metni:\n{exc_info()[1]}'
                              '\n\n--------SEDENBOT HATA GUNLUGU BITIS--------'
                              '\n\n\nSon 10 commit:\n')
 
-                    process = Popen(['git','log', '--pretty=format:"%an: %s"', '-10'], stdout=PIPE, stderr=PIPE)
+                    process = Popen(['git', 'log', '--pretty=format:"%an: %s"', '-10'], stdout=PIPE, stderr=PIPE)
                     out, err = process.communicate()
                     out = f'{out.decode()}\n{err.decode()}'.strip()
 
@@ -151,7 +152,7 @@ def extract_args(message, markdown=True):
     if not ' ' in text:
         return ''
 
-    text = sub('\s+',' ',text)
+    text = sub(r'\s+', ' ', text)
     text = text[text.find(' '):].strip()
     return text
 
@@ -313,7 +314,7 @@ def download_media(client, data, file_name=None, progress=None):
 
     if progress:
         return client.download_media(data, file_name=file_name, progress=progress)
-    
+
     return client.download_media(data, file_name=file_name)
 
 

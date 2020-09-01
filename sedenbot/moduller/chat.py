@@ -15,13 +15,13 @@
 #
 
 from sedenbot import KOMUT
-from sedenecem.events import edit, extract_args, sedenify
+from sedenecem.core import edit, sedenify
 
-@sedenify(pattern='.chatid')
+@sedenify(pattern='.chatid', private=False)
 def chatid(message):
     edit(message, 'Grup ID: `' + str(message.chat.id) + '`')
 
-@sedenify(pattern='^.kickme', compat=False)
+@sedenify(pattern='^.kickme', compat=False, private=False)
 def kickme(client, message):
     edit(message, '`Güle Güle ben gidiyorum 🤠`')
     client.leave_chat(message.chat.id, 'me')

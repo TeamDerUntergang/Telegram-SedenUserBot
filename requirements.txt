@@ -10,9 +10,10 @@ humanize
 lyricsgenius
 psycopg2-binary
 pybase64
-pyrogram
+git+https://github.com/NaytSeyd/pyrogram
 python-dotenv
 requests
+removebg
 selenium
 sqlalchemy
 tgcrypto

@@ -14,11 +14,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-import os
-import lyricsgenius
+from os import remove
+from lyricsgenius import Genius
 
 from sedenbot import KOMUT, GENIUS_TOKEN
-from sedenecem.events import edit, reply_doc, extract_args, sedenify
+from sedenecem.core import edit, reply_doc, extract_args, sedenify
 
 @sedenify(pattern='^.lyrics')
 def lyrics(message):
@@ -27,14 +27,13 @@ def lyrics(message):
         pass
     else:
         edit(message, "`Hata: lütfen <sanatçı> ve <şarkı> için bölücü olarak '-' kullanın`\n"
-                     "`Örnek: Rota - Belki Başka Zaman`")
+             "`Örnek: Rota - Belki Başka Zaman`")
         return
 
     if not GENIUS_TOKEN:
-        edit(message,
-            '`Lütfen Genius tokeni ayarlayınız. Teşekkürler!`')
+        edit(message, '`Lütfen Genius tokeni ayarlayınız. Teşekkürler!`')
     else:
-        genius = lyricsgenius.Genius(GENIUS_TOKEN)
+        genius = Genius(GENIUS_TOKEN)
         try:
             args = args.split('-')
             artist = args[0].strip()
@@ -62,7 +61,7 @@ def lyrics(message):
         with open('lyrics.txt', 'w+') as f:
             f.write(f'Arama sorgusu: \n{artist} - {song}\n\n{songs.lyrics}')
         reply_doc(message, 'lyrics.txt')
-        os.remove('lyrics.txt')
+        remove('lyrics.txt')
     else:
         edit(message, f'**Arama sorgusu**: \n`{artist} - {song}`\n\n```{songs.lyrics}```')
     return

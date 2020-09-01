@@ -14,27 +14,26 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-import os
-import re
-import urllib
-import requests
-
+from os import path, remove
+from re import findall, I, M
+from urllib import request, parse
+from requests import post, get
 from PIL import Image
 from bs4 import BeautifulSoup
 from pyrogram import InputMediaPhoto
 
 from sedenbot import KOMUT
-from sedenecem.events import edit, reply_doc, extract_args, sedenify, download_media_wc
+from sedenecem.core import edit, reply_doc, extract_args, sedenify, download_media_wc
 
-opener = urllib.request.build_opener()
+opener = request.build_opener()
 useragent = 'Mozilla/5.0 (Linux; Android 9; SM-G960F Build/PPR1.180610.011; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/78.0.3904.70 Mobile Safari/537.36'
 opener.addheaders = [('User-agent', useragent)]
 
 @sedenify(pattern=r'^.reverse$', compat=False)
 def reverse(client, message):
     photo = 'reverse.png'
-    if os.path.isfile(photo):
-        os.remove(photo)
+    if path.isfile(photo):
+        remove(photo)
 
     reverse = message.reply_to_message
     revfile = None
@@ -59,30 +58,30 @@ def reverse(client, message):
             'encoded_image': (photo, open(photo, 'rb')),
             'image_content': ''
         }
-        response = requests.post(searchUrl,
+        response = post(searchUrl,
                                  files=multipart,
                                  allow_redirects=False)
         fetchUrl = response.headers['Location']
 
         if response != 400:
             edit(message, "`Görüntü başarıyla Google'a yüklendi.`"
-                           "\n`Şimdi kaynak ayrıştırılıyor.`")
+                 "\n`Şimdi kaynak ayrıştırılıyor.`")
         else:
             edit(message, '`Google siktirip gitmemi söyledi.`')
             return
 
-        os.remove(photo)
+        remove(photo)
         match = ParseSauce(fetchUrl +
-                           "&preferences?hl=en&fg=1#languages")
+                           '&preferences?hl=en&fg=1#languages')
         guess = match['best_guess']
         imgspage = match['similar_images']
 
         if guess and imgspage:
             edit(message, f'[{guess}]({fetchUrl})\n\n`Resim arıyorum...`')
         else:
-            edit(message, "`Çirkin kıçın için bir şey bulamadım.`")
+            edit(message, '`Çirkin kıçın için bir şey bulamadım.`')
             return
-        
+
         msg = extract_args(message)
         if len(msg) > 1 and msg.isdigit():
             lim = msg
@@ -91,7 +90,7 @@ def reverse(client, message):
         images = scam(match, lim)
         yeet = []
         for i in range(len(images)):
-            k = requests.get(images[i])
+            k = get(images[i])
             n = f'reverse_{i}.png'
             file = open(n, 'wb')
             file.write(k.content)
@@ -99,7 +98,7 @@ def reverse(client, message):
             yeet.append(InputMediaPhoto(n))
         reply_doc(message, yeet)
         edit(message,
-            f'[{guess}]({fetchUrl})\n\n[Benzer görüntüler]({imgspage})')
+             f'[{guess}]({fetchUrl})\n\n[Benzer görüntüler]({imgspage})')
 
 
 def ParseSauce(googleurl):
@@ -112,7 +111,7 @@ def ParseSauce(googleurl):
     try:
         for similar_image in soup.findAll('input', {'class': 'gLFyf'}):
             url = 'https://www.google.com/search?tbm=isch&q=' + \
-                urllib.parse.quote_plus(similar_image.get('value'))
+                parse.quote_plus(similar_image.get('value'))
             results['similar_images'] = url
     except BaseException:
         pass
@@ -131,7 +130,7 @@ def scam(results, lim):
     counter = 0
 
     pattern = r'^,\[\"(.*[.png|.jpg|.jpeg])\",[0-9]+,[0-9]+\]$'
-    oboi = re.findall(pattern, decoded, re.I | re.M)
+    oboi = findall(pattern, decoded, I | M)
 
     for imglink in oboi:
         counter += 1

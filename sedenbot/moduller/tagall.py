@@ -15,7 +15,7 @@
 #
 
 from sedenbot import KOMUT
-from sedenecem.events import sedenify, reply
+from sedenecem.core import sedenify, reply
 
 # Copyright (c) @NaytSeyd | 2020
 @sedenify(pattern='^.tagall$', compat=False, private=False)
@@ -33,7 +33,7 @@ def tagall(client, message):
 @sedenify(pattern='^.admin$', compat=False, private=False)
 def admin(client, message):
     mesaj = '@admin'
-    chat =  message.chat
+    chat = message.chat
     for member in client.iter_chat_members(chat.id, filter='administrators'):
         mesaj += f'[\u2063](tg://user?id={member.user.id})'
     yanit = message.reply_to_message

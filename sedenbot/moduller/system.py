@@ -16,17 +16,17 @@
 
 from os import execl, remove
 from datetime import datetime
-from pyrogram.api import functions
 from shutil import which
 from getpass import getuser
 from sys import executable, argv
-import operator as op
-import ast
+from operator import add, sub, mul, truediv, pow, xor, neg
+from ast import Add, Sub, Mult, Div, Pow, BitXor, USub, parse, Num, BinOp, UnaryOp
+from pyrogram.api import functions
 
 from sedenbot.moduller.lovers import saniye
 from sedenbot.moduller.ecem import ecem
-from sedenbot import KOMUT, ALIVE_MESAJI, BOT_VERSION, SUPPORT_GROUP
-from sedenecem.events import edit, reply, reply_doc, send_log, extract_args, sedenify
+from sedenbot import KOMUT, ALIVE_MESAJI, BOT_VERSION, CHANNEL
+from sedenecem.core import edit, reply, reply_doc, send_log, extract_args, sedenify
 # ================= CONSTANT =================
 KULLANICIMESAJI = ALIVE_MESAJI
 # ============================================
@@ -34,7 +34,7 @@ KULLANICIMESAJI = ALIVE_MESAJI
 def neofetch(message):
     try:
         from subprocess import PIPE, Popen
-        islem = Popen(['neofetch','--stdout'], stdout=PIPE, stderr=PIPE)
+        islem = Popen(['neofetch', '--stdout'], stdout=PIPE, stderr=PIPE)
         sonuc, _ = islem.communicate()
         edit(message, sonuc.decode(), parse=None)
     except:
@@ -42,21 +42,19 @@ def neofetch(message):
 
 @sedenify(pattern='^.botver$')
 def botver(message):
-    if which('git') :
+    if which('git'):
         from subprocess import PIPE, Popen
         degisiklik = Popen(['git', 'rev-list', '--all', '--count'], stdout=PIPE, stderr=PIPE, universal_newlines=True)
         sonuc, _ = degisiklik.communicate()
 
-        edit(message, f'[Seden UserBot](https://telegram.dog/{SUPPORT_GROUP}) `Sürümü: '
-                            f'v{BOT_VERSION}'
-                            '` \n'
-                            '`Toplam değişiklik (Commit): '
-                            f'{sonuc}'
-                            '`', preview=False, fix_markdown=True)
+        edit(message, f'[Seden UserBot](https://t.me/{CHANNEL}) `Sürümü: '
+                      f'v{BOT_VERSION}'
+                      '` \n'
+                      '`Toplam değişiklik (Commit): '
+                      f'{sonuc}'
+                      '`', preview=False, fix_markdown=True)
     else:
-        edit(message,
-            'Bu arada Seden seni çok seviyor. ❤️'
-        )
+        edit(message, 'Bu arada Seden seni çok seviyor. ❤️')
 
 @sedenify(pattern='^.pip')
 def pip3(message):
@@ -95,9 +93,8 @@ def restart(client, message):
     send_log('#RESTART\n'
              'Bot yeniden başlatıldı.')
     try:
-        client.terminate()
-        client.disconnect()
-    except:
+        client.stop()
+    except Exception as e:
         pass
     execl(executable, executable, *argv)
 
@@ -107,11 +104,9 @@ def restart(client, message):
     send_log('#SHUTDOWN \n'
              'Bot kapatıldı.')
     try:
-        client.terminate()
-        client.disconnect()
-    except:
+        client.stop()
+    except Exception as e:
         pass
-    execl(executable, 'killall', executable)
 
 @sedenify(pattern='^.ping$')
 def ping(message):
@@ -177,17 +172,16 @@ def terminal(message):
         from os import geteuid
         uid = geteuid()
     except ImportError:
-        uid = 'Bu değil şef!'
+        uid = 0
 
     if not command:
         edit(message, '`Yardım almak için .seden term yazarak örneğe bakabilirsin.`')
         return
-    
+
     sonuc = 'Komutun sonucu alınamadı.'
     try:
-        from subprocess import PIPE, Popen
-        islem = Popen(command.split(), stdout=PIPE, stderr=PIPE, universal_newlines=True)
-        sonuc, _ = islem.communicate()
+        from subprocess import getoutput
+        sonuc = getoutput(command)
     except:
         pass
 
@@ -219,9 +213,8 @@ def eval(message):
                     file.write(evaluation)
                     file.close()
                     reply_doc(message,
-                        'cikti.txt',
-                        caption='`Çıktı çok büyük, dosya olarak gönderiliyor`',
-                    )
+                              'cikti.txt',
+                              caption='`Çıktı çok büyük, dosya olarak gönderiliyor`',)
                     remove('cikti.txt')
                     return
                 edit(message, '**Sorgu: **\n`'
@@ -241,20 +234,20 @@ def eval(message):
 
     send_log(f'Eval sorgusu {args} başarıyla yürütüldü')
 
-operators = {ast.Add: op.add, ast.Sub: op.sub, ast.Mult: op.mul,
-			ast.Div: op.truediv, ast.Pow: op.pow, ast.BitXor: op.xor,
-			ast.USub: op.neg}
+operators = {Add: add, Sub: sub, Mult: mul,
+             Div: truediv, Pow: pow, BitXor: xor,
+             USub: neg}
 
 def safe_eval(expr):
-    expr = expr.lower().replace("x","*").replace(" ","")
-    return str(_eval(ast.parse(expr, mode='eval').body))
+    expr = expr.lower().replace("x", "*").replace(" ", "")
+    return str(_eval(parse(expr, mode='eval').body))
 
 def _eval(node):
-    if isinstance(node, ast.Num):
+    if isinstance(node, Num):
         return node.n
-    elif isinstance(node, ast.BinOp):
+    elif isinstance(node, BinOp):
         return operators[type(node.op)](_eval(node.left), _eval(node.right))
-    elif isinstance(node, ast.UnaryOp):
+    elif isinstance(node, UnaryOp):
         return operators[type(node.op)](_eval(node.operand))
     else:
         raise TypeError("Bu güvenli bir eval sorgusu olmayabilir.")

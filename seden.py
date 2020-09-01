@@ -15,4 +15,5 @@
 #
 
 if __name__ == '__main__':
-   from sedenbot import seden_main
+    import sedenbot
+    sedenbot.app.start()

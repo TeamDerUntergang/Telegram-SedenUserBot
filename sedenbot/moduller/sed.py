@@ -14,12 +14,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-import re
-
+from re import match, sub, IGNORECASE, I
 from sre_constants import error as sre_err
 
 from sedenbot import KOMUT
-from sedenecem.events import edit, sedenify
+from sedenecem.core import edit, sedenify
 
 DELIMITERS = ('/', ':', '|', '_')
 
@@ -65,38 +64,38 @@ def separate_sed(sed_string):
 
 @sedenify(pattern='^sed')
 def sed(message):
-    sed_result = separate_sed(message.text)
+    sed_result = separate_sed(message.text or message.caption)
     textx = message.reply_to_message
     if sed_result:
         if textx:
             to_fix = textx.text
         else:
             edit(message,
-                '`Bunun için yeterli zekâya sahip değilim.`')
+                 '`Bunun için yeterli zekâya sahip değilim.`')
             return
 
         repl, repl_with, flags = sed_result
 
         if not repl:
             edit(message,
-                '`Bunun için yeterli zekâya sahip değilim.`')
+                 '`Bunun için yeterli zekâya sahip değilim.`')
             return
 
         try:
-            check = re.match(repl, to_fix, flags=re.IGNORECASE)
+            check = match(repl, to_fix, flags=IGNORECASE)
             if check and check.group(0).lower() == to_fix.lower():
                 edit(message, '`Bu bir yanıtlama. Sed kullanma`')
                 return
 
             if 'i' in flags and 'g' in flags:
-                text = re.sub(repl, repl_with, to_fix, flags=re.I).strip()
+                text = sub(repl, repl_with, to_fix, flags=I).strip()
             elif 'i' in flags:
-                text = re.sub(repl, repl_with, to_fix, count=1,
-                              flags=re.I).strip()
+                text = sub(repl, repl_with, to_fix, count=1,
+                              flags=I).strip()
             elif 'g' in flags:
-                text = re.sub(repl, repl_with, to_fix).strip()
+                text = sub(repl, repl_with, to_fix).strip()
             else:
-                text = re.sub(repl, repl_with, to_fix, count=1).strip()
+                text = sub(repl, repl_with, to_fix, count=1).strip()
         except sre_err:
             edit(message, 'Dostum lütfen [regex](https://regexone.com) öğren!')
             return
@@ -109,4 +108,3 @@ KOMUT.update({
     \nKullanım: Sed kullanarak bir kelimeyi veya kelimeleri değiştirir.\
     \nSınırlayıcılar: `/, :, |, _`"
 })
-

@@ -14,15 +14,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-import time
-
+from time import sleep
 from base64 import b64decode
 from re import match
-from os.path import exists
-from os import remove
 
 from sedenbot import KOMUT
-from sedenecem.events import edit, reply_doc, extract_args, sedenify, get_webdriver
+from sedenecem.core import edit, reply_doc, extract_args, sedenify, get_webdriver
 
 @sedenify(pattern=r'^.ss')
 def ss(message):
@@ -48,7 +45,7 @@ def ss(message):
     \n`Sayfanın yüksekliği: {height} piksel`\
     \n`Sayfanın genişliği: {width} piksel`\
     \n`Sayfanın yüklenmesi için {wait_for} saniye beklendi.`')
-    time.sleep(wait_for)
+    sleep(wait_for)
     im_png = driver.get_screenshot_as_base64()
     # Sayfanın ekran görüntüsü kaydedilir.
     driver.close()

@@ -16,13 +16,12 @@
 # @NaytSeyd tarafından portlanmıştır.
 #
 
-import io
-import re
+from io import BytesIO
+from re import escape, search, IGNORECASE
+from importlib import import_module
 
 from sedenbot import KOMUT, LOGS
-from sedenecem.events import edit, reply, send_log, reply_doc, extract_args, sedenify
-
-from importlib import import_module
+from sedenecem.core import edit, reply, send_log, reply_doc, extract_args, sedenify
 
 def blacklist_init():
     try:
@@ -38,6 +37,9 @@ blacklist_init()
 
 @sedenify(incoming=True, outgoing=False)
 def blacklist(message):
+    if message.from_user.is_self:
+        message.continue_propagation()
+
     if not sql:
         return
     name = message.text
@@ -45,13 +47,13 @@ def blacklist(message):
         return
     snips = sql.get_chat_blacklist(message.chat.id)
     for snip in snips:
-        pattern = r'( |^|[^\w])' + re.escape(snip) + r'( |$|[^\w])'
-        if re.search(pattern, name, flags=re.IGNORECASE):
+        pattern = r'( |^|[^\w])' + escape(snip) + r'( |$|[^\w])'
+        if search(pattern, name, flags=IGNORECASE):
             try:
                 message.delete()
             except Exception as e:
                 reply(message, 'Bu grupta mesaj silme iznim yok !')
-                sql.rm_from_blacklist(event.chat_id, snip.lower())
+                sql.rm_from_blacklist(message.chat.id, snip.lower())
             break
         pass
 
@@ -89,7 +91,7 @@ def showblacklist(message):
         OUT_STR = '**Karalisteye eklenmiş kelime bulunamadı.**\
                   \n`.addblacklist` **komutu ile ekleyebilirsin.**'
     if len(OUT_STR) > 4096:
-        with io.BytesIO(str.encode(OUT_STR)) as out_file:
+        with BytesIO(str.encode(OUT_STR)) as out_file:
             out_file.name = 'blacklist.text'
             reply_doc(message, out_file, caption='**Bu grup için ayarlanan karaliste:**')
             message.delete()

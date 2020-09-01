@@ -7,9 +7,11 @@
       "userbot",
       "python",
       "seden",
-      "module"
+      "module",
+      "pyrogram",
+      "postgresql"
     ],
-    "repository": "https://github.com/NaytSeyd/denemebot",
+    "repository": "https://github.com/TeamDerUntergang/Telegram-SedenUserBot",
     "website": "https://devotag.com",
     "success_url": "https://t.me/SedenUserBotSupport",
     "stack": "container",
@@ -39,15 +41,15 @@
             "value": "https://github.com/TeamDerUntergang/Telegram-SedenUserBot",
             "required": true
         },
-        "TZ": {
-            "description": "Bunun ne işe yaradığı hakkında fikrin yoksa kurcalama :)",
-            "value": "Europe/Istanbul",
-            "required": true  
-        },
         "LOG_ID": {
             "description": "Log grubu için grup ID",
             "value": "0",
             "required": true
+        },
+        "ALIVE_MESAJI": {
+            "description": "Botunuzun .alive komutunda yazdığı mesajı değiştermeye yarar. Varsayılan olarak kendi mesajımız mevcuttur.",
+            "value": "Merhaba Seden! Seni Seviyorum ❤️",
+            "required": false 
         },
         "CHROME_DRIVER": {
             "description": "Selenium tabanlı modüller için ChromeDriver konumu.",
@@ -65,7 +67,10 @@
         },
         "OCR_APIKEY": {
             "description": ".ocr komutu için OCR API Key. https://ocr.space/ocrapi adresinden alın.",
-            "required": false,
+            "required": false
+        },
+        "RBG_APIKEY": {
+            "description": ".rbg komutu için remove.bg API Key. https://www.remove.bg/api adresinden alın.",
             "required": false
         },
         "DOWNLOAD_DIRECTORY": {
@@ -75,7 +80,6 @@
         },
         "WEATHER": {
             "description": "Seden UserBot'un hava durumu modülü için varsayılan şehri ayarlayın.",
-            "required": false,
             "required": false
         }
     },

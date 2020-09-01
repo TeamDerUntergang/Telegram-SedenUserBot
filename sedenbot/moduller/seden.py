@@ -14,8 +14,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from sedenbot import KOMUT, SUPPORT_GROUP
-from sedenecem.events import edit, reply, extract_args, sedenify
+from sedenbot import KOMUT, CHANNEL
+from sedenecem.core import edit, reply, extract_args, sedenify
 
 @sedenify(pattern='^.seden')
 def seden(message):
@@ -28,7 +28,7 @@ def seden(message):
     else:
         edit(message, '**Lütfen hangi Seden modülü için yardım istediğinizi belirtin !\
             \nKullanım:** `.seden <modül adı>`')
-        metin = f'**[Seden UserBot](https://telegram.dog/{SUPPORT_GROUP}) Yüklü Modüller:**\n'
+        metin = f'**[Seden UserBot](https://t.me/{CHANNEL}) Yüklü Modüller:**\n'
         for liste in KOMUT:
             metin += '- `' + str(liste)
             metin += '` \n'

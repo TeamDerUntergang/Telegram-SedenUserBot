@@ -14,13 +14,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-import threading
-
+from threading import Event
 from re import sub
 
 from sedenbot import KOMUT
-from sedenecem.events import (edit, reply, reply_img, send_log, extract_args, 
-                              extract_args_arr, sedenify)
+from sedenecem.core import (edit, reply, reply_img, send_log, extract_args,
+                            extract_args_arr, sedenify)
 
 @sedenify(pattern='^.tspam')
 def tspam(message):
@@ -29,7 +28,7 @@ def tspam(message):
         edit(message, '`Bir şeyler eksik/yanlış gibi görünüyor.`')
         return
     message.delete()
-    for metin in tspam.replace(' ',''):
+    for metin in tspam.replace(' ', ''):
         message.reply(metin)
 
     send_log('#TSPAM \n'
@@ -47,7 +46,7 @@ def spam(message):
         return
     message.delete()
     miktar = int(arr[0])
-    metin = spam.replace(arr[0],'').strip()
+    metin = spam.replace(arr[0], '').strip()
     for i in range(0, miktar):
         reply(message, metin)
 
@@ -81,7 +80,7 @@ def delayspam(message):
     miktar = int(arr[1])
     spam_message = sub(f'{arr[0]}|{arr[1]}', '', delayspam).strip()
     message.delete()
-    delaySpamEvent = threading.Event()
+    delaySpamEvent = Event()
     for i in range(0, miktar):
         message.reply(spam_message)
         delaySpamEvent.wait(gecikme)

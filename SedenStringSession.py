@@ -26,12 +26,12 @@ API_HASH = input('API HASH: ')
 
 app = Client(
     'sedenuserbot',
-    api_id = API_KEY,
-    api_hash = API_HASH,
-    app_version = "Seden v1.0",
-    device_model = "Der Untergang",
-    system_version = "1.0",
-    lang_code = "tr",
+    api_id=API_KEY,
+    api_hash=API_HASH,
+    app_version="Seden UserBot",
+    device_model="Der Untergang",
+    system_version="1.0",
+    lang_code="tr",
 )
 
 with app:

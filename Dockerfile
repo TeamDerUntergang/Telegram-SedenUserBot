@@ -15,24 +15,17 @@
 #
 
 # Copyright (c) @NaytSeyd | 2020
-FROM naytseyd/sedenbot:latest
-
-# Maintainer
-MAINTAINER Ahmet Acikgoz <NaytSeyd@yandex.com>
-
-# Zaman dilimini ayarla
-ENV TZ=Europe/Istanbul
+FROM naytseyd/sedenbot:j1xlte
 
 # Çalışma dizini
-ENV PATH="/root/sedenuser/bin:$PATH"
-WORKDIR /root/sedenuser
+ENV PATH="/root/DerUntergang/seden/bin:$PATH"
+WORKDIR /root/DerUntergang/seden
 
 # Repoyu klonla
-RUN git clone -b seden https://github.com/TeamDerUntergang/Telegram-SedenUserBot /root/sedenuser
+RUN git clone -b seden https://github.com/TeamDerUntergang/Telegram-SedenUserBot /root/DerUntergang/seden
 
 # Oturum ve yapılandırmayı kopyala (varsa)
-COPY ./sample_config.env ./sedenbot.session* ./config.env* /root/sedenuser/
+COPY ./sample_config.env ./sedenbot.session* ./config.env* /root/DerUntergang/seden/
 
 # Botu çalıştır
-RUN pip3 install -r requirements.txt
 CMD ["python3","seden.py"]
