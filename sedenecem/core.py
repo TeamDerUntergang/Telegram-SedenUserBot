@@ -24,7 +24,7 @@ from traceback import format_exc
 from selenium.webdriver import Chrome
 from selenium.webdriver import ChromeOptions
 from PIL import Image
-from pyrogram import Filters, MessageHandler, Chat, ContinuePropagation, StopPropagation
+from pyrogram import Filters, MessageHandler, Chat, ContinuePropagation, StopPropagation, Message
 from sedenbot import SUPPORT_GROUP, LOG_ID, BLACKLIST, BRAIN_CHECKER, CHROME_DRIVER, me, app
 
 MARKDOWN_FIX_CHAR = '\u2064'
@@ -45,6 +45,9 @@ def sedenify(**args):
 
     def msg_decorator(func):
         def wrap(client, message):
+            if not message or not message.from_user or message.empty:
+                return
+
             try:
                 if len(me) < 1:
                     me.append(app.get_me())
@@ -247,6 +250,41 @@ def reply_sticker(message, sticker, delete_orig=False):
     except:
         pass
 
+def reply_msg(message, message2, delete_orig=False):
+    try:
+        filename = None
+        if message2.media:
+            filename = download_media_wc(message2, sticker_orig=True)
+            if message2.audio:
+                message.reply_audio(filename)
+            elif message2.animation:
+                message.reply_animation(filename)
+            elif message2.sticker:
+                message.reply_sticker(filename)
+            elif message2.photo:
+                message.reply_photo(filename)
+            elif message2.video:
+                message.reply_video(filename)
+            elif message2.voice:
+                message.reply_voice(filename)
+            elif message2.video_note:
+                message.reply_video_note(filename)
+            elif message2.document:
+                message.reply_document(filename)
+            else:
+                filename = None
+                message2.forward(message.chat.id)
+
+            if filename:
+                remove(filename)
+        else:
+            message.reply_text(message2.text)
+
+        if delete_orig:
+            message.delete()
+    except Exception as e:
+        raise e
+
 
 def send_log(text, fix_markdown=False):
     send(app, LOG_ID if LOG_ID else get_me().id, text, fix_markdown=fix_markdown)
@@ -285,7 +323,7 @@ def send_doc(client, chat, doc, caption='', fix_markdown=False):
     client.send_document(chat if isinstance(chat, int) else chat.id, doc, caption=caption)
 
 
-def download_media(client, data, file_name=None, progress=None):
+def download_media(client, data, file_name=None, progress=None, sticker_orig=False):
     if not file_name:
         if data.document:
             file_name = (data.document.file_name
@@ -308,7 +346,7 @@ def download_media(client, data, file_name=None, progress=None):
         elif data.video_note:
             file_name = f'{data.video_note.file_id}.mp4'
         elif data.sticker:
-            file_name = f'{data.sticker.file_id}.{"tgs" if data.sticker.is_animated else "png"}'
+            file_name = f'{data.sticker.file_id}.{"tgs" if data.sticker.is_animated else ("webp" if sticker_orig else "png")}'
         else:
             return None
 
@@ -318,8 +356,8 @@ def download_media(client, data, file_name=None, progress=None):
     return client.download_media(data, file_name=file_name)
 
 
-def download_media_wc(data, file_name=None, progress=None):
-    return download_media(app, data, file_name, progress)
+def download_media_wc(data, file_name=None, progress=None, sticker_orig=False):
+    return download_media(app, data, file_name, progress, sticker_orig)
 
 
 def get_webdriver():
@@ -358,6 +396,21 @@ def sticker_resize(photo):
     temp = 'temp.png'
     image.save(temp, 'PNG')
     return temp
+
+
+def get_messages(chat_id, msg_ids=None, client=app):
+    try:
+        ret = client.get_messages(chat_id=(chat_id or 'me'), message_ids=msg_ids)
+        return [ret] if ret and isinstance(ret, Message) else ret
+    except:
+        return []
+
+def forward(message, chat_id):
+    try:
+        return message.forward(chat_id or 'me')
+    except Exception as e:
+        raise e
+        return None
 
 
 class RetardsException(Exception):

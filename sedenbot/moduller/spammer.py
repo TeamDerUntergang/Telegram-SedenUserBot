@@ -46,7 +46,7 @@ def spam(message):
         return
     message.delete()
     miktar = int(arr[0])
-    metin = spam.replace(arr[0], '').strip()
+    metin = spam.replace(arr[0], '', 1).strip()
     for i in range(0, miktar):
         reply(message, metin)
 
@@ -78,12 +78,14 @@ def delayspam(message):
         return
     gecikme = int(arr[0])
     miktar = int(arr[1])
-    spam_message = sub(f'{arr[0]}|{arr[1]}', '', delayspam).strip()
+    spam_message = delayspam.replace(arr[0], '', 1)
+    spam_message = spam_message.replace(arr[1], '', 1).strip()
     message.delete()
     delaySpamEvent = Event()
     for i in range(0, miktar):
+        if i != 0:
+            delaySpamEvent.wait(gecikme)
         message.reply(spam_message)
-        delaySpamEvent.wait(gecikme)
 
     send_log('#DELAYSPAM \n'
              'DelaySpam başarıyla gerçekleştirildi')

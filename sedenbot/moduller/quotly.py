@@ -15,6 +15,8 @@
 #
 
 from time import sleep
+from pyrogram.errors import YouBlockedUser
+
 from sedenbot import KOMUT
 from sedenecem.conv import PyroConversation
 from sedenecem.core import sedenify, edit
@@ -27,7 +29,7 @@ def quotly(client, message):
     else:
         edit(message, '`Bir mesaja yanıt verin.`')
         return
-    
+
     sleep(1)
     chat = 'QuotLyBot'
 
@@ -36,13 +38,14 @@ def quotly(client, message):
         try:
             msg = conv.forward_msg(reply)
             response = conv.recv_msg()
-        except: # pylint: disable=W0702
-            edit(message, '`Bottan yanıt alamadım. Muhtemelen bu gruba ekli veya botu engelledin.`')
+        except YouBlockedUser:
+            edit(message, f'`Lütfen` **@{chat}** `engelini kaldırın ve tekrar deneyin`')
             return
+        except Exception as e:
 
-        if response.text and response.text.startswith('Forward'):
-            edit(message, '`Gizlilik ayarları bunu yapmama engel oldu.`')
-            return
+            if not response:
+                edit(message, '`Botdan cevap alamadım !`')
+                return
 
         response.forward(message.chat.id, as_copy=True)
 

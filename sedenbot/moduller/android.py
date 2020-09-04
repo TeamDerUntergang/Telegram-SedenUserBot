@@ -26,7 +26,7 @@ from sedenecem.core import edit, extract_args, sedenify, get_webdriver
 
 GITHUB = 'https://github.com'
 
-@sedenify(pattern='^.magisk')
+@sedenify(pattern='^.magisk$')
 def magisk(message):
     magisk_dict = {
         "Stable":
@@ -42,6 +42,29 @@ def magisk(message):
         releases += f'`{name}:` [ZIP v{data["magisk"]["version"]}]({data["magisk"]["link"]}) | ' \
                     f'[APK v{data["app"]["version"]}]({data["app"]["link"]}) | ' \
                     f'[Uninstaller]({data["uninstaller"]["link"]})\n'
+    edit(message, releases, preview=False)
+
+@sedenify(pattern='^.phh')
+def phh(message):
+    get_phh = get(f'https://api.github.com/repos/phhusson/treble_experimentations/releases/latest').json()
+    search = extract_args(message)
+    releases = f'`Güncel Phh {"{} ".format(search) if len(search) > 0 else ""}AOSP sürümleri`\n'
+    count = 0
+    for i in range(len(get_phh)):
+        try:
+            name = get_phh['assets'][i]['name']
+            if not name.endswith('img.xz'):
+                continue
+            if not search in name:
+                continue
+            count += 1
+            url = get_phh['assets'][i]['browser_download_url']
+            releases += f'[{name}]({url})\n'
+        except IndexError:
+            continue
+
+    if count < 1:
+        releases = f'**{search}** `araması için bir ROM bulunamadı`'
     edit(message, releases, preview=False)
 
 @sedenify(pattern=r'^.device')
@@ -194,7 +217,7 @@ def ofox(message):
 
             date_str = frow.find_elements_by_xpath('.//p[contains(@class, "MuiListItemText-secondary")]')
 
-            link = f"https://files.orangefox.tech/OrangeFox-{'Stable' if '-Stable-' in name_str else 'Beta'}/{args}/{name_str[0].text}"
+            link = f"https://files.orangefox.tech/OrangeFox-{'Stable' if 'Stable' in name_str[0].text else 'Beta'}/{args}/{name_str[0].text}"
 
             ofrp_map[version[g].text] = [date_str[0].text, link]
 
@@ -204,7 +227,7 @@ def ofox(message):
 
     for key in ofrp_map.keys():
         item = ofrp_map[key]
-        out += f"[{key}{' (Beta)' if not '-Stable-' in item[1] else ''}]({item[1]})\n"
+        out += f"[{key}{' (Beta)' if not 'Stable' in item[1] else ''}]({item[1]})\n"
         out += f"{item[0] if len(item[0].strip()) > 0 else 'Tarih bilgisi çekilemedi'}\n\n"
 
     if len(out) < 1:
@@ -394,5 +417,7 @@ KOMUT.update({
 \n\n.twrp <kod adı>\
 \nKullanım: Hedeflenen cihaz için resmi olan güncel TWRP sürümlerini alın.\
 \n\n.orangefox <kod adı>\
-\nKullanım: Hedeflenen cihaz için resmi olan güncel OrangeFox Recovery sürümlerini alın."
+\nKullanım: Hedeflenen cihaz için resmi olan güncel OrangeFox Recovery sürümlerini alın.\
+\n\n.phh <mimari>\
+\nKullanım: Güncel Phh AOSP sürümlerini alın."
 })

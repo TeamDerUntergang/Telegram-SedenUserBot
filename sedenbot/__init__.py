@@ -81,7 +81,7 @@ if not API_HASH:
     LOGS.warn("API HASH Ayarlanmadı. Lütfen config.env dosyasınız kontrol edin.")
     quit(1)
 
-BOT_VERSION = "1.0 Beta"
+BOT_VERSION = "1.1 Beta"
 SUPPORT_GROUP = "SedenUserBotSupport"
 CHANNEL = "SedenUserBot"
 

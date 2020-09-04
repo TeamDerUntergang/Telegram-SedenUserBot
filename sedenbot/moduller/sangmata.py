@@ -14,6 +14,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from pyrogram.errors import YouBlockedUser
+
 from sedenbot import KOMUT
 from sedenecem.conv import PyroConversation
 from sedenecem.core import sedenify, edit
@@ -21,30 +23,31 @@ from sedenecem.core import sedenify, edit
 @sedenify(pattern='^.sangmata$', compat=False)
 def sangmata(client, message):
     reply = message.reply_to_message
-    if not reply or not reply.text:
+    if reply and reply.text:
+        edit(message, '`İşleniyor...`')
+    else:
         edit(message, '`Bir mesaja yanıt verin.`')
         return
 
     chat = 'SangMataInfo_bot'
-    edit(message, '`İşleniyor ...`')
 
     with PyroConversation(client, chat) as conv:
         response = None
         try:
             msg = conv.forward_msg(reply)
             response = conv.recv_msg()
-        except: # pylint: disable=W0702
-            edit(message, '`Bottan yanıt alamadım. Muhtemelen botu engelledin.`')
+        except YouBlockedUser:
+            edit(message, f'`Lütfen` **@{chat}** `engelini kaldırın ve tekrar deneyin`')
             return
+        except Exception as e:
+            raise e
 
-        if response.text and response.text.startswith('Forward'):
+        if not response:
+            edit(message, '`Botdan cevap alamadım!`')
+        elif response.text and response.text.startswith('Forward'):
             edit(message, '`Gizlilik ayarları bunu yapmama engel oldu.`')
-            return
-
-        response.forward(message.chat.id, as_copy=True)
-
-    message.delete()
-
+        else:
+            edit(message, response.text)
 
 KOMUT.update({
     "sangmata":

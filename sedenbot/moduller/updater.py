@@ -70,15 +70,15 @@ def upstream(ups):
         origin = repo.create_remote('upstream', off_repo)
         origin.fetch()
         force_update = True
-        repo.create_head('master', origin.refs.seden)
-        repo.heads.seden.set_tracking_branch(origin.refs.sql)
+        repo.create_head('seden', origin.refs.seden)
+        repo.heads.seden.set_tracking_branch(origin.refs.seden)
         repo.heads.seden.checkout(True)
 
     ac_br = repo.active_branch.name
     if ac_br != 'seden':
         edit(ups,
-             f'**[SedenBot Güncelleyici]:**`Galiba botunun branch ismini değiştirdin. Kullandığın branch ismi: ({ac_br}). '
-             'Böyle olursa botunu güncelleyemem. Çünkü branch ismi uyuşmuyor..'
+             f'**[SedenBot Güncelleyici]:**` Galiba botunun branch ismini değiştirdin. Kullandığın branch ismi: ({ac_br}). '
+             'Böyle olursa botunu güncelleyemem. Çünkü branch ismi uyuşmuyor.. '
              'Lütfen botunu SedenBot resmi repodan kullan.`')
         repo.__del__()
         return
@@ -159,7 +159,7 @@ def upstream(ups):
             repo.git.reset('--hard', 'FETCH_HEAD')
         update_requirements()
         edit(ups, '`Güncelleme başarıyla tamamlandı!\n'
-             'SedenBot yeniden başlatılıyor, sabırla beklediğin için teşekkür ederiz :)`')
+             'SedenBot yeniden başlatılıyor.`')
 
     try:
         app.terminate()

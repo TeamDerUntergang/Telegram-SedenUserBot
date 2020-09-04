@@ -14,43 +14,42 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from re import sub, DOTALL
 from requests import get
-from bs4 import BeautifulSoup
+from json import loads
 
 from sedenbot import KOMUT
 from sedenecem.core import edit, sedenify
 
 # Copyright (c) @frknkrc44 | 2020
-@sedenify(pattern='^.(covid|covid19)$')
+@sedenify(pattern='^.covid(|19)$')
 def covid(message):
     try:
-        request = get('https://covid19.saglik.gov.tr/')
-        result = BeautifulSoup(request.text, 'html.parser')
+        request = get('https://covid19.saglik.gov.tr/covid19api?getir=sondurum')
+        result = loads(request.text)
     except: # pylint: disable=W0702
         edit(message, '`Bir hata oluştu.`')
         return
 
-    def to_nums(a):
-        return [sub(r'<span class=".*?">|</span>|\r|\n|\s|\.', '', str(s), flags=DOTALL) for s in a]
+    if len(result) > 0:
+        result = result[0]
 
-    res1 = result.body.findAll('ul', {'class':['list-group', 'list-group-genislik']})
-    res2 = to_nums(res1[0].findAll('span', {'class':['']}))
-    res3 = to_nums(res1[1].findAll('span', {'class':['buyuk-bilgi-l-sayi', '']}))
+    def del_dots(res):
+        return res.replace('.', '')
 
-    sonuclar = ('**🇹🇷 Koronavirüs Verileri 🇹🇷**\n' +
-                '\n**Toplam**\n' +
-                f'**Test:** `{res2[0]}`\n' +
-                f'**Vaka:** `{res2[1]}`\n' +
-                f'**Ölüm:** `{res2[2]}`\n' +
-                f'**Y.Bakım:** `{res2[3]}`\n' +
-                f'**Entübe:** `{res2[4]}`\n' +
-                f'**İyileşen:** `{res2[5]}`\n' +
-                '\n**Bugün**\n' +
-                f'**Test:** `{res3[0]}`\n' +
-                f'**Vaka:** `{res3[1]}`\n' +
-                f'**Ölüm:** `{res3[2]}`\n' +
-                f'**İyileşen:** `{res3[3]}`')
+    sonuclar = ( '**🇹🇷 Koronavirüs Verileri 🇹🇷**\n' +
+                f'\n**Tarih:** {result["tarih"]}\n' +
+                 '\n**Toplam**\n' +
+                f'**Test:** `{del_dots(result["toplam_test"])}`\n' +
+                f'**Vaka:** `{del_dots(result["toplam_vaka"])}`\n' +
+                f'**Ölüm:** `{del_dots(result["toplam_vefat"])}`\n' +
+                f'**Ağır hasta:** `{del_dots(result["agir_hasta_sayisi"])}`\n' +
+                f'**Zatürre:** `%{result["hastalarda_zaturre_oran"]}`\n' +
+                f'**İyileşen:** `{del_dots(result["toplam_iyilesen"])}`\n' +
+                 '\n**Bugün**\n' +
+                f'**Test:** `{del_dots(result["gunluk_test"])}`\n' +
+                f'**Vaka:** `{del_dots(result["gunluk_vaka"])}`\n' +
+                f'**Ölüm:** `{del_dots(result["gunluk_vefat"])}`\n' +
+                f'**İyileşen:** `{del_dots(result["gunluk_iyilesen"])}`')
 
     edit(message, sonuclar)
 
