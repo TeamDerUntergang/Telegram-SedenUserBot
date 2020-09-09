@@ -15,18 +15,19 @@
 #
 
 from sedenbot import KOMUT, LOG_ID
-from sedenecem.core import extract_args, sedenify, edit, get_messages, reply_msg, reply, forward, send_log
+from sedenecem.core import extract_args, sedenify, edit, get_messages, reply_msg, reply, forward, send_log, get_translation
+
 
 @sedenify(pattern='^.addsnip')
 def save_snip(message):
     try:
         from sedenecem.sql.snips_sql import add_snip
     except AttributeError:
-        edit(message, '`Bot Non-SQL modunda çalışıyor!`')
+        edit(message, f'`{get_translation("nonSqlMode")}`')
         return
     args = extract_args(message, markdown=True).split(' ', 1)
     if len(args) < 1 or len(args[0]) < 1:
-        edit(message, '`Komut kullanımı hatalı.`')
+        edit(message, f'`{get_translation("wrongCommand")}`')
         return
     keyword = args[0]
     string = args[1] if len(args) > 1 else ''
@@ -41,70 +42,68 @@ def save_snip(message):
                 string = None
                 msg_o = forward(msg, LOG_ID)
                 if not msg_o:
-                    edit(message, '`Mesaj yönlendirilemedi ve küresel not eklenemedi.`')
+                    edit(
+                        message, f'`{get_translation("snipError")}`')
                     return
                 msg_id = msg_o.message_id
-                send_log('#SNIP'
-                    f'\nFiltre: ${keyword}'
-                     '\n\nYukarıdaki mesaj küresel notun cevaplanması için kaydedildi, lütfen silmeyin!')
+                send_log(get_translation(
+                    'snipsLog', [message.chat.id, keyword]))
         else:
-            edit(message, '`Komut kullanımı hatalı.`')
+            edit(message, f'`{get_translation("wrongCommand")}`')
 
-    success = '`Snip {}. Kullanım:` **${}** `'
     if add_snip(keyword, string, msg_id) is False:
-        edit(message, success.format('güncellendi', keyword))
+        edit(message, get_translation('snipsUpdated', ['`', keyword]))
     else:
-        edit(message, success.format('kaydedildi', keyword))
+        edit(message, get_translation('snipsAdded', ['`', keyword]))
+
 
 @sedenify(pattern='^.snips$')
 def snip_list(message):
     try:
         from sedenecem.sql.snips_sql import get_snips
     except:
-        edit(message, '`SQL dışı modda çalışıyor!`')
+        edit(message, f'`{get_translation("nonSqlMode")}`')
         return
 
-    list = '`Şu anda hiçbir snip mevcut değil.`'
+    list = f'`{get_translation("noSnip")}`'
     all_snips = get_snips()
     for a_snip in all_snips:
-        if list == '`Şu anda hiçbir snip mevcut değil.`':
-            list = 'Mevcut snipler:\n'
+        if list == f'`{get_translation("noSnip")}`':
+            list = f'{get_translation("snipChats")}\n'
             list += f'`${a_snip.snip}`\n'
         else:
             list += f'`${a_snip.snip}`\n'
 
     edit(message, list)
 
+
 @sedenify(pattern='^.remsnip')
 def delete_snip(message):
     try:
         from sedenecem.sql.snips_sql import remove_snip
     except AttributeError:
-        edit(message, '`SQL dışı modda çalışıyor!`')
+        edit(message, f'`{get_translation("nonSqlMode")}`')
         return
     name = extract_args(message)
     if len(name) < 1:
-        edit(message, '`Komut kullanımı hatalı.`')
+        edit(message, f'`{get_translation("wrongCommand")}`')
         return
-    if remove_snip(name) is True:
-        edit(message, f'`snip:` **{name}** `Başarıyla silindi`')
+
+    if remove_snip(name) is False:
+        edit(message, get_translation('snipsNotFound', ['`', name]))
     else:
-        edit(message, f'`snip:` **{name}** `Bulunamadı` ')
+        edit(message, get_translation('snipsRemoved', ['**', '`', name]))
 
-@sedenify(pattern=r'^\$.*')
-def call_snip(message):
-    name = message.text
-    if not name:
-        return
 
+def get_snip(message):
     try:
         try:
             from sedenecem.sql.snips_sql import get_snip
         except:
-            edit(message, '`Bot Non-SQL modunda çalışıyor!`')
+            edit(message, f'`{get_translation("nonSqlMode")}`')
             return
 
-        snipname = name.split()[0][1:]
+        snipname = extract_args(message).split()[0][1:]
         snip = get_snip(snipname)
 
         if snip:
@@ -114,25 +113,15 @@ def call_snip(message):
                     msg = msg_o[-1]
                     reply_msg(message, msg)
                 else:
-                    edit(message, '`Küresel not sonucu bulunamadı!`')
+                    edit(message, f'`{get_translation("snipResult")}`')
             elif snip.reply and len(snip.reply) > 0:
                 edit(message, snip.reply)
             else:
-                edit(message, '`Küresel not getirilirken bir sorun oluştu!`')
+                edit(message, f'`{get_translation("snipError2")}`')
         else:
-            edit(message, '`Küresel not bulunamadı!`')
+            edit(message, f'`{get_translation("snipNotFound")}`')
     except:
         pass
 
-KOMUT.update({
-    "snips":
-    "\
-$<snip_adı>\
-\nKullanım: Belirtilen snipi kullanır.\
-\n\n.addsnip <isim> <veri> veya .addsnip <isim> ile bir iletiyi yanıtlayın.\
-\nKullanım: Bir snip (küresel not) olarak kaydeder. \
-\n\n.snips\
-\nKullanım: Kaydedilen tüm snip'leri listeler.\
-\n\n.remsnip <snip_adı>\
-\nKullanım: Belirtilen snip'i siler."
-})
+
+KOMUT.update({"snips": get_translation("snipInfo")})

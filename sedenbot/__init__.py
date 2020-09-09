@@ -25,18 +25,17 @@ from logging import basicConfig, getLogger, INFO, DEBUG, CRITICAL
 from requests import get
 from pyrogram import Client, Filters, MessageHandler
 from dotenv import load_dotenv
+import sedenecem.translator as _tr
 load_dotenv("config.env")
 
 if version_info[0] < 3 or version_info[1] < 8:
-    LOGS.warn("En az python 3.8 sürümüne sahip olmanız gerekir. "
-              "Birden fazla özellik buna bağlıdır. Bot kapatılıyor.")
+    LOGS.warn(get_translation("pythonVersionError"))
     quit(1)
 
 KOMUT = {}
 BRAIN_CHECKER = []
 BLACKLIST = []
 VALID_PROXY_URL = []
-ASYNC_POOL = []
 CONVERSATION = {}
 
 # Ayrıntılı konsol günlügü
@@ -48,6 +47,26 @@ basicConfig(
 )
 
 # Copyright (c) @NaytSeyd, @frknkrc44 | 2020
+
+#
+# Bot dili
+#
+# Eğer yanlış yazılırsa varsayılan dil ingilizcedir.
+SEDEN_LANG = environ.get('SEDEN_LANG', 'en')
+
+
+def get_translation(transKey, params: list = None):
+    ret = _tr.get_translation(SEDEN_LANG, transKey)
+
+    if params and len(params) > 0:
+        for i in reversed(range(len(params))):
+            ret = ret.replace(f'%{i+1}', str(params[i]))
+
+    ret = ret.replace('½', '%')
+
+    return ret
+
+
 def set_logger():
     # String session değerini dışarı yazdırmayı kapatır
     pyrogram_syncer = getLogger('pyrogram.client.ext.syncer')
@@ -56,6 +75,7 @@ def set_logger():
     # Bazı önemsiz çıktıları kapatır
     pyrogram_session = getLogger('pyrogram.session.session')
     pyrogram_session.setLevel(CRITICAL)
+
 
 set_logger()
 
@@ -67,18 +87,18 @@ CONFIG_CHECK = environ.get(
     "___________LUTFEN_______BU_____SATIRI_____SILIN__________", None)
 
 if CONFIG_CHECK:
-    LOGS.warn("Lütfen ilk belirtilen satırı config.env dosyasından kaldırın")
+    LOGS.warn(f'{get_translation("removeFirstLine")}')
     quit(1)
 
 # Telegram APP ID ve HASH
 API_ID = environ.get("API_ID", None)
 if not API_ID:
-    LOGS.warn("API ID Ayarlanmadı. Lütfen config.env dosyasınız kontrol edin.")
+    LOGS.warn(f'{get_translation("apiIdError")}')
     quit(1)
 
 API_HASH = environ.get("API_HASH", None)
 if not API_HASH:
-    LOGS.warn("API HASH Ayarlanmadı. Lütfen config.env dosyasınız kontrol edin.")
+    LOGS.warn(f'{get_translation("apiHashError")}')
     quit(1)
 
 BOT_VERSION = "1.1 Beta"
@@ -92,7 +112,7 @@ WEATHER = environ.get("WEATHER", None)
 GENIUS_TOKEN = environ.get("GENIUS_TOKEN", None) or environ.get("GENIUS", None)
 
 # Alive Mesajını değiştirme
-ALIVE_MESAJI = environ.get("ALIVE_MESAJI", "Merhaba Seden! Seni Seviyorum ❤️")
+ALIVE_MESAJI = environ.get("ALIVE_MESAJI", None)
 
 # Chrome sürücüsü ve Google Chrome dosyaları
 CHROME_DRIVER = environ.get("CHROME_DRIVER", "chromedriver")
@@ -113,7 +133,8 @@ DOWNLOAD_DIRECTORY = environ.get("DOWNLOAD_DIRECTORY", "./downloads")
 SESSION = environ.get("SESSION", 'sedenuserbot')
 
 # SedenBot güncellemesi için depo adresi
-REPO_URL = environ.get("REPO_URL", "https://github.com/TeamDerUntergang/SedenUserBot")
+REPO_URL = environ.get(
+    "REPO_URL", "https://github.com/TeamDerUntergang/SedenUserBot")
 
 # Heroku bilgileri
 HEROKU_KEY = environ.get("HEROKU_KEY", None)
@@ -135,6 +156,7 @@ LOG_ID = int(LOG_ID) if LOG_ID and resr(r'^-?\d+$', LOG_ID) else None
 # Daha fazla bilgi: https://docs.pyrogram.org/topics/test-servers
 DEEPGRAM = sb(environ.get('DEEPGRAM', "False"))
 
+
 def load_brain():
     if path.exists("learning-data-root.check"):
         remove("learning-data-root.check")
@@ -148,6 +170,7 @@ def load_brain():
     for i in ALL_ROWS:
         BRAIN_CHECKER.append(i[0])
     DB.close()
+
 
 def load_bl():
     if path.exists("blacklist.check"):
@@ -163,10 +186,12 @@ def load_bl():
         BLACKLIST.append(i[0])
     DB.close()
 
+
 load_brain()
 load_bl()
 
 me = []
+
 
 class PyroClient(Client):
 
@@ -184,7 +209,9 @@ class PyroClient(Client):
 
     def __init__(self, session, **args):
         super().__init__(session, **args)
-        self.add_handler(MessageHandler(PyroClient.store_msg, Filters.incoming))
+        self.add_handler(MessageHandler(
+            PyroClient.store_msg, Filters.incoming))
+
 
 app = PyroClient(
     SESSION,
@@ -197,6 +224,7 @@ app = PyroClient(
     test_mode=DEEPGRAM,
 )
 
+
 def __get_modules():
     folder = 'sedenbot/moduller'
     modules = [
@@ -205,21 +233,21 @@ def __get_modules():
     ]
     return modules
 
+
 def __import_modules():
     modules = __get_modules()
-    LOGS.info(f'Yüklenecek modüller: {modules}')
+    LOGS.info(get_translation("loadedModules", [modules]))
     for module in modules:
         try:
-            LOGS.info(f'Yüklenen modül: {module}')
+            LOGS.info(get_translation("loadedModules2", [module]))
             import_module(f'sedenbot.moduller.{module}')
         except Exception as e:
             if LOG_VERBOSE:
                 raise e
-            LOGS.warn(f"{module} modülü yüklenirken bir hata oluştu.")
+            LOGS.warn(get_translation("loadedModulesError", [module]))
+
 
 __import_modules()
 
-LOGS.info("Botun çalışıyor! Herhangi bir sohbete .alive yazarak test edebilirsin, "
-          ".seden yazarak modüllerin listesini alabilirsin. "
-          f"Yardıma ihtiyacın varsa, destek grubumuza bakabilirsin https://t.me/{SUPPORT_GROUP}")
-LOGS.info(f"Bot sürümü; Seden v{BOT_VERSION}")
+LOGS.info(get_translation("runningBot", [SUPPORT_GROUP]))
+LOGS.info(get_translation("sedenVersion", [BOT_VERSION]))

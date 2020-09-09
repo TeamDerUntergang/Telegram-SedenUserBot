@@ -16,28 +16,32 @@
 
 from re import fullmatch, IGNORECASE
 
-from sedenbot import KOMUT, LOG_ID
-from sedenecem.core import extract_args, sedenify, edit, get_me, get_messages, reply_msg, reply, forward, send_log
 from pyrogram import Message
+from sedenbot import KOMUT, LOG_ID
+from sedenecem.core import extract_args, sedenify, edit, get_me, get_messages, reply_msg, reply, forward, send_log, get_translation
 
-@sedenify(incoming=True, outgoing=True)
+
+@sedenify(incoming=True, outgoing=False)
 def filter_incoming(message):
-    if message.from_user.is_self:
+    if message.from_user and message.from_user.is_self:
         message.continue_propagation()
 
     name = message.text
     if not name:
-        return
+        message.continue_propagation()
 
     try:
         from sedenecem.sql.filters_sql import get_filters
-    except Exception as e:
-        raise e
+    except:
+        message.continue_propagation()
 
-    filters = get_filters(message.chat.id)
+    try:
+        filters = get_filters(message.chat.id)
+    except:
+        message.continue_propagation()
 
     if not filters:
-        return
+        message.continue_propagation()
 
     for trigger in filters:
         pro = fullmatch(trigger.keyword, name, flags=IGNORECASE)
@@ -48,22 +52,25 @@ def filter_incoming(message):
                     msg = msg_o[-1]
                     reply_msg(message, msg)
                 else:
-                    edit(message, '`Filtre sonucu bulunamadı!`')
+                    edit(message, f'`{get_translation("filterResult")}`')
             elif trigger.reply:
                 reply(message, trigger.reply)
             else:
-                edit(message, '`Filtre hatalı!`')
+                edit(message, f'`{get_translation("wrongFilter")}`')
+
+    message.continue_propagation()
+
 
 @sedenify(pattern='^.addfilter')
 def add_filter(message):
     try:
         from sedenecem.sql.filters_sql import add_filter
     except:
-        edit(message, '`Bot Non-SQL modunda çalışıyor!`')
+        edit(message, f'`{get_translation("nonSqlMode")}`')
         return
     args = extract_args(message, markdown=True).split(' ', 1)
     if len(args) < 1 or len(args[0]) < 1:
-        edit(message, '`Komut kullanımı hatalı.`')
+        edit(message, f'`{get_translation("wrongCommand")}`')
         return
     keyword = args[0]
     string = args[1] if len(args) > 1 else ''
@@ -78,61 +85,52 @@ def add_filter(message):
                 string = None
                 msg_o = forward(msg, LOG_ID)
                 if not msg_o:
-                    edit(message, '`Mesaj yönlendirilemedi ve filtre eklenemedi.`')
+                    edit(
+                        message, f'`{get_translation("filterError")}`')
                     return
                 msg_id = msg_o.message_id
-                send_log('#FILTRE'
-                    f'\nGrup ID: {message.chat.id}'
-                    f'\nFiltre: {keyword}'
-                     '\n\nYukarıdaki mesaj filtrenin cevaplanması için kaydedildi, lütfen silmeyin!')
+                send_log(get_translation(
+                    'filter_log', [message.chat.id, keyword]))
         else:
-            edit(message, '`Komut kullanımı hatalı.`')
+            edit(message, f'`{get_translation("wrongCommand")}`')
 
-    success = "**{}** `filtresi {}`"
     if add_filter(str(message.chat.id), keyword, string, msg_id):
-        edit(message, success.format(keyword, 'eklendi'))
+        edit(message, get_translation('filterAdded', ['**', '`', keyword]))
     else:
-        edit(message, success.format(keyword, 'güncellendi'))
+        edit(message, get_translation('filterUpdated', ['**', '`', keyword]))
+
 
 @sedenify(pattern='^.stop')
 def stop_filter(message):
     try:
         from sedenecem.sql.filters_sql import remove_filter
     except:
-        edit(message, '`Bot Non-SQL modunda çalışıyor!`')
+        edit(message, f'`{get_translation("nonSqlMode")}`')
         return
     filt = extract_args(message)
     if not remove_filter(message.chat.id, filt):
-        edit(message, ' **{}** `filtresi mevcut değil.`'.format(filt))
+        edit(message, get_translation('filterNotFound', ['**', '`', filt]))
     else:
-        edit(message, '**{}** `filtresi başarıyla silindi`'.format(filt))
+        edit(message, get_translation('filterRemoved', ['**', '`', filt]))
+
 
 @sedenify(pattern='^.filters$')
 def filters(message):
     try:
         from sedenecem.sql.filters_sql import get_filters
     except:
-        edit(message, '`Bot Non-SQL modunda çalışıyor!`')
+        edit(message, f'`{get_translation("nonSqlMode")}`')
         return
-    transact = '`Bu sohbette hiç filtre yok.`'
+    transact = f'`{get_translation("noFilter")}`'
     filters = get_filters(message.chat.id)
     for filt in filters:
-        if transact == '`Bu sohbette hiç filtre yok.`':
-            transact = 'Sohbetteki filtreler:\n'
+        if transact == f'`{get_translation("noFilter")}`':
+            transact = f'{get_translation("filterChats")}\n'
             transact += '`{}`\n'.format(filt.keyword)
         else:
             transact += '`{}`\n'.format(filt.keyword)
 
     edit(message, transact)
 
-KOMUT.update({
-    "filter":
-    ".filters\
-    \nKullanım: Bir sohbetteki tüm userbot filtrelerini listeler.\
-    \n\n.addfilter <filtrelenecek kelime> <cevaplanacak metin> ya da bir mesajı .filter <filtrelenecek kelime>\
-    \nKullanım: 'filtrelenecek kelime' olarak istenilen şeyi kaydeder.\
-    \nBot her 'filtrelenecek kelime' yi algıladığında o mesaja cevap verecektir.\
-    \nDosyalardan çıkartmalara her türlü şeyle çalışır.\
-    \n\n.stop <filtre>\
-    \nKullanım: Seçilen filtreyi durdurur."
-})
+
+KOMUT.update({"filter": get_translation("filterInfo")})

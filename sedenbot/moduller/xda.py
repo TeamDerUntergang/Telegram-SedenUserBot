@@ -17,7 +17,7 @@
 from random import choice
 
 from sedenbot import KOMUT
-from sedenecem.core import edit, sedenify
+from sedenecem.core import edit, sedenify, get_translation
 # ================= CONSTANT =================
 XDA_STRINGS = [
     "sur",
@@ -65,15 +65,20 @@ XDA_STRINGS = [
     "linage",
     "arrows",
     "kernal",
+    "meme12",
+    "bruh",
+    "imail",
 ]
 # ================= CONSTANT =================
-# Copyright (c) @NaytSeyd, Quotes taken from friendly-telegram (https://gitlab.com/friendly-telegram) | 2020
+"""
+Copyright (c) @NaytSeyd, Quotes taken
+from friendly-telegram (https://gitlab.com/friendly-telegram) | 2020
+"""
+
+
 @sedenify(pattern='^.xda$')
 def xda(message):
     edit(message, choice(XDA_STRINGS))
 
-KOMUT.update({
-    "xda":
-    ".xda veya .xda ile birinin metnine cevap verin.\
-    \nKullanım: XDA'nın meşhur sözleri."
-})
+
+KOMUT.update({"xda": get_translation("xdaInfo")})

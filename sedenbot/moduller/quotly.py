@@ -19,15 +19,16 @@ from pyrogram.errors import YouBlockedUser
 
 from sedenbot import KOMUT
 from sedenecem.conv import PyroConversation
-from sedenecem.core import sedenify, edit
+from sedenecem.core import sedenify, edit, get_translation
+
 
 @sedenify(pattern='^.q$', compat=False)
 def quotly(client, message):
     reply = message.reply_to_message
     if reply and (reply.text or reply.photo or reply.sticker):
-        edit(message, '`Alıntı yapılıyor ...`')
+        edit(message, f'`{get_translation("makeQuote")}`')
     else:
-        edit(message, '`Bir mesaja yanıt verin.`')
+        edit(message, f'`{get_translation("replyMessage")}`')
         return
 
     sleep(1)
@@ -39,20 +40,17 @@ def quotly(client, message):
             msg = conv.forward_msg(reply)
             response = conv.recv_msg()
         except YouBlockedUser:
-            edit(message, f'`Lütfen` **@{chat}** `engelini kaldırın ve tekrar deneyin`')
+            edit(message, get_translation('unblockChat', ['**', '`', chat]))
             return
         except Exception as e:
 
             if not response:
-                edit(message, '`Botdan cevap alamadım !`')
+                edit(message, f'`{get_translation("answerFromBot")}`')
                 return
 
         response.forward(message.chat.id, as_copy=True)
 
     message.delete()
 
-KOMUT.update({
-    "quotly":
-    ".q \
-    \nKullanım: Metninizi çıkartmaya dönüştürün.\n"
-})
+
+KOMUT.update({"quotly": get_translation("quotlyInfo")})

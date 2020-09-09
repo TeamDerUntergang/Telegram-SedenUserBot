@@ -18,16 +18,19 @@ from requests import get
 from json import loads
 
 from sedenbot import KOMUT
-from sedenecem.core import edit, sedenify
+from sedenecem.core import edit, sedenify, get_translation
 
 # Copyright (c) @frknkrc44 | 2020
+
+
 @sedenify(pattern='^.covid(|19)$')
 def covid(message):
     try:
-        request = get('https://covid19.saglik.gov.tr/covid19api?getir=sondurum')
+        request = get(
+            'https://covid19.saglik.gov.tr/covid19api?getir=sondurum')
         result = loads(request.text)
-    except: # pylint: disable=W0702
-        edit(message, '`Bir hata oluştu.`')
+    except:  # pylint: disable=W0702
+        edit(message, f'`{get_translation("covidError")}`')
         return
 
     if len(result) > 0:
@@ -36,25 +39,22 @@ def covid(message):
     def del_dots(res):
         return res.replace('.', '')
 
-    sonuclar = ( '**🇹🇷 Koronavirüs Verileri 🇹🇷**\n' +
-                f'\n**Tarih:** {result["tarih"]}\n' +
-                 '\n**Toplam**\n' +
+    sonuclar = (f'**{get_translation("covidData")}**\n' +
+                f'\n**{get_translation("covidDate")}** {result["tarih"]}\n' +
+                f'\n**{get_translation("covidTotal")}**\n' +
                 f'**Test:** `{del_dots(result["toplam_test"])}`\n' +
-                f'**Vaka:** `{del_dots(result["toplam_vaka"])}`\n' +
-                f'**Ölüm:** `{del_dots(result["toplam_vefat"])}`\n' +
-                f'**Ağır hasta:** `{del_dots(result["agir_hasta_sayisi"])}`\n' +
-                f'**Zatürre:** `%{result["hastalarda_zaturre_oran"]}`\n' +
-                f'**İyileşen:** `{del_dots(result["toplam_iyilesen"])}`\n' +
-                 '\n**Bugün**\n' +
+                f'**{get_translation("covidCases")}** `{del_dots(result["toplam_vaka"])}`\n' +
+                f'**{get_translation("covidDeaths")}** `{del_dots(result["toplam_vefat"])}`\n' +
+                f'**{get_translation("covidSeriouslyill")}** `{del_dots(result["agir_hasta_sayisi"])}`\n' +
+                f'**{get_translation("covidPneumonia")}** `%{result["hastalarda_zaturre_oran"]}`\n' +
+                f'**{get_translation("covidHealed")}** `{del_dots(result["toplam_iyilesen"])}`\n' +
+                f'\n**{get_translation("covidToday")}**\n' +
                 f'**Test:** `{del_dots(result["gunluk_test"])}`\n' +
-                f'**Vaka:** `{del_dots(result["gunluk_vaka"])}`\n' +
-                f'**Ölüm:** `{del_dots(result["gunluk_vefat"])}`\n' +
-                f'**İyileşen:** `{del_dots(result["gunluk_iyilesen"])}`')
+                f'**{get_translation("covidCases")}** `{del_dots(result["gunluk_vaka"])}`\n' +
+                f'**{get_translation("covidDeaths")}** `{del_dots(result["gunluk_vefat"])}`\n' +
+                f'**{get_translation("covidHealed")}** `{del_dots(result["gunluk_iyilesen"])}`')
 
     edit(message, sonuclar)
 
-KOMUT.update({
-    "covid19":
-    ".covid \
-    \nKullanım: Hem Dünya geneli hem de Türkiye için güncel Covid 19 istatistikleri."
-})
+
+KOMUT.update({"covid19": get_translation("covidInfo")})

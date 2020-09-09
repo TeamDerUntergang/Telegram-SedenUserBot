@@ -26,6 +26,8 @@ NAME_OK = "```Adın başarıyla değiştirildi.```"
 USERNAME_SUCCESS = "```Kullanıcı adın başarıyla değiştirildi.```"
 USERNAME_TAKEN = "```Kullanıcı adı müsait değil.```"
 # ===============================================================
+
+
 @sedenify(pattern='^.reserved$', compat=False)
 def reserved(client, message):
     sonuc = client.send(functions.channels.GetAdminedPublicChannels())
@@ -46,7 +48,8 @@ def name(client, message):
         firstname = namesplit[0]
         lastname = namesplit[1]
 
-    client.send(functions.account.UpdateProfile(first_name=firstname, last_name=lastname))
+    client.send(functions.account.UpdateProfile(
+        first_name=firstname, last_name=lastname))
     edit(message, NAME_OK)
 
 

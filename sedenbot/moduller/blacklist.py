@@ -21,7 +21,8 @@ from re import escape, search, IGNORECASE
 from importlib import import_module
 
 from sedenbot import KOMUT, LOGS
-from sedenecem.core import edit, reply, send_log, reply_doc, extract_args, sedenify
+from sedenecem.core import edit, reply, send_log, reply_doc, extract_args, sedenify, get_translation
+
 
 def blacklist_init():
     try:
@@ -29,7 +30,7 @@ def blacklist_init():
         sql = import_module('sedenecem.sql.blacklist_sql')
     except Exception as e:
         sql = None
-        LOGS.warn('Karaliste özelliği çalıştırılamıyor, SQL bağlantısı bulunamadı')
+        LOGS.warn(f'{get_translation("blacklistSqlLog")}')
 
 
 blacklist_init()
@@ -37,63 +38,76 @@ blacklist_init()
 
 @sedenify(incoming=True, outgoing=False)
 def blacklist(message):
-    if message.from_user.is_self:
+    if message.from_user and message.from_user.is_self:
         message.continue_propagation()
 
     if not sql:
-        return
+        message.continue_propagation()
+
     name = message.text
     if not name:
-        return
-    snips = sql.get_chat_blacklist(message.chat.id)
+        message.continue_propagation()
+
+    snips = None
+    try:
+        snips = sql.get_chat_blacklist(message.chat.id)
+    except:
+        message.continue_propagation()
+
+    msg_removed = False
     for snip in snips:
-        pattern = r'( |^|[^\w])' + escape(snip) + r'( |$|[^\w])'
+        regex1 = r'( |^|[^\w])'
+        regex2 = r'( |$|[^\w])'
+        pattern = f"{regex1}{escape(snip)}{regex2}"
         if search(pattern, name, flags=IGNORECASE):
             try:
                 message.delete()
+                msg_removed = True
             except Exception as e:
-                reply(message, 'Bu grupta mesaj silme iznim yok !')
+                reply(
+                    message, f'`{get_translation("blacklistPermission")}`')
                 sql.rm_from_blacklist(message.chat.id, snip.lower())
             break
-        pass
+
+    if not msg_removed:
+        message.continue_propagation()
 
 
 @sedenify(pattern='^.addblacklist', compat=False)
 def addblacklist(client, message):
     if not sql:
-        edit(message, '`SQL dışı modda çalışıyorum, bunu gerçekleştiremem`')
+        edit(message, f'`{get_translation("nonSqlMode")}`')
         return
     text = extract_args(message)
     if len(text) < 1:
-        edit(message, '`Bana bir metin ver`')
+        edit(message, f'`{get_translation("blacklistText")}`')
         return
-    to_blacklist = list(set(trigger.strip() for trigger in text.split("\n") if trigger.strip()))
+    to_blacklist = list(set(trigger.strip()
+                            for trigger in text.split("\n") if trigger.strip()))
     for trigger in to_blacklist:
         sql.add_to_blacklist(message.chat.id, trigger.lower())
-    edit(message, f'`{text}` **kelimesi bu sohbet için karalisteye alındı.**'.format(len(to_blacklist)))
+    edit(message, get_translation('blacklistAddSuccess', ['**', '`', text]))
 
-    send_log(f"#BLACKLIST\
-             \nGrup ID: `{message.chat.id}`\
-             \nKelime: `{text}`")
+    send_log(get_translation('blacklistLog', ['`', message.chat.id, text]))
 
 
 @sedenify(pattern='^.showblacklist$')
 def showblacklist(message):
     if not sql:
-        edit(message, '`SQL dışı modda çalışıyorum, bunu gerçekleştiremem`')
+        edit(message, f'`{get_translation("nonSqlMode")}`')
         return
     all_blacklisted = sql.get_chat_blacklist(message.chat.id)
-    OUT_STR = '**Bu grup için ayarlanan karaliste kelimeleri:**\n'
+    OUT_STR = f'**{get_translation("blacklistChats")}**\n'
     if len(all_blacklisted) > 0:
         for trigger in all_blacklisted:
             OUT_STR += f'`{trigger}`\n'
     else:
-        OUT_STR = '**Karalisteye eklenmiş kelime bulunamadı.**\
-                  \n`.addblacklist` **komutu ile ekleyebilirsin.**'
+        OUT_STR = f'**{get_translation("blankBlacklist")}**'
     if len(OUT_STR) > 4096:
         with BytesIO(str.encode(OUT_STR)) as out_file:
             out_file.name = 'blacklist.text'
-            reply_doc(message, out_file, caption='**Bu grup için ayarlanan karaliste:**')
+            reply_doc(message, out_file,
+                      caption=f'**{get_translation("blacklistChats")}**')
             message.delete()
     else:
         edit(message, OUT_STR)
@@ -102,28 +116,19 @@ def showblacklist(message):
 @sedenify(pattern='^.rmblacklist')
 def rmblacklist(message):
     if not sql:
-        edit(message, '`SQL dışı modda çalışıyorum, bunu gerçekleştiremem`')
+        edit(message, f'`{get_translation("nonSqlMode")}`')
         return
     text = extract_args(message)
     if len(text) < 1:
-        edit(message, '`Bana bir metin ver`')
+        edit(message, f'`{get_translation("blacklistText")}`')
         return
-    to_unblacklist = list(set(trigger.strip() for trigger in text.split("\n") if trigger.strip()))
+    to_unblacklist = list(set(trigger.strip()
+                              for trigger in text.split("\n") if trigger.strip()))
     successful = 0
     for trigger in to_unblacklist:
         if sql.rm_from_blacklist(message.chat.id, trigger.lower()):
             successful += 1
-    edit(message, f'`{text}` **kelimesi bu sohbet için karalisteden kaldırıldı.**'.format(len(to_unblacklist)))
+    edit(message, get_translation('blacklistRemoveSuccess', ['**', '`', text]))
 
 
-KOMUT.update({
-    "blacklist":
-    ".showblacklist\
-    \nKullanım: Bir sohbetteki etkin kara listeyi listeler.\
-    \n\n.addblacklist <kelime>\
-    \nKullanım: İletiyi 'kara liste anahtar kelimesine' kaydeder.\
-    \n'Kara liste anahtar kelimesinden' bahsedildiğinde bot iletiyi siler.\
-    \n\n.rmblacklist <kelime>\
-    \nKullanım: Belirtilen kara listeyi durdurur.\
-    \nBu arada bu işlemleri gerçekleştirmek için yönetici olmalı ve **Mesaj Silme** yetkiniz olmalı."
-})
+KOMUT.update({"blacklist": get_translation("blacklistInfo")})

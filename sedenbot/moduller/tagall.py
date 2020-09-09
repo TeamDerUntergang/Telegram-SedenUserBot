@@ -18,6 +18,8 @@ from sedenbot import KOMUT
 from sedenecem.core import sedenify, reply
 
 # Copyright (c) @NaytSeyd | 2020
+
+
 @sedenify(pattern='^.tagall$', compat=False, private=False)
 def tagall(client, message):
     mesaj = '@tag'
@@ -30,6 +32,7 @@ def tagall(client, message):
     reply(message, mesaj, fix_markdown=True)
     message.delete()
 
+
 @sedenify(pattern='^.admin$', compat=False, private=False)
 def admin(client, message):
     mesaj = '@admin'
@@ -39,6 +42,7 @@ def admin(client, message):
     yanit = message.reply_to_message
     reply(yanit if yanit else message, mesaj, fix_markdown=True)
     message.delete()
+
 
 KOMUT.update({
     "tagall":

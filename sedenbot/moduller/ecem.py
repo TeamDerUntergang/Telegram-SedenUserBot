@@ -17,7 +17,7 @@
 from random import choice
 
 from sedenbot import KOMUT
-from sedenecem.core import edit, sedenify
+from sedenecem.core import edit, sedenify, get_translation
 # ================= CONSTANT =================
 ECEM_STRINGS = [
     "Çocukluk aşkımsın",
@@ -383,16 +383,16 @@ ECEM_STRINGS = [
 ]
 # ================= CONSTANT =================
 # Copyright (c) @NaytSeyd, @Sedenogen | 2020
+
+
 @sedenify(pattern='^.ecem$')
 def ecemify(message):
     ecem(message)
+
 
 def ecem(message):
     # Ecem'in sözlüğü
     edit(message, choice(ECEM_STRINGS))
 
-KOMUT.update({
-    "ecem":
-    ".ecem veya .ecem ile birinin metnine cevap verin.\
-    \nKullanım: Ecem'den alıntılar."
-})
+
+KOMUT.update({"ecem": get_translation("ecemInfo")})

@@ -23,7 +23,7 @@ from cowpy import cow
 from requests import get
 
 from sedenbot import KOMUT
-from sedenecem.core import edit, extract_args, sedenify
+from sedenecem.core import edit, extract_args, sedenify, get_translation
 # ================= CONSTANT =================
 ZALGS = [[
     "̖",
@@ -67,35 +67,35 @@ ZALGS = [[
     " ͚",
     " ",
 ],
-         [
-             " ̍", " ̎", " ̄", " ̅", " ̿", " ̑", " ̆", " ̐", " ͒", " ͗",
-             " ͑", " ̇", " ̈", " ̊", " ͂", " ̓", " ̈́", " ͊", " ͋", " ͌",
-             " ̃", " ̂", " ̌", " ͐", " ́", " ̋", " ̏", " ̽", " ̉", " ͣ",
-             " ͤ", " ͥ", " ͦ", " ͧ", " ͨ", " ͩ", " ͪ", " ͫ", " ͬ", " ͭ",
-             " ͮ", " ͯ", " ̾", " ͛", " ͆", " ̚"],
-         [
-             " ̕",
-             " ̛",
-             " ̀",
-             " ́",
-             " ͘",
-             " ̡",
-             " ̢",
-             " ̧",
-             " ̨",
-             " ̴",
-             " ̵",
-             " ̶",
-             " ͜",
-             " ͝",
-             " ͞",
-             " ͟",
-             " ͠",
-             " ͢",
-             " ̸",
-             " ̷",
-             " ͡",]
-        ]
+    [
+    " ̍", " ̎", " ̄", " ̅", " ̿", " ̑", " ̆", " ̐", " ͒", " ͗",
+    " ͑", " ̇", " ̈", " ̊", " ͂", " ̓", " ̈́", " ͊", " ͋", " ͌",
+    " ̃", " ̂", " ̌", " ͐", " ́", " ̋", " ̏", " ̽", " ̉", " ͣ",
+    " ͤ", " ͥ", " ͦ", " ͧ", " ͨ", " ͩ", " ͪ", " ͫ", " ͬ", " ͭ",
+    " ͮ", " ͯ", " ̾", " ͛", " ͆", " ̚"],
+    [
+    " ̕",
+    " ̛",
+    " ̀",
+    " ́",
+    " ͘",
+    " ̡",
+    " ̢",
+    " ̧",
+    " ̨",
+    " ̴",
+    " ̵",
+    " ̶",
+    " ͜",
+    " ͝",
+    " ͞",
+    " ͟",
+    " ͠",
+    " ͢",
+    " ̸",
+    " ̷",
+    " ͡", ]
+]
 EMOJIS = [
     "😂",
     "😂",
@@ -250,55 +250,54 @@ REACTS = [
 ]
 
 RUNS = [
-    "Hey! Nereye gidiyorsun?",
-    "Ha? Ne? kaçtılar mı?",
-    "ZZzzZZzz... Noldu? oh, yine onlarmış, boşver.",
-    "Geri gel!",
-    "Kaçın OneBot geliyor !!",
-    "Duvara dikkat et!",
-    "Beni onlarla sakın yalnız bırakma!!",
-    "Kaçarsan, ölürsün.",
-    "Şakacı seni, Ben heryerdeyim.",
-    "Bunu yaptığına pişman olacaksın...",
-    "/kickme tuşunuda deneyebilirsin, Eğlenceli olduğunu söylüyorlar.",
-    "Git başka birini rahatsız et, burda kimse takmıyor.",
-    "Kaçabilirsin ama saklanamazsın.",
-    "Yapabildiklerin bunlar mı?",
-    "Arkandayım...",
-    "Misafirlerin var!",
-    "Bunu kolay yoldan yapabiliriz, yada zor yoldan.",
-    "Anlamıyorsun, değil mi?",
-    "Haha, kaçsan iyi edersin.!",
-    "Lütfen, hatırlat bana ne kadar aldırıyorum?",
-    "Senin yerinde olsam daha hızlı kaçardım.",
-    "Bu kesinlikle aradığımız robot.",
-    "Belki şans sana güler.",
-    "Ünlü son sözler.",
-    "Ve sonsuza dek yok oldular, hiç görünmediler.",
-    "\"Hey, bana bakın! Bottan kaçabiliyorum çok havalıyım!\" - bu kişi",
-    "Evet evet, /kickme tuşuna şimdiden bas.",
-    "İşte, bu yüzüğü alın ve Mordor'a gidin.",
-    "Efsaneye göre onlar hala çalışıyor...",
-    "Harry Potter'ın aksine, ebeveynlerin seni benden koruyamaz.",
-    "Korku öfkeye, öfke nefrete, nefret acıya yol açar. Korku içinde kaçmaya devam edersen,"
-    "bir sonraki Vader sen olabilirsin.",
-    "Birden fazla hesaplama yapıldıktan sonra, dalaverelerine olan ilgimin tam olarak 0 olduğuna karar verdim.",
-    "Efsaneye göre onlar hala çalışıyor.",
-    "Devam et, seni burda istediğimize emin değilim.",
-    "Sen bir sihirb- Oh. Bekle. Sen Harry değilsin, devam et.",
-    "KORİDORDA KOŞMAYIN!",
-    "Görüşürüz bebeğim.",
-    "Kim köpekleri saldı?",
-    "Komik çünkü kimse takmıyor.",
-    "Ah, ne büyük kayıp. Bu seferkini sevmiştim.",
-    "Açıkcası canım, umrumda değil.",
-    "Sütüm tüm erkekleri avluya çekiyor... Daha hızlı koş!",
-    "Gerçeği KALDIRAMAZSIN!",
-    "Uzun zaman önce, çok çok uzaktaki bir galakside birileri takabilirdi. Ama artık değil.",
-    "Hey, onlara bak! Kaçınılmaz banhammer'dan kaçıyorlar... Ne kadarda tatlı.",
-    "Han önce vuruldu. Ben de öyle yapacağım",
-    "Beyaz tavşanın, arkasında ne yapıyorsun?",
-    "Doktorunda söyleyeceği gibi... KAÇ!",
+    f'{get_translation("runstr1")}',
+    f'{get_translation("runstr2")}',
+    f'{get_translation("runstr3")}',
+    f'{get_translation("runstr4")}',
+    f'{get_translation("runstr5")}',
+    f'{get_translation("runstr6")}',
+    f'{get_translation("runstr7")}',
+    f'{get_translation("runstr8")}',
+    f'{get_translation("runstr9")}',
+    f'{get_translation("runstr10")}',
+    f'{get_translation("runstr11")}',
+    f'{get_translation("runstr12")}',
+    f'{get_translation("runstr13")}',
+    f'{get_translation("runstr14")}',
+    f'{get_translation("runstr15")}',
+    f'{get_translation("runstr16")}',
+    f'{get_translation("runstr17")}',
+    f'{get_translation("runstr18")}',
+    f'{get_translation("runstr19")}',
+    f'{get_translation("runstr20")}',
+    f'{get_translation("runstr21")}',
+    f'{get_translation("runstr22")}',
+    f'{get_translation("runstr23")}',
+    f'{get_translation("runstr24")}',
+    f'{get_translation("runstr25")}',
+    f'{get_translation("runstr26")}',
+    f'{get_translation("runstr27")}',
+    f'{get_translation("runstr28")}',
+    f'{get_translation("runstr29")}',
+    f'{get_translation("runstr30")}',
+    f'{get_translation("runstr31")}',
+    f'{get_translation("runstr32")}',
+    f'{get_translation("runstr33")}',
+    f'{get_translation("runstr34")}',
+    f'{get_translation("runstr35")}',
+    f'{get_translation("runstr36")}',
+    f'{get_translation("runstr37")}',
+    f'{get_translation("runstr38")}',
+    f'{get_translation("runstr39")}',
+    f'{get_translation("runstr40")}',
+    f'{get_translation("runstr41")}',
+    f'{get_translation("runstr42")}',
+    f'{get_translation("runstr43")}',
+    f'{get_translation("runstr44")}',
+    f'{get_translation("runstr45")}',
+    f'{get_translation("runstr46")}',
+    f'{get_translation("runstr47")}',
+    f'{get_translation("runstr48")}',
 ]
 
 SHGS = [
@@ -359,69 +358,9 @@ CRYS = [
     "༼ಢ_ಢ༽",
     "༼ ༎ຶ ෴ ༎ຶ༽",
 ]
-
-SLAP_TEMPLATES = [
-    "{victim} kullanıcısını {item} ile {hits} .",
-    "{victim} kullanıcısını {item} ile yüzüne {hits} .",
-    "{victim} kullanıcısını {item} ile biraz {hits} .",
-    "{victim} kullanıcısına {item} {throws} .",
-    "{victim} kullanıcısını {item} ile yüzüne {throws} .",
-    "{victim} kullanıcısına doğru {item} fırlatıyor.",
-    "{victim} aptalına {item} ile tokat atıyor.",
-    "{victim} kullanıcısını yere sabitleyıp ardı ardına {item} ile {hits} .",
-    "{item} alarak {victim} {hits}.",
-    "{victim} kullanıcısını sandalyeye bağlayıp {item} {throws} .",
-    "{victim} kullanıcısını arkadaşca ittirerek lavda yüzmeyi öğrenmesini sağlıyor."
-]
-
-ITEMS = [
-    "demir tencere",
-    "büyük alabalık",
-    "beyzbol sopası",
-    "kriket sopası",
-    "tahta baston",
-    "çivi",
-    "yazıcı",
-    "kürek",
-    "tüplü monitör",
-    "fizik defteri",
-    "tost makinası",
-    "Richard Stallman'ın portresi",
-    "televizyon",
-    "beş ton kamyon",
-    "koli bandı",
-    "kitap",
-    "dizüstü bilgisayar",
-    "eski televizyon",
-    "kayalı çuval",
-    "gökkuşağı alabalığı",
-    "plastik tavuk",
-    "çivili sopa",
-    "yangın söndürücü",
-    "ağır taş",
-    "kir yığını",
-    "arı kovanı",
-    "çürük et parçası",
-    "ayı",
-    "tonlarca tuğla",
-]
-
-THROW = [
-    "atıyor",
-    "fırlatıyor",
-    "savuruyor",
-    "yağdırıyor",
-]
-
-HIT = [
-    "vuruyor",
-    "sert vuruyor",
-    "tokatlıyor",
-    "yumrukluyor",
-    "geçiriyor",
-]
-
 # ================= CONSTANT =================
+
+
 @sedenify(pattern=r'^.(\w+)say')
 def cowsay(message):
     ext = message.text.split(' ', 1)
@@ -433,7 +372,7 @@ def cowsay(message):
     elif len(ext) > 1:
         text = ext[1]
     else:
-        edit(message, '`Komut kullanımı hatalı.`')
+        edit(message, f'`{get_translation("wrongCommand")}`')
         return
 
     if arg == "cow" or arg not in cow.COWACTERS:
@@ -444,6 +383,7 @@ def cowsay(message):
 
     edit(message, f"`{cheese.milk(text).replace('`', '´')}`")
 
+
 @sedenify(pattern='^:/$')
 def kek(message):
     uio = ["/", "\\"]
@@ -451,13 +391,16 @@ def kek(message):
         sleep(0.3)
         edit(message, ':' + uio[i % 2])
 
+
 @sedenify(pattern='^.fp$')
 def facepalm(message):
     edit(message, '🤦‍♂')
 
+
 @sedenify(pattern='^.cry$')
 def cry(message):
     edit(message, choice(CRYS))
+
 
 @sedenify(pattern='^.cp')
 def copypasta(message):
@@ -490,6 +433,7 @@ def copypasta(message):
     reply_text += choice(EMOJIS)
     edit(message, reply_text)
 
+
 @sedenify(pattern='^.vapor')
 def vapor(message):
     reply_text = []
@@ -500,7 +444,7 @@ def vapor(message):
     elif textx:
         vapor = textx.text
     else:
-        edit(message, '`Ｂａｎａ ｂｉｒ ｍｅｔｉｎ ｖｅｒ!`')
+        edit(message, f'`{get_translation("vaporUsage")}`')
         return
 
     for charac in vapor:
@@ -513,6 +457,7 @@ def vapor(message):
 
     edit(message, ''.join(reply_text))
 
+
 @sedenify(pattern='^.str')
 def stretch(message):
     textx = message.reply_to_message
@@ -522,13 +467,14 @@ def stretch(message):
     elif textx:
         stretch = textx.text
     else:
-        edit(message, '`Baaaaanaaaaa biiiiir meeeeetiiiiin veeeeer!`')
+        edit(message, f'`{get_translation("strUsage")}`')
         return
 
     count = randint(3, 10)
     reply_text = sub(r"([aeiouAEIOUａｅｉｏｕＡＥＩＯＵаеиоуюяыэё])", (r"\1" * count),
                      stretch)
     edit(message, reply_text)
+
 
 @sedenify(pattern='^.zal')
 def zalgofy(message):
@@ -540,8 +486,7 @@ def zalgofy(message):
     elif textx:
         zalgofy = textx.text
     else:
-        edit(message,
-             '`Ｂ̺ͬａ̠͑ｎ̵̉ａ̬͜ ｂ̶͔ｉ̼͚ｒ͈͞ ｍ̼͘ｅ̨̝ｔ͔͙ｉ̢ͮｎ̜͗ ｖ͢͜ｅ̗͐ｒ̴ͮ`')
+        edit(message, f'`{get_translation("zalUsage")}`')
         return
 
     for charac in zalgofy:
@@ -556,6 +501,7 @@ def zalgofy(message):
 
     edit(message, ''.join(reply_text))
 
+
 @sedenify(pattern='^.shout')
 def shout(message):
     textx = message.reply_to_message
@@ -565,7 +511,7 @@ def shout(message):
     elif textx:
         shout = textx.text
     else:
-        edit(message, '`Yazı nerede!`')
+        edit(message, f'`{get_translation("wrongCommand")}`')
         return
 
     if message.forward_from:
@@ -585,6 +531,7 @@ def shout(message):
         msg = "\n" + result
         edit(message, '`'+msg+'`')
 
+
 @sedenify(pattern='^.owo')
 def owo(message):
     textx = message.reply_to_message
@@ -594,7 +541,7 @@ def owo(message):
     elif textx:
         owo = textx.text
     else:
-        edit(message, '` UwU bana bir metin ver! `')
+        edit(message, f'`{get_translation("owoUsage")}`')
         return
 
     reply_text = sub(r"(r|l)", "w", owo)
@@ -606,6 +553,7 @@ def owo(message):
     reply_text += " " + choice(UWUS)
     edit(message, reply_text)
 
+
 @sedenify(pattern='^.fuk')
 def fuk(message):
     animation_interval = 0.1
@@ -615,12 +563,13 @@ def fuk(message):
         "🍆     🍑️",
         "🍆  🍑️",
         "🍆🍑️💦"
-        ]
+    ]
     for i in animation_ttl:
         sleep(animation_interval)
         edit(message, animation_chars[i % 4])
 
-@sedenify(pattern='^.kalp$')
+
+@sedenify(pattern='^.(kalp|heart)$')
 def kalp(message):
     deq = deque(list("❤️🧡💛💚💙💜🖤"))
     try:
@@ -630,6 +579,7 @@ def kalp(message):
             deq.rotate(1)
     except BaseException:
         return
+
 
 @sedenify(pattern='^.mock')
 def mock(message):
@@ -641,7 +591,7 @@ def mock(message):
     elif textx:
         mock = textx.text
     else:
-        edit(message, '`bANa bIr mETin vEr!`')
+        edit(message, f'`{get_translation("mockUsage")}`')
         return
 
     for charac in mock:
@@ -653,6 +603,7 @@ def mock(message):
 
     edit(message, ''.join(reply_text))
 
+
 @sedenify(pattern='^.clap')
 def clap(message):
     textx = message.reply_to_message
@@ -662,12 +613,13 @@ def clap(message):
     elif textx:
         clap = textx.text
     else:
-        edit(message, '`Hah, anlamı olmadan alkışlamıyorum!`')
+        edit(message, f'`{get_translation("clapUsage")}`')
         return
     reply_text = "👏 "
     reply_text += clap.replace(" ", " 👏 ")
     reply_text += " 👏"
     edit(message, reply_text)
+
 
 @sedenify(pattern='^.lfy')
 def lfy(message):
@@ -678,47 +630,16 @@ def lfy(message):
     elif textx:
         query = textx
     else:
-        edit(message, '`Komut kullanımı hatalı.`')
+        edit(message, f'`{get_translation("wrongCommand")}`')
         return
         query = query.message
     query_encoded = query.replace(" ", "+")
     lfy_url = f"http://lmgtfy.com/?s=g&iie=1&q={query_encoded}"
     payload = {'format': 'json', 'url': lfy_url}
     r = get('http://is.gd/create.php', params=payload)
-    edit(message, f"İşte, keyfine bak.\
-    \n[{query}]({r.json()['shorturl']})")
+    edit(message, f'`{get_translation("lfyResult")}`'
+         f"\n[{query}]({r.json()['shorturl']})")
 
-@sedenify(pattern=r'.scam', compat=False)
-def scam(client, message):
-    options = [
-        'typing', 'contact', 'game', 'location', 'voice', 'round', 'video',
-        'photo', 'document', 'cancel'
-    ]
-    input_str = extract_args(message)
-    args = input_str.split()
-    if len(args) == 0:
-        scam_action = choice(options)
-        scam_time = randint(30, 60)
-    elif len(args) == 1:
-        try:
-            scam_action = str(args[0]).lower()
-            scam_time = randint(30, 60)
-        except ValueError:
-            scam_action = choice(options)
-            scam_time = int(args[0])
-    elif len(args) == 2:
-        scam_action = str(args[0]).lower()
-        scam_time = int(args[1])
-    else:
-        edit(message, '`Komut kullanımı hatalı.`')
-        return
-    try:
-        if (scam_time > 0):
-            message.delete()
-            client.send_chat_action(message.chat.id, scam_action)
-            sleep(scam_time)
-    except BaseException:
-        return
 
 @sedenify(pattern='^.type')
 def type(message):
@@ -729,7 +650,7 @@ def type(message):
     elif textx:
         type = textx.text
     else:
-        edit(message, 'Bana bir metin ver!`')
+        edit(message, f'`{get_translation("wrongCommand")}`')
         return
     sleep_time = 0.03
     typing_symbol = '|'
@@ -744,6 +665,7 @@ def type(message):
         edit(message, old_text)
         sleep(sleep_time)
 
+
 @sedenify(pattern='^[Ss]krrt$')
 def skrrt(message):
     t = f"{(message.text or message.caption)[0]}krrt"
@@ -751,12 +673,14 @@ def skrrt(message):
         t = f"{t[:-1]}rt"
         edit(message, t)
 
+
 @sedenify(pattern='^[Oo]of$')
 def oof(message):
     t = f"{(message.text or message.caption)[0]}of"
     for j in range(16):
         t = f"{t[:-1]}of"
         edit(message, t)
+
 
 @sedenify(pattern='^.10iq$')
 def iqless(message):
@@ -771,6 +695,7 @@ def iqless(message):
          '♿️♿️♿️ BAK KALABALIKLASTI BAK DELI GELIYOR DELIRDI DELI \n'
          'AC YOLU DUTDUTDURURURUDUTTT♿️♿️♿️♿️♿️♿️♿️♿️♿️ \n'
          '♿️♿️♿️♿️♿️KAFAYI YEDI BUNLAR AC LAAAAN YOLU')
+
 
 @sedenify(pattern='^.mizah$')
 def mizahshow(message):
@@ -797,6 +722,7 @@ def mizahshow(message):
          '😂⚠️😂😂😂😂😂😂⚠️⚠️⚠️😂😂😂😂♿️♿️♿️😅😅 \n'
          '😅😂👏💯⚠️👏♿️🚨')
 
+
 @sedenify(pattern='^.h$')
 def h(message):
     edit(message,
@@ -821,17 +747,21 @@ def h(message):
          '⠀⠀⠀⠀⠀⠀⠀⠊⠠⠂⠉⢤⣀⠀⠀⠀⠀⢠⠀⠐⠣⠠⢤⠀⠀⠀⠀⠀⠀⠀\n'
          '⠀⠀⠀⠀⠀⠀⠀⠁⠂⠤⠼⠓⠓⠒⠀⠀⠀⠈⠂⠀⠀⠀⠂⠚⠁⠀⠀      ')
 
+
 @sedenify(pattern='^.react$')
 def react(message):
     edit(message, choice(REACTS))
+
 
 @sedenify(pattern='^.shg$')
 def shg(message):
     edit(message, choice(SHGS))
 
+
 @sedenify(pattern='^.run$')
 def run(message):
     edit(message, choice(RUNS))
+
 
 @sedenify(pattern=r'^.f (.*)')
 def payf(message):
@@ -841,6 +771,7 @@ def payf(message):
         paytext * 6, paytext * 6, paytext * 2, paytext * 2, paytext * 2,
         paytext * 2, paytext * 2)
     edit(message, pay)
+
 
 @sedenify(pattern='^.moon$')
 def moon(message):
@@ -853,6 +784,7 @@ def moon(message):
     except BaseException:
         return
 
+
 @sedenify(pattern='^.clock$')
 def clock(message):
     deq = deque(list('🕙🕘🕗🕖🕕🕔🕓🕒🕑🕐🕛'))
@@ -864,7 +796,8 @@ def clock(message):
     except BaseException:
         return
 
-@sedenify(pattern='^.hava$')
+
+@sedenify(pattern='^.(hava|sky)$')
 def hava(message):
     deq = deque(list('☀️🌤⛅️🌥☁️🌦🌧🌩🌨❄️'))
     try:
@@ -876,7 +809,7 @@ def hava(message):
         return
 
 
-@sedenify(pattern='^.d[uü]nya$')
+@sedenify(pattern='^.(d[uü]nya|earth)$')
 def dunya(message):
     deq = deque(list('🌏🌍🌎🌎🌍🌏🌍🌎'))
     try:
@@ -887,7 +820,8 @@ def dunya(message):
     except BaseException:
         return
 
-@sedenify(pattern='^.d[uü][sş][uü]nme$')
+
+@sedenify(pattern='^.(d[uü][sş][uü]nme|thinking)$')
 def dusunme(message):
     deq = deque(list('🤔🧐🤔🧐🤔🧐'))
     try:
@@ -898,7 +832,8 @@ def dusunme(message):
     except BaseException:
         return
 
-@sedenify(pattern='^.y[ıi]lan$')
+
+@sedenify(pattern='^.(y[ıi]lan|snake)$')
 def yilan(message):
     animation_interval = 0.3
     animation_ttl = range(0, 27)
@@ -935,11 +870,12 @@ def yilan(message):
         sleep(animation_interval)
         edit(message, animation_chars[i % 27])
 
+
 @sedenify(pattern='^.(solar|g[uü]ne[sş])$')
 def gunes(message):
     animation_interval = 0.1
     animation_ttl = range(0, 100)
-    edit(message, 'Ay ve Güneş')
+    edit(message, f'`{get_translation("solarResult")}`')
     animation_chars = [
         "`◼️◼️◼️◼️◼️\n◼️◼️◼️◼️☀\n◼️◼️🌎◼️◼️\n🌕◼️◼️◼️◼️\n◼️◼️◼️◼️◼️`",
         "`◼️◼️◼️◼️◼️\n🌕◼️◼️◼️◼️\n◼️◼️🌎◼️◼️\n◼️◼️◼️◼️☀\n◼️◼️◼️◼️◼️`",
@@ -1084,12 +1020,13 @@ def gunes(message):
         "`◼️◼️◼️◼️◼️\n◼️◼️◼️◼️🌕\n◼️◼️🌎◼️◼️\n☀◼️◼️◼️◼️\n◼️◼️◼️◼️◼️`",
         "`◼️◼️◼️◼️◼️\n☀◼️◼️◼️◼️\n◼️◼️🌎◼️◼️\n◼️◼️◼️◼️🌕\n◼️◼️◼️◼️◼️`",
         "`◼️☀◼️◼️◼️\n◼️◼️◼️◼️◼️\n◼️◼️🌎◼️◼️\n◼️◼️◼️◼️◼️\n◼️◼️◼️🌕◼️`",
-        "`◼️◼️◼️☀◼️\n◼️◼️◼️◼️◼️\n◼️◼️🌎◼️◼️\n◼️◼️◼️◼️◼️\n◼️🌕◼️◼️◼️`",]
+        "`◼️◼️◼️☀◼️\n◼️◼️◼️◼️◼️\n◼️◼️🌎◼️◼️\n◼️◼️◼️◼️◼️\n◼️🌕◼️◼️◼️`", ]
     for i in animation_ttl:
         sleep(animation_interval)
         edit(message, animation_chars[i % 100])
 
-@sedenify(pattern='^.şehir')
+
+@sedenify(pattern='^.(şehir|city)')
 def sehir(message):
     edit(message, '''☁️☁️🌞      ☁️           ☁️  ☁️
        ☁️  ✈️         ☁️    🚁     ☁️
@@ -1103,15 +1040,17 @@ def sehir(message):
    🌳/                |   🚍      \ 🌴🚴🚴
 🌴/                   |                 \🌲''')
 
+
 @sedenify(pattern='^.(lmoon|ay)')
 def lmoon(message):
     edit(message, '🌕🌕🌕🌕🌕🌕🌕🌕\n🌕🌕🌖🌔🌖🌔🌕🌕\n🌕🌕🌗🌔🌖🌓🌕🌕\n🌕🌕🌗🌔🌖🌓🌕🌕\n🌕🌕🌖🌓🌗🌔🌕🌕\n🌕🌕🌗🌑🌑🌓🌕🌕\n🌕🌕🌗👀🌑🌓🌕🌕\n🌕🌕🌘👄🌑🌓🌕🌕\n🌕🌕🌗🌑🌑🌒🌕🌕\n🌕🌖🌑🌑🌑🌑🌔🌕\n🌕🌘🌑🌑🌑🌑🌒🌕\n🌖🌑🌑🌑🌑🌑🌑🌔\n🌕🤜🏻🌑🌑🌑🌑🤛🏻🌕\n🌕🌖🌑🌑🌑🌑🌔🌕\n🌘🌑🌑🌑🌑🌑🌑🌒\n🌕🌕🌕🌕🌕🌕🌕🌕')
 
-@sedenify(pattern='^.k[uü][cç][uü]lme')
+
+@sedenify(pattern='^.(k[uü][cç][uü]lme|smalling)')
 def kuculme(message):
     animation_interval = 1
     animation_ttl = range(0, 30)
-    edit(message, 'Küçülüyor...')
+    edit(message, f'`{get_translation("smallingResult")}`')
     animation_chars = [
         "🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎\n🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎\n🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎\n🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎\n🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎",
         "◼️🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎\n🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎\n🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎\n🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎\n🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎",
@@ -1147,11 +1086,12 @@ def kuculme(message):
         sleep(animation_interval)
         edit(message, animation_chars[i % 30])
 
+
 @sedenify(pattern='^.nasa')
 def nasa(message):
     animation_interval = 1
     animation_ttl = range(0, 24)
-    edit(message, 'Bağlanıyor..')
+    edit(message, f'{get_translation("nasaResult")}')
     animation_chars = [
         "⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛",
         "⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛\n🚀⬛⬛⬛⬛⬛",
@@ -1176,89 +1116,10 @@ def nasa(message):
         "⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛\n👽⬛⬛🛸🚶‍♂️⬛\n⬜⬜⬜⬜⬜⬜",
         "⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛\n⬛👽⬛🛸🚶‍♂️⬛\n⬜⬜⬜⬜⬜⬜",
         "⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛\n⬛⬛⬛⬛⬛⬛\n⬛⬛👽🛸🚶‍♂️⬛\n⬜⬜⬜⬜⬜⬜",
-        "__Sinyal Kaybedildi....__"]
+        f'__{get_translation("nasaResult2")}__']
     for i in animation_ttl:
         sleep(animation_interval)
         edit(message, animation_chars[i % 24])
 
-KOMUT.update({
-    "memes":
-    ".cowsay\
-\nKullanım: bir şeyler söyleyen inek.\
-\n\n:/\
-\nKullanım: Kendinizi kontrol edin ;)\
-\n\n-_-\
-\nKullanım: Tamam...\
-\n\n;_;\
-\nKullanım: `-_-` gibi ama ağlıyor.\
-\n\n.cp\
-\nKullanım: Meşhur copypasta modülü\
-\n\n.vapor\
-\nKullanım: Her şeyi vaporlaştırın!\
-\n\n.str\
-\nKullanım: Mesajı iyice uzatın.\
-\n\n.10iq\
-\nKullanım: Aptallık seviyenizi ölçün !!\
-\n\n.nasa\
-\nKullanım: 👽 👽 👽\
-\n\n.şehir\
-\nKullanım: Güzel manzaralı bir şehir.\
-\n\n.lmoon\
-\nKullanım: Moon komutunun farklı bir hali.\
-\n\n.küçülme\
-\nKullanım: Küçülen bir animasyon.\
-\n\n.dünya\
-\nKullanım: Dünya animasyonu.\
-\n\n.güneş\
-\nKullanım: Ay ve güneşin dünya etrafında döndüğü bir animasyon.\
-\n\n.yılan\
-\nKullanım: Yılana benzer bir animasyon.\
-\n\n.düşünme\
-\nKullanım: Düşünme animasyonu.\
-\n\n.hava\
-\nKullanım: Hava durumu animasyonu.\
-\n\n.mizah\
-\nKullanım: Aptallık seviyenizi ölçün !!\
-\n\n.zal\
-\nKullanım: Kaos duygusunu çağırın.\
-\n\noof\
-\nKullanım: ooooof\
-\n\nskrrt\
-\nKullanım: skrrrrt\
-\n\n.fuk\
-\nKullanım: ¯\_(ツ)_/¯\
-\n\n.kalp\
-\nKullanım: Sevginizi gösterin.\
-\n\n.fp\
-\nKullanım: Utanmak  🤦‍♂\
-\n\n.moon\
-\nKullanım: Ay animasyonu.\
-\n\n.clock\
-\nKullanım: Saat animasyonu.\
-\n\n.owo\
-\nKullanım: UwU\
-\n\n.react\
-\nKullanım: UserBot'un her şeye tepki vermesini sağlayın.\
-\n\n.slap\
-\nKullanım: rastgele nesnelerle tokatlamak için mesaja cevap verin !!\
-\n\n.cry\
-\nKullanım: bunu yaparsan, her zaman ağlarım.\
-\n\n.shg\
-\nKullanım: ¯\_(ツ)_/¯\
-\n\n.run\
-\nKullanım: UserBot'un koşmasını sağlar!\
-\n\n.mock\
-\nKullanım: Yap ve gerçek eğlenceyi bul.\
-\n\n.shout\
-\nKullanım: Değişik bir yazım türü.\
-\n\n.clap\
-\nKullanım: İnsanları övün!\
-\n\n.f <emoji/karakter>\
-\nKullanım: Saygılar..\
-\n\n.type\
-\nKullanım: Klavyenizi daktilo haline getirmek için küçük bir komut!\
-\n\n.lfy <sorgu>\
-\nKullanım: Bırakın Google bunu sizin için araştırsın.\
-\n\n\nBunlardan bazıları için teşekkürler 🅱️ottom🅱️ext🅱️ot (@NotAMemeBot).\
-\n\nUyarlamalar için teşekkürler [@NaytSeyd](tg://user?id=551728027)"
-})
+
+KOMUT.update({"memes": get_translation('memesInfo')})

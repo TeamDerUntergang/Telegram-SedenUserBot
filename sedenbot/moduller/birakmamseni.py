@@ -17,9 +17,11 @@
 
 from requests import post
 from sedenbot import KOMUT
-from sedenecem.core import edit, sedenify
+from sedenecem.core import edit, sedenify, get_translation
 
 # Copyright (c) @Adem68 | 2020
+
+
 @sedenify(pattern='^.b[ıi]rakmamseni$')
 def birakmamseni(message):
     url = 'https://birakmamseni.org/'
@@ -38,23 +40,13 @@ def birakmamseni(message):
     try:
         response = post(url=url + path, headers=headers)
         count = response.json()['counter'].lstrip('0')
-    except: # pylint: disable=W0702
-        edit(message, '`Bir hata oluştu.`')
+    except:  # pylint: disable=W0702
+        edit(message, f'`{get_translation("covidError")}`')
         return
 
-    sonuc = ('**⚫⚪ Bırakmam Seni Kampanyası Verileri ⚫⚪**\n\n' +
-             'Şu an itibarıyla **BIRAKMAM SENİ** kampanyası kapsamında ' +
-             f'`{count}` 🖤🤍 adet destekte bulunuldu.\n' +
-             '\nHaydi sen de hemen **BÜYÜK BEŞİKTAŞ’IMIZA** 🦅 destek ol !\n' +
-             '\n[https://birakmamseni.org](https://birakmamseni.org/)\n' +
-             '`\n=============================\n`' +
-             '`SMS, Havale/Eft ve Posta Çeki kanalları ile gelen destekler periyodik olarak sayaca eklenmektedir.`\n' +
-             '`=============================`')
+    sonuc = (get_translation("birakmamseniResult", ['**', '`', count]))
 
     edit(message, sonuc, preview=False)
 
-KOMUT.update({
-    "birakmamseni":
-    ".birakmamseni \
-    \nKullanım: Beşiktaş'ın Bırakmam Seni kampanyasına yapılan destek sayısını göstermektedir."
-})
+
+KOMUT.update({"birakmamseni": get_translation("birakmamseniInfo")})

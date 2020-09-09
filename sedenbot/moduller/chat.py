@@ -14,23 +14,73 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from time import sleep
 from sedenbot import KOMUT
-from sedenecem.core import edit, sedenify
+from sedenecem.core import edit, sedenify, send_log, get_translation
 
-@sedenify(pattern='.chatid', private=False)
+
+@sedenify(pattern='.chatid$', private=False)
 def chatid(message):
-    edit(message, 'Grup ID: `' + str(message.chat.id) + '`')
+    edit(
+        message, f"{get_translation('chatidInfo', ['`', str(message.chat.id)])}")
 
-@sedenify(pattern='^.kickme', compat=False, private=False)
+
+@sedenify(pattern='^.kickme$', compat=False, private=False)
 def kickme(client, message):
-    edit(message, '`Güle Güle ben gidiyorum 🤠`')
+    edit(message, f'`{get_translation("kickmeInfo")}`')
     client.leave_chat(message.chat.id, 'me')
 
 
-KOMUT.update({
-    "chat":
-    ".chatid\
-\nKullanım: Belirlenen grubun ID numarasını verir\
-\n\n.kickme\
-\nKullanım: Belirlenen gruptan ayrılmanızı sağlar."
-})
+@sedenify(pattern='^.unmutechat$')
+def unmutechat(message):
+    try:
+        from sedenecem.sql.keep_read_sql import unkread
+    except AttributeError:
+        edit(message, f'`{get_translation("nonSqlMode")}`')
+        return
+    status = unkread(str(message.chat.id))
+    if status:
+        edit(message, f'`{get_translation("chatUnmuted")}`')
+    else:
+        edit(message, f'`{get_translation("chatAlreadyUnmuted")}`')
+    sleep(2)
+    message.delete()
+
+
+@sedenify(pattern='^.mutechat$')
+def mutechat(message):
+    try:
+        from sedenecem.sql.keep_read_sql import kread
+    except AttributeError:
+        edit(message, f'`{get_translation("nonSqlMode")}`')
+        return
+    status = kread(str(message.chat.id))
+    if status:
+        edit(message, f'`{get_translation("chatMuted")}`')
+    else:
+        edit(message, f'`{get_translation("chatAlreadyMuted")}`')
+    sleep(2)
+    message.delete()
+
+    send_log(get_translation("chatLog", [message.chat.id]))
+
+
+@sedenify(incoming=True, compat=False)
+def keep_read(client, message):
+    if message.from_user and message.from_user.is_self:
+        message.continue_propagation()
+
+    try:
+        from sedenecem.sql.keep_read_sql import is_kread
+    except AttributeError:
+        return
+    kread = is_kread()
+    if kread:
+        for i in kread:
+            if i.groupid == str(message.chat.id):
+                client.read_history(message.chat.id)
+
+    message.continue_propagation()
+
+
+KOMUT.update({"chat": get_translation('infoChatID')})

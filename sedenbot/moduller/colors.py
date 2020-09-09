@@ -19,8 +19,9 @@
 from os import remove
 from PIL import Image, ImageColor
 
-from sedenbot import KOMUT
-from sedenecem.core import edit, reply_img, extract_args, sedenify
+from sedenbot import KOMUT, SEDEN_LANG
+from sedenecem.core import edit, reply_img, extract_args, sedenify, get_translation
+
 
 @sedenify(pattern='^.color')
 def color(message):
@@ -42,11 +43,7 @@ def color(message):
             remove('sedencik.png')
             message.delete()
     else:
-        edit(message, "Belki burayı okuyarak bir şeyler öğrenebilirsin.. \
-             `.color <renk kodu>  | Örnek: .color #330066`")
+        edit(message, f'`{get_translation("colorsUsage")}`')
 
-KOMUT.update({
-    'color': ".color <renk kodu> \
-\nKullanım: Belirttiğniz renk kodunun çıktısını alın. \
-\nÖrnek: .color #330066"
-})
+
+KOMUT.update({'color': get_translation("colorsInfo")})

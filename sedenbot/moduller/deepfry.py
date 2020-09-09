@@ -21,9 +21,11 @@ from random import randint, uniform
 from PIL import Image, ImageEnhance, ImageOps
 
 from sedenbot import KOMUT
-from sedenecem.core import edit, reply_img, sedenify, download_media
+from sedenecem.core import edit, reply_img, sedenify, download_media, get_translation
 
 # Copyright (c) @NaytSeyd, @frknkrc44 | 2020
+
+
 @sedenify(pattern='^.(deepf|f)ry', compat=False)
 def deepfry(client, message):
 
@@ -34,7 +36,7 @@ def deepfry(client, message):
         frycount = int(text[1])
         if frycount < 1:
             raise ValueError
-    except: # pylint: disable=W0702
+    except:  # pylint: disable=W0702
         frycount = 1
 
     MAX_LIMIT = 5
@@ -47,20 +49,22 @@ def deepfry(client, message):
         data = check_media(reply)
 
         if not data:
-            edit(message, '`Bunu deepfry yapamam!`')
+            edit(message, f'`{get_translation("deepfryError")}`')
             return
     else:
-        edit(message, f'`{"F" if fry else "Deepf"}ry yapmam için bir resme veya çıkartmaya cevap verin!`')
+        edit(message, get_translation('deepfryNoPic',
+                                      ['`', f'{"f" if fry else "deepf"}ry']))
         return
 
     # Fotoğrafı (yüksek çözünürlük) bayt dizisi olarak indir
-    edit(message, '`Medya indiriliyor...`')
+    edit(message, f'`{get_translation("deepfryDownload")}`')
     image_file = download_media(client, reply, 'image.png')
     image = Image.open(image_file)
     remove(image_file)
 
     # Resime uygula
-    edit(message, f'`Medyaya {"" if fry else "deep"}fry efekti uygulanıyor...`')
+    edit(message, get_translation(
+        'deepfryApply', ['`', f'{"" if fry else "deep"}']))
     for _ in range(frycount):
         image = deepfry(image, fry)
 
@@ -69,6 +73,7 @@ def deepfry(client, message):
     fried_io.close()
 
     reply_img(message, 'image.jpeg', delete_file=True)
+
 
 def deepfry(img: Image, fry: bool) -> Image:
     colors = None
@@ -83,13 +88,16 @@ def deepfry(img: Image, fry: bool) -> Image:
     width, height = img.width, img.height
 
     temp_num = uniform(.8, .9) if fry else .75
-    img = img.resize((int(width ** temp_num), int(height ** temp_num)), resample=Image.LANCZOS)
+    img = img.resize(
+        (int(width ** temp_num), int(height ** temp_num)), resample=Image.LANCZOS)
 
     temp_num = uniform(.85, .95) if fry else .88
-    img = img.resize((int(width ** temp_num), int(height ** temp_num)), resample=Image.BILINEAR)
+    img = img.resize(
+        (int(width ** temp_num), int(height ** temp_num)), resample=Image.BILINEAR)
 
     temp_num = uniform(.89, .98) if fry else .9
-    img = img.resize((int(width ** temp_num), int(height ** temp_num)), resample=Image.BICUBIC)
+    img = img.resize(
+        (int(width ** temp_num), int(height ** temp_num)), resample=Image.BICUBIC)
     img = img.resize((width, height), resample=Image.BICUBIC)
 
     temp_num = randint(3, 7) if fry else 4
@@ -119,6 +127,7 @@ def deepfry(img: Image, fry: bool) -> Image:
 
     return img
 
+
 def check_media(reply_message):
     data = False
 
@@ -134,8 +143,5 @@ def check_media(reply_message):
 
     return data
 
-KOMUT.update({
-    "deepfry":
-    ".deepfry veya .fry [numara 1-5]\
-    \nKullanım: Belirlenen görüntüye deepfry efekti uygular."
-})
+
+KOMUT.update({"deepfry": get_translation("deepfryInfo")})

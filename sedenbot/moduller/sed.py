@@ -18,9 +18,10 @@ from re import match, sub, IGNORECASE, I
 from sre_constants import error as sre_err
 
 from sedenbot import KOMUT
-from sedenecem.core import edit, sedenify
+from sedenecem.core import edit, sedenify, get_translation
 
 DELIMITERS = ('/', ':', '|', '_')
+
 
 def separate_sed(sed_string):
     if (len(sed_string) > 3 and sed_string[3] in DELIMITERS
@@ -62,6 +63,7 @@ def separate_sed(sed_string):
         return replace, replace_with, flags.lower()
     return None
 
+
 @sedenify(pattern='^sed')
 def sed(message):
     sed_result = separate_sed(message.text or message.caption)
@@ -70,41 +72,35 @@ def sed(message):
         if textx:
             to_fix = textx.text
         else:
-            edit(message,
-                 '`Bunun için yeterli zekâya sahip değilim.`')
+            edit(message, f'`{get_translation("sedError")}`')
             return
 
         repl, repl_with, flags = sed_result
 
         if not repl:
-            edit(message,
-                 '`Bunun için yeterli zekâya sahip değilim.`')
+            edit(message, f'`{get_translation("sedError")}`')
             return
 
         try:
             check = match(repl, to_fix, flags=IGNORECASE)
             if check and check.group(0).lower() == to_fix.lower():
-                edit(message, '`Bu bir yanıtlama. Sed kullanma`')
+                edit(message, f'`{get_translation("sedError2")}`')
                 return
 
             if 'i' in flags and 'g' in flags:
                 text = sub(repl, repl_with, to_fix, flags=I).strip()
             elif 'i' in flags:
                 text = sub(repl, repl_with, to_fix, count=1,
-                              flags=I).strip()
+                           flags=I).strip()
             elif 'g' in flags:
                 text = sub(repl, repl_with, to_fix).strip()
             else:
                 text = sub(repl, repl_with, to_fix, count=1).strip()
         except sre_err:
-            edit(message, 'Dostum lütfen [regex](https://regexone.com) öğren!')
+            edit(message, f'{get_translation("sedLearn")}')
             return
         if text:
-            edit(message, f'Bunu mu demek istedin ? \n\n{text}')
+            edit(message, get_translation("sedResult", [text]))
 
-KOMUT.update({
-    "sed":
-    "sed<sınırlayıcı><eski kelime(ler)><sınırlayıcı><yeni kelime(ler)>\
-    \nKullanım: Sed kullanarak bir kelimeyi veya kelimeleri değiştirir.\
-    \nSınırlayıcılar: `/, :, |, _`"
-})
+
+KOMUT.update({"sed": get_translation("sedInfo")})

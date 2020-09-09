@@ -26,10 +26,12 @@ from pyrogram.api import functions
 from sedenbot.moduller.lovers import saniye
 from sedenbot.moduller.ecem import ecem
 from sedenbot import KOMUT, ALIVE_MESAJI, BOT_VERSION, CHANNEL
-from sedenecem.core import edit, reply, reply_doc, send_log, extract_args, sedenify
+from sedenecem.core import edit, reply, reply_doc, send_log, extract_args, sedenify, get_translation
 # ================= CONSTANT =================
-KULLANICIMESAJI = ALIVE_MESAJI
+KULLANICIMESAJI = ALIVE_MESAJI or get_translation('sedenAlive')
 # ============================================
+
+
 @sedenify(pattern='^.neofetch$')
 def neofetch(message):
     try:
@@ -38,75 +40,72 @@ def neofetch(message):
         sonuc, _ = islem.communicate()
         edit(message, sonuc.decode(), parse=None)
     except:
-        edit(message, '`Lütfen neofetch yükleyin.`')
+        edit(message, f'`{get_translation("neofetchNotFound")}`')
+
 
 @sedenify(pattern='^.botver$')
 def botver(message):
     if which('git'):
         from subprocess import PIPE, Popen
-        degisiklik = Popen(['git', 'rev-list', '--all', '--count'], stdout=PIPE, stderr=PIPE, universal_newlines=True)
+        degisiklik = Popen(['git', 'rev-list', '--all', '--count'],
+                           stdout=PIPE, stderr=PIPE, universal_newlines=True)
         sonuc, _ = degisiklik.communicate()
 
-        edit(message, f'[Seden UserBot](https://t.me/{CHANNEL}) `Sürümü: '
-                      f'v{BOT_VERSION}'
-                      '` \n'
-                      '`Toplam değişiklik (Commit): '
-                      f'{sonuc}'
-                      '`', preview=False, fix_markdown=True)
+        edit(message, get_translation('sedenShowBotVersion', [
+             '**', '`', 'Seden UserBot', CHANNEL, BOT_VERSION, sonuc]), preview=False, fix_markdown=True)
     else:
-        edit(message, 'Bu arada Seden seni çok seviyor. ❤️')
+        edit(message, f'`{get_translation("sedenGitNotFound")}`')
+
 
 @sedenify(pattern='^.pip')
 def pip3(message):
     pipmodule = extract_args(message)
     if len(pipmodule) > 0:
-        edit(message, '`Aranıyor...`')
+        edit(message, f'`{get_translation("pipSearch")}`')
         pipsorgu = f"pip3 search {pipmodule}"
         from subprocess import PIPE, Popen
-        islem = Popen(pipsorgu.split(), stdout=PIPE, stderr=PIPE, universal_newlines=True)
+        islem = Popen(pipsorgu.split(), stdout=PIPE,
+                      stderr=PIPE, universal_newlines=True)
         sonuc, _ = islem.communicate()
 
         if sonuc:
             if len(sonuc) > 4096:
-                edit(message, '`Çıktı çok büyük, dosya olarak gönderiliyor.`')
-                file = open('cikti.txt', 'w+')
+                edit(message, f'`{get_translation("outputTooLarge")}`')
+                file = open('pip3.txt', 'w+')
                 file.write(sonuc)
                 file.close()
-                reply_doc(message, 'cikti.txt')
-                remove('cikti.txt')
+                reply_doc(message, 'pip3.txt')
+                remove('pip3.txt')
                 return
-            edit(message, '**Sorgu: **\n`'
-                          f'{pipsorgu}'
-                          '`\n**Sonuç: **\n`'
-                          f'{sonuc}'
-                          '`', fix_markdown=True)
+            edit(message, get_translation(
+                'sedenQuery', ['**', '`', pipsorgu, sonuc]))
         else:
-            edit(message, '**Sorgu: **\n`'
-                          f'{pipsorgu}'
-                          '`\n**Sonuç: **\n`Bir şey bulunamadı.`')
+            edit(message, get_translation('sedenQuery', [
+                 '**', '`', pipsorgu, get_translation('sedenZeroResults')]))
     else:
-        edit(message, '`Bir örnek görmek için .seden pip komutunu kullanın.`')
+        edit(message, f'`{get_translation("pipHelp")}`')
+
 
 @sedenify(pattern='^.(restart|yb)$', compat=False)
 def restart(client, message):
-    edit(message, '`Yeniden başlatılıyor ...`')
-    send_log('#RESTART\n'
-             'Bot yeniden başlatıldı.')
+    edit(message, f'`{get_translation("restart")}`')
+    send_log(f'{get_translation("restartLog")}')
     try:
         client.stop()
     except Exception as e:
         pass
     execl(executable, executable, *argv)
 
+
 @sedenify(pattern='^.(shutdown|kapat)$', compat=False)
 def restart(client, message):
-    edit(message, '`Ben kapanıyorum, görüşürüz ...`')
-    send_log('#SHUTDOWN \n'
-             'Bot kapatıldı.')
+    edit(message, f'`{get_translation("shutdown")}`')
+    send_log(f'{get_translation("shutdownLog")}')
     try:
         client.stop()
     except Exception as e:
         pass
+
 
 @sedenify(pattern='^.ping$')
 def ping(message):
@@ -115,6 +114,7 @@ def ping(message):
     bitir = datetime.now()
     sure = (bitir - basla).microseconds / 1000
     edit(message, f'`Pong!\n{sure}ms`')
+
 
 @sedenify(pattern='^.alive$')
 def alive(message):
@@ -126,21 +126,24 @@ def alive(message):
         return
     edit(message, f'`{KULLANICIMESAJI}`')
 
+
 @sedenify(pattern='^.alives')
 def alives(message):
     alives = extract_args(message)
-    sonuc = '`Kullanım: .alives <alive mesajı>`'
+    sonuc = f'`{get_translation("alivesUsage")}`'
     if len(alives) > 0:
         global KULLANICIMESAJI
         KULLANICIMESAJI = alives
-        sonuc = f'Alive mesajı, {KULLANICIMESAJI} olarak ayarlandı!'
+        sonuc = get_translation('sedenSetAlive', [KULLANICIMESAJI])
     edit(message, '`' f'{sonuc}' '`')
+
 
 @sedenify(pattern='^.resalive$')
 def resalive(message):
     global KULLANICIMESAJI
-    KULLANICIMESAJI = str(ALIVE_MESAJI) if ALIVE_MESAJI else kullanicireset().node
-    edit(message, '`Alive mesajı başarıyla sıfırlandı!`')
+    KULLANICIMESAJI = ALIVE_MESAJI or get_translation('sedenAlive')
+    edit(message, f'`{get_translation("aliveReset")}`')
+
 
 @sedenify(pattern='^.echo')
 def echo(message):
@@ -149,22 +152,25 @@ def echo(message):
         message.delete()
         reply(message, args)
     else:
-        edit(message, '`Argüman yazın`')
+        edit(message, f'`{get_translation("echoHelp")}`')
+
 
 @sedenify(pattern='^.dc$', compat=False)
 def dc(client, message):
     sonuc = client.send(functions.help.GetNearestDc())
-    edit(message, f'**Ülke :** `{sonuc.country}`\n'
-                  f'**En yakın veri merkezi :** `{sonuc.nearest_dc}`\n'
-                  f'**Şu anki veri merkezi :** `{sonuc.this_dc}`')
+
+    edit(message, get_translation('sedenNearestDC', [
+         '**', '`', sonuc.country, sonuc.nearest_dc, sonuc.this_dc]))
 
 # Copyright (c) @NaytSeyd, @frknkrc44 | 2020
+
+
 @sedenify(pattern='^.term')
 def terminal(message):
     command = extract_args(message)
 
     if len(command) < 1:
-        edit(message, '`Lütfen bir komut yazın.`')
+        edit(message, f'`{get_translation("termUsage")}`')
         return
 
     curruser = getuser()
@@ -175,10 +181,10 @@ def terminal(message):
         uid = 0
 
     if not command:
-        edit(message, '`Yardım almak için .seden term yazarak örneğe bakabilirsin.`')
+        edit(message, f'`{get_translation("termHelp")}`')
         return
 
-    sonuc = 'Komutun sonucu alınamadı.'
+    sonuc = f'`{get_translation("termNoResult")}`'
     try:
         from subprocess import getoutput
         sonuc = getoutput(command)
@@ -186,22 +192,25 @@ def terminal(message):
         pass
 
     if len(sonuc) > 4096:
-        output = open('cikti.txt', 'w+')
+        output = open('output.txt', 'w+')
         output.write(sonuc)
         output.close()
-        reply_doc(message, 'cikti.txt', caption='`Çıktı çok büyük, dosya olarak gönderiliyor`')
-        remove('cikti.txt')
+        reply_doc(message, 'output.txt',
+                  caption=f'`{get_translation("outputTooLarge")}`')
+        remove('output.txt')
         return
 
-    edit(message, f'`{curruser}:~{"#" if uid == 0 else "$"} {command}\n{sonuc}`', fix_markdown=True)
+    edit(
+        message, f'`{curruser}:~{"#" if uid == 0 else "$"} {command}\n{sonuc}`', fix_markdown=True)
 
-    send_log('Terminal Komutu ' + command + ' başarıyla yürütüldü')
+    send_log(get_translation('termLog', [command]))
+
 
 @sedenify(pattern='^.eval')
 def eval(message):
     args = extract_args(message)
     if len(args) < 1:
-        edit(message, '`Değerlendirmek için bir ifade verin.`')
+        edit(message, f'`{get_translation("evalUsage")}`')
         return
 
     try:
@@ -209,38 +218,35 @@ def eval(message):
         if evaluation:
             if isinstance(evaluation, str):
                 if len(evaluation) >= 4096:
-                    file = open('cikti.txt', 'w+')
+                    file = open('output.txt', 'w+')
                     file.write(evaluation)
                     file.close()
                     reply_doc(message,
-                              'cikti.txt',
-                              caption='`Çıktı çok büyük, dosya olarak gönderiliyor`',)
-                    remove('cikti.txt')
+                              'output.txt',
+                              caption=f'`{get_translation("outputTooLarge")}`')
+                    remove('output.txt')
                     return
-                edit(message, '**Sorgu: **\n`'
-                              f'{args}'
-                              '`\n**Sonuç: **\n`'
-                              f'{evaluation}'
-                              '`')
+                edit(message, get_translation(
+                    'sedenQuery', ['**', '`', args, evaluation]))
         else:
-            edit(message, '**Sorgu: **\n`'
-                          f'{args}'
-                          '`\n**Sonuç: **\n`Sonuç döndürülemedi / Yanlış`')
+            edit(message, get_translation('sedenQuery', [
+                 '**', '`', args, get_translation('sedenErrorResult')]))
     except Exception as err:
-        edit(message, '**Sorgu: **\n`'
-                      f'{args}'
-                      '`\n**İstisna: **\n'
-                      f'`{err}`')
+        edit(message, get_translation(
+            'sedenQuery', ['**', '`', args, str(err)]))
 
-    send_log(f'Eval sorgusu {args} başarıyla yürütüldü')
+    send_log(get_translation('evalLog', [args]))
+
 
 operators = {Add: add, Sub: sub, Mult: mul,
              Div: truediv, Pow: pow, BitXor: xor,
              USub: neg}
 
+
 def safe_eval(expr):
     expr = expr.lower().replace("x", "*").replace(" ", "")
     return str(_eval(parse(expr, mode='eval').body))
+
 
 def _eval(node):
     if isinstance(node, Num):
@@ -250,43 +256,17 @@ def _eval(node):
     elif isinstance(node, UnaryOp):
         return operators[type(node.op)](_eval(node.operand))
     else:
-        raise TypeError("Bu güvenli bir eval sorgusu olmayabilir.")
+        raise TypeError(f'`{get_translation("safeEval")}`')
 
-KOMUT.update(
-    {"neofetch": ".neofetch\
-    \nKullanım: Neofetch komutunu kullanarak sistem bilgisi gösterir."})
-KOMUT.update({"botver": ".botver\
-    \nKullanım: UserBot sürümünü gösterir."})
-KOMUT.update(
-    {"pip": ".pip <modül ismi>\
-    \nKullanım: Pip modüllerinde arama yapar."})
-KOMUT.update(
-    {"dc": ".dc\
-    \nKullanım: Sunucunuza en yakın veri merkezini gösterir."})
-KOMUT.update(
-    {"restart": ".restart\
-\nKullanım: Botu yeniden başlatır."})
-KOMUT.update(
-    {"shutdown":".shutdown\
-\nKullanım: Bazen canın botunu kapatmak ister. Gerçekten o nostaljik \
-Windows XP kapanış sesini duyabileceğini zannedersin..."})
-KOMUT.update(
-    {"ping": ".ping\
-    \nKullanım: Botun ping değerini gösterir."})
-KOMUT.update(
-    {"echo": ".echo\
-    \nKullanım: Yazdığınız metni tekrar eder."})
-KOMUT.update(
-    {"eval": ".eval 2 + 3\
-    \nKullanım: Mini ifadeleri değerlendirin."})
-KOMUT.update(
-    {"term": ".term\
-    \nKullanım: Sunucunuzda bash komutlarını ve komut dosyalarını çalıştırın."})
-KOMUT.update({
-    "alive": ".alive\
-    \nKullanım: Seden botunun çalışıp çalışmadığını kontrol etmek için kullanılır.\
-    \n\n.alives <alive mesajı>\
-    \nKullanım: Bu komut Seden botun alive mesajını değiştirmenize yarar.\
-    \n\n.resalive\
-    \nKullanım: Bu komut ayarladığınız alive mesajını varsayılan Seden olan haline döndürür."
-})
+
+KOMUT.update({"neofetch": get_translation("neofetchInfo")})
+KOMUT.update({"botver": get_translation("botverInfo")})
+KOMUT.update({"pip": get_translation("pipInfo")})
+KOMUT.update({"dc": get_translation("dcInfo")})
+KOMUT.update({"restart": get_translation("restartInfo")})
+KOMUT.update({"shutdown": get_translation("shutdownInfo")})
+KOMUT.update({"ping": get_translation("pingInfo")})
+KOMUT.update({"echo": get_translation("echoInfo")})
+KOMUT.update({"eval": get_translation("evalInfo")})
+KOMUT.update({"term": get_translation("termInfo")})
+KOMUT.update({"alive": get_translation("aliveInfo")})

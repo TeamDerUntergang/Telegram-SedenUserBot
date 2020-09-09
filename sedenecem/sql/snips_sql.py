@@ -5,6 +5,7 @@ except ImportError:
 
 from sqlalchemy import Column, UnicodeText, Numeric
 
+
 class Snips(BASE):
     __tablename__ = "snips"
     snip = Column(UnicodeText, primary_key=True)
@@ -19,17 +20,20 @@ class Snips(BASE):
 
 Snips.__table__.create(checkfirst=True)
 
+
 def get_snip(keyword):
     try:
         return SESSION.query(Snips).get(keyword)
     finally:
         SESSION.close()
 
+
 def get_snips():
     try:
         return SESSION.query(Snips).all()
     finally:
         SESSION.close()
+
 
 def add_snip(keyword, reply, f_mesg_id):
     to_check = get_snip(keyword)
@@ -40,19 +44,19 @@ def add_snip(keyword, reply, f_mesg_id):
         return True
     else:
         rem = SESSION.query(Snips).filter(Snips.snip == keyword)
-        SESSION.delete(rem)
+        rem.delete()
         SESSION.commit()
         adder = Snips(keyword, reply, f_mesg_id)
         SESSION.add(adder)
         SESSION.commit()
         return False
 
+
 def remove_snip(keyword):
     to_check = get_snip(keyword)
     if not to_check:
         return False
     else:
-        rem = SESSION.query(Snips).filter(Snips.snip == keyword)
-        rem.delete()
+        SESSION.delete(to_check)
         SESSION.commit()
         return True

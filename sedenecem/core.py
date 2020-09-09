@@ -21,15 +21,16 @@ from subprocess import Popen, PIPE
 from os import execl, remove
 from math import floor
 from traceback import format_exc
-from selenium.webdriver import Chrome
-from selenium.webdriver import ChromeOptions
+from selenium.webdriver import Chrome, ChromeOptions
 from PIL import Image
 from pyrogram import Filters, MessageHandler, Chat, ContinuePropagation, StopPropagation, Message
-from sedenbot import SUPPORT_GROUP, LOG_ID, BLACKLIST, BRAIN_CHECKER, CHROME_DRIVER, me, app
+from sedenbot import SUPPORT_GROUP, LOG_ID, BLACKLIST, BRAIN_CHECKER, CHROME_DRIVER, SEDEN_LANG, me, app, get_translation
 
 MARKDOWN_FIX_CHAR = '\u2064'
 
 # Copyright (c) @NaytSeyd, @frknkrc44 | 2020
+
+
 def sedenify(**args):
     pattern = args.get('pattern', None)
     outgoing = args.get('outgoing', True)
@@ -45,7 +46,7 @@ def sedenify(**args):
 
     def msg_decorator(func):
         def wrap(client, message):
-            if not message or not message.from_user or message.empty:
+            if message.empty:
                 return
 
             try:
@@ -59,11 +60,11 @@ def sedenify(**args):
                     return
 
                 if not private and message.chat.type in ['private', 'bot']:
-                    edit(message, '`Bu komut sadece gruplarda kullanılabilir.`')
+                    edit(message, f'`{get_translation("groupUsage")}`')
                     return
 
                 if not group and message.chat.type in ['group', 'supergroup']:
-                    edit(message, '`Bu komut sadece özelde kullanılabilir.`')
+                    edit(message, f'`{get_translation("privateUsage")}`')
                     return
 
                 if not compat:
@@ -72,8 +73,7 @@ def sedenify(**args):
                     func(message)
             except RetardsException:
                 try:
-                    app.disconnect()
-                    app.terminate()
+                    app.stop()
                 except:
                     pass
                 execl(executable, 'killall', executable)
@@ -84,43 +84,28 @@ def sedenify(**args):
                     date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
                     if '.crash' == f'{message.text}':
-                        text = 'Bu bir test raporudur, LOG_ID kontrolü içindir.'
+                        text = f'{get_translation("logidTest")}'
                     else:
-                        edit(message, '`Bir sorun oluştu, kayıtları log grubuna gönderiyorum ...`')
-                        link = f'[Seden Destek Grubu](https://telegram.dog/{SUPPORT_GROUP})'
-                        text = ('**SEDENBOT HATA RAPORU**\n'
-                                'İsterseniz, bunu rapor edebilirsiniz '
-                                f'- sadece bu mesajı buraya iletin {link}.\n'
-                                'Hata ve Tarih dışında hiçbir şey kaydedilmez\n')
+                        edit(message, f'`{get_translation("errorLogSend")}`')
+                        link = get_translation("supportGroup", [SUPPORT_GROUP])
+                        text = get_translation("sedenErrorText", ['**', link])
 
-                    ftext = ('========== UYARI =========='
-                             '\nBu dosya sadece burada yüklendi,'
-                             '\nsadece hata ve tarih kısmını kaydettik,'
-                             '\ngizliliğinize saygı duyuyoruz,'
-                             '\nburada herhangi bir gizli veri varsa'
-                             '\nbu hata raporu olmayabilir, kimse verilerinize ulaşamaz.\n'
-                             '================================\n\n'
-                             '--------SEDENBOT HATA GUNLUGU--------\n'
-                             f'\nTarih: {date}'
-                             f'\nGrup ID: {message.chat.id}'
-                             f'\nGönderen kişinin ID: {message.from_user.id}'
-                             f'\n\nOlay Tetikleyici:\n{message.text}'
-                             f'\n\nGeri izleme bilgisi:\n{format_exc()}'
-                             f'\n\nHata metni:\n{exc_info()[1]}'
-                             '\n\n--------SEDENBOT HATA GUNLUGU BITIS--------'
-                             '\n\n\nSon 10 commit:\n')
+                    ftext = get_translation("sedenErrorText2", [date, message.chat.id, message.from_user.id if message.from_user else "Unknown",
+                                                                message.text, format_exc(), exc_info()[1]])
 
-                    process = Popen(['git', 'log', '--pretty=format:"%an: %s"', '-10'], stdout=PIPE, stderr=PIPE)
+                    process = Popen(
+                        ['git', 'log', '--pretty=format:"%an: %s"', '-10'], stdout=PIPE, stderr=PIPE)
                     out, err = process.communicate()
                     out = f'{out.decode()}\n{err.decode()}'.strip()
 
                     ftext += out
 
-                    file = open('hata.log', 'w+')
+                    file = open(f'{get_translation("rbgLog")}', 'w+')
                     file.write(ftext)
                     file.close()
 
-                    send_log_doc('hata.log', caption=text, remove_file=True)
+                    send_log_doc(f'{get_translation("rbgLog")}',
+                                 caption=text, remove_file=True)
                     raise e
                 except Exception as x:
                     raise x
@@ -171,7 +156,8 @@ def edit(message, text, preview=True, fix_markdown=False, parse='md'):
         if message.from_user.id != me[0].id:
             reply(message, text, preview=preview, parse=parse)
             return
-        message.edit_text(text.strip(), disable_web_page_preview=not preview, parse_mode=parse)
+        message.edit_text(
+            text.strip(), disable_web_page_preview=not preview, parse_mode=parse)
     except:
         pass
 
@@ -180,7 +166,8 @@ def reply(message, text, preview=True, fix_markdown=False, delete_orig=False, pa
     try:
         if fix_markdown:
             text += MARKDOWN_FIX_CHAR
-        message.reply_text(text.strip(), disable_web_page_preview=not preview, parse_mode=parse)
+        message.reply_text(
+            text.strip(), disable_web_page_preview=not preview, parse_mode=parse)
         if delete_orig:
             message.delete()
     except:
@@ -228,7 +215,8 @@ def reply_doc(message, doc, caption='', fix_markdown=False, delete_orig=False, p
         if len(caption) > 0 and fix_markdown:
             caption += MARKDOWN_FIX_CHAR
         if isinstance(doc, str):
-            message.reply_document(doc, caption=caption.strip(), progress=progress)
+            message.reply_document(
+                doc, caption=caption.strip(), progress=progress)
             if delete_after_send:
                 remove(doc)
         else:
@@ -249,6 +237,7 @@ def reply_sticker(message, sticker, delete_orig=False):
             message.delete()
     except:
         pass
+
 
 def reply_msg(message, message2, delete_orig=False):
     try:
@@ -287,11 +276,13 @@ def reply_msg(message, message2, delete_orig=False):
 
 
 def send_log(text, fix_markdown=False):
-    send(app, LOG_ID if LOG_ID else get_me().id, text, fix_markdown=fix_markdown)
+    send(app, LOG_ID if LOG_ID else get_me().id,
+         text, fix_markdown=fix_markdown)
 
 
 def send_log_doc(doc, caption='', fix_markdown=False, remove_file=False):
-    send_doc(app, LOG_ID if LOG_ID else get_me().id, doc, caption=caption, fix_markdown=fix_markdown)
+    send_doc(app, LOG_ID if LOG_ID else get_me().id, doc,
+             caption=caption, fix_markdown=fix_markdown)
     if remove_file:
         remove(doc)
 
@@ -306,9 +297,11 @@ def send(client, chat, text, fix_markdown=False, reply_id=None):
 
     if len(text) < 4096:
         if not reply_id:
-            client.send_message(chat.id if isinstance(chat, Chat) else chat, text)
+            client.send_message(chat.id if isinstance(
+                chat, Chat) else chat, text)
         else:
-            client.send_message(chat.id if isinstance(chat, Chat) else chat, text, reply_to_message_id=reply_id)
+            client.send_message(chat.id if isinstance(
+                chat, Chat) else chat, text, reply_to_message_id=reply_id)
         return
 
     file = open('temp.txt', 'w+')
@@ -317,10 +310,22 @@ def send(client, chat, text, fix_markdown=False, reply_id=None):
     send_doc(client, chat, 'temp.txt')
 
 
+def send_sticker(client, chat, sticker):
+    try:
+        client.send_sticker(chat if isinstance(
+            chat, int) else chat.id, sticker)
+    except:
+        pass
+
+
 def send_doc(client, chat, doc, caption='', fix_markdown=False):
-    if len(caption) > 0 and fix_markdown:
-        caption += MARKDOWN_FIX_CHAR
-    client.send_document(chat if isinstance(chat, int) else chat.id, doc, caption=caption)
+    try:
+        if len(caption) > 0 and fix_markdown:
+            caption += MARKDOWN_FIX_CHAR
+        client.send_document(chat if isinstance(chat, int)
+                             else chat.id, doc, caption=caption)
+    except:
+        pass
 
 
 def download_media(client, data, file_name=None, progress=None, sticker_orig=False):
@@ -361,15 +366,19 @@ def download_media_wc(data, file_name=None, progress=None, sticker_orig=False):
 
 
 def get_webdriver():
-    options = ChromeOptions()
-    options.add_argument("--headless")
-    options.add_argument("--window-size=1920x1080")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-gpu")
-    prefs = {'download.default_directory': './'}
-    options.add_experimental_option('prefs', prefs)
-    return Chrome(executable_path=CHROME_DRIVER, options=options)
+    try:
+        options = ChromeOptions()
+        options.add_argument("--headless")
+        options.add_argument("--window-size=1920x1080")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-gpu")
+        prefs = {'download.default_directory': './'}
+        options.add_experimental_option('prefs', prefs)
+        return Chrome(executable_path=CHROME_DRIVER, options=options)
+    except:
+        raise Exception('CHROME_DRIVER not found!')
+        return None
 
 
 def sticker_resize(photo):
@@ -400,10 +409,12 @@ def sticker_resize(photo):
 
 def get_messages(chat_id, msg_ids=None, client=app):
     try:
-        ret = client.get_messages(chat_id=(chat_id or 'me'), message_ids=msg_ids)
+        ret = client.get_messages(
+            chat_id=(chat_id or 'me'), message_ids=msg_ids)
         return [ret] if ret and isinstance(ret, Message) else ret
     except:
         return []
+
 
 def forward(message, chat_id):
     try:

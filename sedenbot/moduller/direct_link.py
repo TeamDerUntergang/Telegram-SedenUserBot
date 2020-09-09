@@ -24,7 +24,8 @@ from humanize import naturalsize
 from requests import get, Session
 
 from sedenbot import KOMUT
-from sedenecem.core import edit, extract_args, sedenify, get_webdriver
+from sedenecem.core import edit, extract_args, sedenify, get_webdriver, get_translation
+
 
 def load_bins():
     # CloudMail.ru ve MEGA.nz ayarlama
@@ -43,11 +44,13 @@ def load_bins():
             load.write(get(binary).content)
         chmod(pth, 0o755)
 
+
 load_bins()
+
 
 @sedenify(pattern=r'^.direct')
 def direct(message):
-    edit(message, '`İşleniyor...`')
+    edit(message, f'`{get_translation("processing")}`')
     textx = message.reply_to_message
     direct = extract_args(message)
     if direct:
@@ -55,15 +58,15 @@ def direct(message):
     elif textx:
         direct = textx.text
     else:
-        edit(message, '`Kullanım: .direct <link>`')
+        edit(message, f'`{get_translation("directUsage")}`')
         return
 
     reply = ''
-    
+
     def check(url, items, starts=False):
         if isinstance(items, str):
             return url.startswith(items) if starts else items in url
-        
+
         for item in items:
             if (url.startswith(item) if starts else item in url):
                 return True
@@ -77,7 +80,7 @@ def direct(message):
             result = urlparse(link)
             all([result.scheme, result.netloc, result.path])
         except:
-            reply += '`Link bulunamadı`\n'
+            reply += f'`{get_translation("directUrlNotFound")}`\n'
             continue
         try:
             if check(link, 'zippyshare.com'):
@@ -99,10 +102,11 @@ def direct(message):
             elif check(link, 'androidfilehost.com'):
                 reply += androidfilehost(link)
             else:
-                reply += f'{link}` desteklenmiyor`\n'
+                reply += f'{get_translation("directUrlNotFound", [link])}\n'
         except:
-            reply += f'{link}` işlenirken hata oluştu`\n'
+            reply += f'{get_translation("directError", [link])}\n'
     edit(message, reply, preview=False)
+
 
 def zippy_share(link: str) -> str:
     reply = ''
@@ -117,9 +121,11 @@ def zippy_share(link: str) -> str:
     size = font[4].text
     button = driver.find_element_by_xpath('//a[contains(@id, "dlbutton")]')
     link = button.get_attribute('href')
-    reply += f'{name} ({size})\n[İndir]({link})\n'
+    reply += '{}\n'.format(get_translation('directZippyLink',
+                                           [name, size, link]))
     driver.quit()
     return reply
+
 
 def yandex_disk(link: str) -> str:
     reply = ''
@@ -129,9 +135,10 @@ def yandex_disk(link: str) -> str:
         name = dl_url.split('filename=')[1].split('&disposition')[0]
         reply += f'[{name}]({dl_url})\n'
     except KeyError:
-        reply += '`Hata: Dosya bulunamadı / İndirme limiti aşılmıştır`\n'
+        reply += f'`{get_translation("yadiskError")}`\n'
         return reply
     return reply
+
 
 def mega_dl(link: str) -> str:
     reply = ''
@@ -140,13 +147,14 @@ def mega_dl(link: str) -> str:
     try:
         data = loads(result)
     except JSONDecodeError:
-        reply += "`Hata: link çıkarılamıyor`\n"
+        reply += f'`{get_translation("urlError")}`\n'
         return reply
     dl_url = data['url']
     name = data['file_name']
     size = naturalsize(int(data['file_size']))
     reply += f'[{name} ({size})]({dl_url})\n'
     return reply
+
 
 def cm_ru(link: str) -> str:
     reply = ''
@@ -156,13 +164,14 @@ def cm_ru(link: str) -> str:
     try:
         data = loads(result)
     except decoder.JSONDecodeError:
-        reply += "`Hata: link çıkarılamıyor`\n"
+        reply += f'`{get_translation("urlError")}`\n'
         return reply
     dl_url = data['download']
     name = data['file_name']
     size = naturalsize(int(data['file_size']))
     reply += f'[{name} ({size})]({dl_url})\n'
     return reply
+
 
 def mediafire(link: str) -> str:
     reply = ''
@@ -173,6 +182,7 @@ def mediafire(link: str) -> str:
     name = page.find('div', {'class': 'filename'}).text
     reply += f'[{name} {size}]({dl_url})\n'
     return reply
+
 
 def sourceforge(link: str) -> str:
     file_path = findall(r'files(.*)/download', link)[0]
@@ -187,6 +197,7 @@ def sourceforge(link: str) -> str:
         dl_url = f'https://{mirror["id"]}.dl.sourceforge.net/project/{project}/{file_path}'
         reply += f'[{name}]({dl_url}) '
     return reply
+
 
 def osdn(link: str) -> str:
     osdn_link = 'https://osdn.net'
@@ -203,6 +214,7 @@ def osdn(link: str) -> str:
         reply += f'[{name}]({dl_url}) '
     return reply
 
+
 def github(link: str) -> str:
     reply = ''
     dl_url = ''
@@ -210,10 +222,11 @@ def github(link: str) -> str:
     try:
         dl_url = download.headers["location"]
     except KeyError:
-        reply += "`Hata: Link çıkarılamıyor`\n"
+        reply += f'`{get_translation("urlError")}`\n'
     name = link.split('/')[-1]
     reply += f'[{name}]({dl_url}) '
     return reply
+
 
 def androidfilehost(link: str) -> str:
     fid = findall(r'\?fid=[0-9]+', link)[0]
@@ -238,8 +251,8 @@ def androidfilehost(link: str) -> str:
         'fid': f'{fid}'
     }
     mirrors = None
-    reply = f'Link: {link}\n'
-    error = "`Hata: link için farklı mirror bulunamadı`\n"
+    reply = f'URL: {link}\n'
+    error = f'`{get_translation("mirrorError")}`\n'
     try:
         req = session.post(
             'https://androidfilehost.com/libs/otf/mirrors.otf.php',
@@ -258,6 +271,7 @@ def androidfilehost(link: str) -> str:
         reply += f'[{name}]({dl_url})\n'
     return reply
 
+
 def useragent():
     req = get('https://user-agents.net/random')
     soup = BeautifulSoup(req.text, 'html.parser')
@@ -270,12 +284,4 @@ def useragent():
     return 'Googlebot/2.1 (+http://www.google.com/bot.html)'
 
 
-KOMUT.update({
-    "direct":
-    ".direct <link>\n"
-    "Kullanım: Bir bağlantıyı yanıtlayın veya doğrudan indirme bağlantısı\n"
-    "oluşturmak için bir URL yapıştırın\n\n"
-    "Desteklenen URL'lerin listesi:\n"
-    "`Google Drive - Cloud Mail - Yandex.Disk - AFH - "
-    "ZippyShare - MEGA.nz - MediaFire - SourceForge - OSDN - GitHub`"
-})
+KOMUT.update({"direct": get_translation("directInfo")})

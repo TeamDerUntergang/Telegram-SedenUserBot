@@ -19,15 +19,17 @@ from functools import reduce
 from requests import get
 from bs4 import BeautifulSoup
 
-from sedenbot import KOMUT
-from sedenecem.core import edit, extract_args, sedenify
+from sedenbot import KOMUT, SEDEN_LANG
+from sedenecem.core import edit, extract_args, sedenify, get_translation
 
 # Copyright (c) @NaytSeyd, @frknkrc44 | 2020
+
+
 @sedenify(pattern='^.ezanvakti')
 def ezanvakti(message):
     konum = extract_args(message).lower()
     if len(konum) < 1:
-        edit(message, '`Lütfen komutun yanına bir şehir belirtin.`')
+        edit(message, f'`{get_translation("ezanvaktiKonum")}`')
         return
 
     try:
@@ -36,13 +38,14 @@ def ezanvakti(message):
             raise ValueError
         request = get(f'https://namazvakitleri.diyanet.gov.tr/tr-TR/{knum}')
         result = BeautifulSoup(request.text, 'html.parser')
-    except: # pylint: disable=W0702
-        edit(message, f'`{konum} için bir bilgi bulunamadı.`')
+    except:  # pylint: disable=W0702
+        edit(message, f'`{get_translation("ezanvaktiErrorInfo", [konum])}`')
         return
 
-    res1 = result.body.findAll('div', {'class':['body-content']})
+    res1 = result.body.findAll('div', {'class': ['body-content']})
     res1 = res1[0].findAll('script')
-    res1 = sub(r'<script>|</script>|\r|{.*?}|\[.*?\]|\n    ', '', str(res1[0]), flags=DOTALL)
+    res1 = sub(
+        r'<script>|</script>|\r|{.*?}|\[.*?\]|\n    ', '', str(res1[0]), flags=DOTALL)
     res1 = sub('\n\n', '\n', res1)[:-1].split('\n')
 
     def get_val(st):
@@ -51,16 +54,11 @@ def ezanvakti(message):
     res2 = get_val(res1[1])
     res3 = get_val(res1[2])
 
-    vakitler = ('**Diyanet Namaz Vakitleri**\n\n' +
-                f'📍 **Yer:** `{res2[1]}`\n\n' +
-                f'🏙 **İmsak:** `{res3[0]}`\n' +
-                f'🌅 **Güneş:** `{res3[1]}`\n' +
-                f'🌇 **Öğle:** `{res3[2]}`\n' +
-                f'🌆 **İkindi:** `{res3[3]}`\n' +
-                f'🌃 **Akşam:** `{res3[4]}`\n' +
-                f'🌌 **Yatsı:** `{res3[5]}`')
+    vakitler = get_translation('ezanvaktiShowInfo', [
+                               '**', '`', res2[1], res3[0], res3[1], res3[2], res3[3], res3[4], res3[5]])
 
     edit(message, vakitler)
+
 
 def find_loc(konum):
     if konum.isdigit():
@@ -70,7 +68,7 @@ def find_loc(konum):
         else:
             return -1
     else:
-        di = {'ç':'c', 'ğ':'g', 'ı':'i', 'ö':'o', 'ş':'s', 'ü':'u'}
+        di = {'ç': 'c', 'ğ': 'g', 'ı': 'i', 'ö': 'o', 'ş': 's', 'ü': 'u'}
         konum = reduce(lambda x, y: x.replace(y, di[y]), di, konum)
         sehir_ad = [s.split()[1].lower() for s in sehirler]
         try:
@@ -78,6 +76,7 @@ def find_loc(konum):
             return int(sehirler[index].split()[2])
         except:
             return -1
+
 
 sehirler = [
     '01 Adana 9146',

@@ -18,9 +18,10 @@ from os import remove
 from requests import get, post, exceptions
 
 from sedenbot import KOMUT, DOWNLOAD_DIRECTORY
-from sedenecem.core import edit, extract_args, sedenify
+from sedenecem.core import edit, extract_args, sedenify, get_translation
 
 DOGBIN_URL = 'https://del.dog/'
+
 
 @sedenify(pattern=r'^.paste', compat=False)
 def paste(client, message):
@@ -29,7 +30,7 @@ def paste(client, message):
     reply_id = message.reply_to_message
 
     if not match and not reply_id:
-        edit(message, '`Elon Musk boşluğu yapıştıramayacağımı söyledi.`')
+        edit(message, f'`{get_translation("dogbinUsage")}`')
         return
 
     if match:
@@ -51,7 +52,7 @@ def paste(client, message):
         else:
             dogbin = dogbin.dogbin
 
-    edit(message, '`Metin yapıştırılıyor...`')
+    edit(message, f'`{get_translation("dogbinPasting")}`')
     resp = post(DOGBIN_URL + 'documents', data=dogbin.encode('utf-8'))
 
     if resp.status_code == 200:
@@ -60,23 +61,22 @@ def paste(client, message):
         dogbin_final_url = DOGBIN_URL + key
 
         if response['isUrl']:
-            reply_text = ('`Başarıyla yapıştırıldı!`\n\n'
-                          f'`Kısaltılmış URL:` {dogbin_final_url}\n\n'
-                          '`Orijinal (kısaltılmamış) URL`\n'
-                          f'`Dogbin URL`: {DOGBIN_URL}v/{key}\n')
+            reply_text = get_translation('dogbinPasteResult2', [
+                                         '`', dogbin_final_url, f'{DOGBIN_URL}v/{key}'])
         else:
-            reply_text = ('`Başarıyla yapıştırıldı!`\n\n'
-                          f'`Dogbin URL`: {dogbin_final_url}')
+            reply_text = get_translation(
+                "dogbinPasteResult", ['`', dogbin_final_url])
     else:
-        reply_text = ('`Dogbine ulaşılamadı`')
+        reply_text = f'`{get_translation("dogbinReach")}`'
 
     edit(message, reply_text, preview=False)
+
 
 @sedenify(outgoing=True, pattern="^.getpaste")
 def getpaste(message):
     textx = message.reply_to_message
     dogbin = extract_args(message)
-    edit(message, '`Dogbin içeriği alınıyor...`')
+    edit(message, f'`{get_translation("dogbinContent")}`')
 
     if textx:
         dogbin = str(textx.dogbin)
@@ -91,7 +91,7 @@ def getpaste(message):
     elif dogbin.startswith('del.dog/'):
         dogbin = dogbin[len('del.dog/'):]
     else:
-        edit(message, "`Bu bir Dogbin URL'si mi?`")
+        edit(message, f'`{get_translation("dogbinUrlError")}`')
         return
 
     resp = get(f'{DOGBIN_URL}raw/{dogbin}')
@@ -99,26 +99,19 @@ def getpaste(message):
     try:
         resp.raise_for_status()
     except exceptions.HTTPError as HTTPErr:
-        edit(message,
-             'İstek başarısız bir durum kodu döndürdü.\n\n' + str(HTTPErr))
+        edit(message, get_translation("dogbinError", [str(HTTPErr)]))
         return
     except exceptions.Timeout as TimeoutErr:
-        edit(message, 'İstek zaman aşımına uğradı.' + str(TimeoutErr))
+        edit(message, get_translation("dogbinTimeOut", [str(TimeoutErr)]))
         return
     except exceptions.TooManyRedirects as RedirectsErr:
-        edit(message,
-             'İstek, yapılandırılmış en fazla yönlendirme sayısını aştı.' +
-             str(RedirectsErr))
+        edit(message, get_translation(
+            "dogbinTooManyRedirects", [str(RedirectsErr)]))
         return
 
-    reply_text = '`Dogbin URL içeriği başarıyla getirildi!`\n\n`İçerik:` ' + resp.text
+    reply_text = get_translation("dogbinResult", ['`', resp.text])
 
     edit(message, reply_text)
 
-KOMUT.update({
-    "dogbin":
-    ".paste <metin/yanıtlama>\
-\nKullanım: Dogbin kullanarak yapıştırılmış veya kısaltılmış url oluşturma (https://del.dog/)\
-\n\n.getpaste\
-\nKullanım: Dogbin url içeriğini metne aktarır (https://del.dog/)"
-})
+
+KOMUT.update({"dogbin": get_translation("dogbinInfo")})

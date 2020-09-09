@@ -17,32 +17,33 @@
 from threading import Event
 from re import sub
 
-from sedenbot import KOMUT
+from sedenbot import KOMUT, SEDEN_LANG
 from sedenecem.core import (edit, reply, reply_img, send_log, extract_args,
-                            extract_args_arr, sedenify)
+                            extract_args_arr, sedenify, get_translation)
+
 
 @sedenify(pattern='^.tspam')
 def tspam(message):
     tspam = extract_args(message)
     if len(tspam) < 1:
-        edit(message, '`Bir şeyler eksik/yanlış gibi görünüyor.`')
+        edit(message, f'`{get_translation("spamWrong")}`')
         return
     message.delete()
     for metin in tspam.replace(' ', ''):
         message.reply(metin)
 
-    send_log('#TSPAM \n'
-             'TSpam başarıyla gerçekleştirildi')
+    send_log(f'`{get_translation("tspamLog")}`')
+
 
 @sedenify(pattern='^.spam')
 def spam(message):
     spam = extract_args(message)
     if len(spam) < 1:
-        edit(message, '`Bir şeyler eksik/yanlış gibi görünüyor.`')
+        edit(message, f'`{get_translation("spamWrong")}`')
         return
     arr = spam.split()
     if not arr[0].isdigit():
-        edit(message, '`Bir şeyler eksik/yanlış gibi görünüyor.`')
+        edit(message, f'`{get_translation("spamWrong")}`')
         return
     message.delete()
     miktar = int(arr[0])
@@ -50,14 +51,14 @@ def spam(message):
     for i in range(0, miktar):
         reply(message, metin)
 
-    send_log('#SPAM \n'
-             'Spam başarıyla gerçekleştirildi')
+    send_log(f'`{get_translation("spamLog")}`')
+
 
 @sedenify(pattern='^.picspam')
 def picspam(message):
     arr = extract_args_arr(message)
     if len(arr) < 2 or not arr[0].isdigit():
-        edit(message, '`Bir şeyler eksik/yanlış gibi görünüyor.`')
+        edit(message, f'`{get_translation("spamWrong")}`')
         return
     message.delete()
     miktar = int(arr[0])
@@ -65,16 +66,17 @@ def picspam(message):
     for i in range(0, miktar):
         reply_img(message, link)
 
-    send_log('#PICSPAM \n'
-             'PicSpam başarıyla gerçekleştirildi')
+    send_log(f'`{get_translation("picspamLog")}`')
 
 # Copyright (c) @ReversedPosix | 2020
+
+
 @sedenify(pattern='^.delayspam')
 def delayspam(message):
     delayspam = extract_args(message)
     arr = delayspam.split()
     if len(arr) < 3 or not arr[0].isdigit() or not arr[1].isdigit():
-        edit(message, '`Bir şeyler eksik/yanlış gibi görünüyor.`')
+        edit(message, f'`{get_translation("spamWrong")}`')
         return
     gecikme = int(arr[0])
     miktar = int(arr[1])
@@ -87,17 +89,7 @@ def delayspam(message):
             delaySpamEvent.wait(gecikme)
         message.reply(spam_message)
 
-    send_log('#DELAYSPAM \n'
-             'DelaySpam başarıyla gerçekleştirildi')
+    send_log(f'`{get_translation("delayspamLog")}`')
 
-KOMUT.update({
-    "spammer": ".tspam <metin>\
-\nKullanım: Verilen mesajı tek tek göndererek spam yapar\
-\n\n.spam <miktar> <metin>\
-\nKullanım: Verilen miktarda spam gönderir\
-\n\n.picspam <miktar> <link>\
-\nKullanım: Verilen miktarda resimli spam gönderir\
-\n\n.delayspam <gecikme> <miktar> <metin>\
-\nKullanım: Verilen miktar ve verilen gecikme ile gecikmeli spam yapar\
-\n\n\nNOT : Sorumluluk size aittir!!"
-})
+
+KOMUT.update({"spammer": get_translation('spamInfo')})

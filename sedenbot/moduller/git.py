@@ -18,27 +18,29 @@ from json import loads
 from requests import get
 
 from sedenbot import KOMUT
-from sedenecem.core import sedenify, edit, extract_args
+from sedenecem.core import sedenify, edit, extract_args, get_translation
 
 # Copyright (c) @frknkrc44 | 2020
+
+
 @sedenify(pattern='^.github')
 def github(message):
     args = extract_args(message)
 
     if len(args) < 1:
-        edit(message, '`Kullanım: .github <kullanıcı-adı>`')
+        edit(message, f'`{get_translation("gitUsage")}`')
         return
 
     try:
         user_info = get(f'https://api.github.com/users/{args}')
         json = loads(user_info.text)
-    except: # pylint: disable=W0702
-        edit(message, '`Sanırım GitHub beni sevmiyor.`')
+    except:  # pylint: disable=W0702
+        edit(message, f'`{get_translation("gitError")}`')
         return
 
     login = json.get('login', None)
     if not login:
-        edit(message, '`Kullanıcı bulunamadı.`')
+        edit(message, f'`{get_translation("gitUserNotFound")}`')
         return
 
     def return_defval_onnull(jsonkey, defval):
@@ -50,7 +52,7 @@ def github(message):
     user_id = json.get('id', -1)
     user_url = json.get('html_url', f'https://github.com/{args}')
 
-    NULL_TEXT = 'Belirtilmemiş'
+    NULL_TEXT = f'{get_translation("gitNull")}'
 
     name = return_defval_onnull('name', NULL_TEXT)
     acc_type = return_defval_onnull('type', 'User')
@@ -83,34 +85,31 @@ def github(message):
 
     def get_repos():
         if not repos or len(repos) < 1:
-            return '`Depo bulunamadı.`'
+            return f'`{get_translation("gitRepo")}`'
         out = ''
         for i in repos:
             out += f'{i}\n'
         return out
 
-    edit(message, f'**{login} GitHub bilgileri**\n\n' +
-                  format_info('Kullanıcı ID', user_id) +
-                  format_info('Kullanıcı tipi', acc_type) +
-                  format_info('Ad soyad', name) +
-                  format_info('Şirket', company) +
-                  format_info('Website', blog) +
-                  format_info('Konum', location) +
-                  format_info('E-posta', email) +
-                  format_info('Biyografi', bio) +
-                  format_info('Twitter', twitter) +
-                  format_info('Toplam depo', repo_count) +
-                  format_info('Toplam gist', gist_count) +
-                  ((format_info('Takipçiler', followers) +
-                    format_info('Takip edilen', following))
+    edit(message, f'**{get_translation("gitUserInfo", [login])}**\n\n' +
+                  format_info(get_translation("gitUser"), user_id) +
+                  format_info(get_translation("gitAccount"), acc_type) +
+                  format_info(get_translation("gitName"), name) +
+                  format_info(get_translation("gitCompany"), company) +
+                  format_info(get_translation("gitWebsite"), blog) +
+                  format_info(get_translation("gitLocation"), location) +
+                  format_info(get_translation("gitMail"), email) +
+                  format_info(get_translation("gitBio"), bio) +
+                  format_info(get_translation("gitTwitter"), twitter) +
+                  format_info(get_translation("gitTotalRepo"), repo_count) +
+                  format_info(get_translation("gitTotalGist"), gist_count) +
+                  ((format_info(get_translation("gitFollowers"), followers) +
+                    format_info(get_translation("gitFollowing"), following))
                    if acc_type == 'User'
                    else '') +
-                  format_info('Oluşturulma tarihi', created) +
-                  format_info('Güncelleme tarihi', updated) +
-                  f'\nDepolar:\n{get_repos()}', preview=False)
+                  format_info(get_translation("gitCreationDate"), created) +
+                  format_info(get_translation("gitDateOfUpdate"), updated) +
+                  f'\n{get_translation("gitRepoList")}\n{get_repos()}', preview=False)
 
-KOMUT.update({
-    "git":
-    ".github \
-    \nKullanım: Hedeflenen kişinin GitHub bilgilerini gösterir.\n"
-})
+
+KOMUT.update({"git": get_translation("gitInfo")})

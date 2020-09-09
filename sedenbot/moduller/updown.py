@@ -17,29 +17,30 @@
 from os.path import isfile
 from sedenbot import KOMUT
 from sedenecem.core import (download_media_wc, sedenify, edit,
-                            extract_args, reply_doc)
+                            extract_args, reply_doc, get_translation)
 
 # Copyright (c) @frknkrc44 | 2020
+
+
 @sedenify(pattern='^.download$')
 def download(message):
     reply = message.reply_to_message
     if not reply or not reply.media:
-        edit(message, '`Lütfen bir dökümanı alıntılayın.`')
+        edit(message, f'`{get_translation("downloadReply")}`')
         return
 
     def progress(current, total):
-        edit(message, '`İndiriliyor ... ' +
-             '(%{:.2f})`'.format(current * 100 / total))
+        edit(message, get_translation('updownDownload', [
+             '`', '(½{:.2f})'.format(current * 100 / total)]))
 
-    edit(message, '`İndiriliyor ...`')
+    edit(message, f'`{get_translation("downloadMedia")}`')
     media = download_media_wc(reply, progress=progress)
 
     if not media:
-        edit(message, '`Henüz yapımcılarım bu türde bir medyayı'
-             ' indirmem için beni ayarlamamış.`')
+        edit(message, f'`{get_translation("downloadMediaError")}`')
         return
 
-    edit(message, f'`{media}` konumuna başarıyla indirildi.')
+    edit(message, get_translation('updownDownloadSuccess', ['`', media]))
 
 
 @sedenify(pattern='^.upload')
@@ -47,31 +48,25 @@ def upload(message):
     args = extract_args(message)
 
     if len(args) < 1:
-        edit(message, '`Buraya hiçliği yükleyemem.`')
+        edit(message, f'`{get_translation("uploadReply")}`')
         return
 
     def progress(current, total):
-        edit(message, '`Yükleniyor ... ' +
-             '(%{:.2f})`'.format(current * 100 / total) +
-             f'\n{args}')
+        edit(message, get_translation('updownUpload', [
+             '`', '(½{:.2f})'.format(current * 100 / total), args]))
 
     if isfile(args):
         try:
-            edit(message, f'`Yükleniyor ...`\n{args}')
+            edit(message, get_translation('updownUpload', ['`', '', args]))
             reply_doc(message, args, progress=progress)
-            edit(message, '`Yükleme tamamlandı!`')
+            edit(message, f'`{get_translation("uploadFinish")}`')
         except Exception as e:
-            edit(message, '`Dosya yüklenemedi.`')
+            edit(message, f'`{get_translation("uploadError")}`')
             raise e
 
         return
 
-    edit(message, '`Dosya bulunamadı.`')
+    edit(message, f'`{get_translation("uploadFileError")}`')
 
-KOMUT.update({
-    "download":
-    ".download <bağlantı-dosya adı> (ya da bir şeye cevap vererek)\
-\nKullanım: Sunucuya dosyayı indirir.\
-\n\n.upload <sunucudaki dosya yolu>\
-\nKullanım: Sunucunuzdaki bir dosyayı sohbete upload eder."
-})
+
+KOMUT.update({"download": get_translation("uploadInfo")})

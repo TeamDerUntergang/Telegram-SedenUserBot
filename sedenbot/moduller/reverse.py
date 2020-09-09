@@ -23,11 +23,12 @@ from bs4 import BeautifulSoup
 from pyrogram import InputMediaPhoto
 
 from sedenbot import KOMUT
-from sedenecem.core import edit, reply_doc, extract_args, sedenify, download_media_wc
+from sedenecem.core import edit, reply_doc, extract_args, sedenify, download_media_wc, get_translation
 
 opener = request.build_opener()
 useragent = 'Mozilla/5.0 (Linux; Android 9; SM-G960F Build/PPR1.180610.011; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/78.0.3904.70 Mobile Safari/537.36'
 opener.addheaders = [('User-agent', useragent)]
+
 
 @sedenify(pattern=r'^.reverse$', compat=False)
 def reverse(client, message):
@@ -40,17 +41,17 @@ def reverse(client, message):
     if reverse and reverse.media:
         revfile = download_media_wc(reverse, photo)
     else:
-        edit(message, '`Lütfen bir fotoğrafa veya çıkartmaya yanıt verin.`')
+        edit(message, f'`{get_translation("reverseUsage")}`')
         return
 
     if photo:
-        edit(message, '`İşleniyor...`')
+        edit(message, f'`{get_translation("processing")}`')
         try:
             image = Image.open(revfile)
         except OSError:
-            edit(message, '`Desteklenmeyen tür`')
+            edit(message, f'`{get_translation("reverseError")}`')
             return
-        image.save(photo, "PNG")
+        image.save(photo, 'PNG')
         image.close()
         # https://stackoverflow.com/questions/23270175/google-reverse-image-search-using-post-request#28792943
         searchUrl = 'https://www.google.com/searchbyimage/upload'
@@ -59,15 +60,14 @@ def reverse(client, message):
             'image_content': ''
         }
         response = post(searchUrl,
-                                 files=multipart,
-                                 allow_redirects=False)
+                        files=multipart,
+                        allow_redirects=False)
         fetchUrl = response.headers['Location']
 
         if response != 400:
-            edit(message, "`Görüntü başarıyla Google'a yüklendi.`"
-                 "\n`Şimdi kaynak ayrıştırılıyor.`")
+            edit(message, f'`{get_translation("reverseProcess")}`')
         else:
-            edit(message, '`Google siktirip gitmemi söyledi.`')
+            edit(message, f'`{get_translation("reverseGoogle")}`')
             return
 
         remove(photo)
@@ -77,9 +77,10 @@ def reverse(client, message):
         imgspage = match['similar_images']
 
         if guess and imgspage:
-            edit(message, f'[{guess}]({fetchUrl})\n\n`Resim arıyorum...`')
+            edit(message, get_translation(
+                "reverseResult", [guess, fetchUrl, '`']))
         else:
-            edit(message, '`Çirkin kıçın için bir şey bulamadım.`')
+            edit(message, f'`{get_translation("reverseError2")}`')
             return
 
         msg = extract_args(message)
@@ -97,8 +98,8 @@ def reverse(client, message):
             file.close()
             yeet.append(InputMediaPhoto(n))
         reply_doc(message, yeet)
-        edit(message,
-             f'[{guess}]({fetchUrl})\n\n[Benzer görüntüler]({imgspage})')
+        edit(message, get_translation(
+            "reverseResult", [guess, fetchUrl, imgspage]))
 
 
 def ParseSauce(googleurl):
@@ -121,6 +122,7 @@ def ParseSauce(googleurl):
 
     return results
 
+
 def scam(results, lim):
 
     single = opener.open(results['similar_images']).read()
@@ -141,8 +143,5 @@ def scam(results, lim):
 
     return imglinks
 
-KOMUT.update({
-    'reverse':
-    '.reverse\
-    \nKullanım: Fotoğraf veya çıkartmaya yanıt vererek görüntüyü Google üzerniden arayabilirsiniz'
-})
+
+KOMUT.update({'reverse': get_translation("reverseInfo")})

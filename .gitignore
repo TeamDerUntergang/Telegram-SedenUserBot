@@ -14,6 +14,7 @@ sedenecem/sql/.DS_Store/*
 sedenecem/sql/__pycache__/*
 sedenecem/.DS_Store/*
 sedenecem/__pycache__/*
+sedenecem/translator/__pycache__/*
 *.check
 *.session
 *.session-journal
@@ -21,8 +22,6 @@ sedenecem/__pycache__/*
 .vscode/*
 .idea/*
 *secret*
-*.ttf
-*.otf
-hata.log
+*.log
 bin/*
 dump.rdb

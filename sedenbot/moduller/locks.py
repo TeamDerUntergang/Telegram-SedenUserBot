@@ -17,9 +17,10 @@
 from pyrogram import ChatPermissions
 
 from sedenbot import KOMUT
-from sedenecem.core import edit, extract_args, sedenify
+from sedenecem.core import edit, extract_args, sedenify, get_translation
 
-@sedenify(pattern=r'^.(un)?lock', compat=False, private=False)
+
+@sedenify(pattern=r'^.(un|)lock', compat=False, private=False)
 def lock(client, message):
     text = message.text
     unlock = text[1:3] == 'un'
@@ -39,35 +40,35 @@ def lock(client, message):
     changeinfo = None
     if kilit == "msg":
         msg = unlock
-        kullanim = "mesaj atma"
+        kullanim = f'{get_translation("lockMsg")}'
     elif kilit == "media":
         media = unlock
-        kullanim = "medya yollama"
+        kullanim = f'{get_translation("lockMedia")}'
     elif kilit == "gif":
         gif = unlock
         sticker = gif
-        kullanim = "GIF ve çıkartma yollama"
+        kullanim = f'{get_translation("lockGif")}'
     elif kilit == "game":
         gamee = unlock
-        kullanim = "oyun"
+        kullanim = f'{get_translation("lockGame")}'
     elif kilit == "inline":
         ainline = unlock
-        kullanim = "sohbet içi botlar"
+        kullanim = f'{get_translation("lockInline")}'
     elif kilit == "web":
         webprev = unlock
-        kullanim = "web sayfa önizlemesi"
+        kullanim = f'{get_translation("lockWeb")}'
     elif kilit == "poll":
         gpoll = unlock
-        kullanim = "anket yollama"
+        kullanim = f'{get_translation("lockPoll")}'
     elif kilit == "invite":
         adduser = unlock
-        kullanim = "davet etme"
+        kullanim = f'{get_translation("lockInvite")}'
     elif kilit == "pin":
         cpin = unlock
-        kullanim = "sabitleme"
+        kullanim = f'{get_translation("lockPin")}'
     elif kilit == "info":
         changeinfo = unlock
-        kullanim = "sohbet bilgisi değiştirme"
+        kullanim = f'{get_translation("lockInformation")}'
     elif kilit == "all":
         msg = unlock
         media = unlock
@@ -79,13 +80,14 @@ def lock(client, message):
         adduser = unlock
         cpin = unlock
         changeinfo = unlock
-        kullanim = "her şey"
+        kullanim = f'{get_translation("lockAll")}'
     else:
         if not kilit:
-            edit(message, f'`Hiçliği{"n kilidini açamam" if unlock else " kilitleyemem"} dostum!`')
+            edit(
+                message, f"{get_translation('locksUnlockNoArgs' if unlock else 'locksLockNoArgs')}")
             return
         else:
-            edit(message, f'`Geçersiz medya tipi:` {kilit}')
+            edit(message, get_translation("lockError", ['`', kilit]))
             return
 
     kilitle = client.get_chat(message.chat.id)
@@ -96,7 +98,8 @@ def lock(client, message):
     gif = get_on_none(gif, kilitle.permissions.can_send_animations)
     gamee = get_on_none(gamee, kilitle.permissions.can_send_games)
     ainline = get_on_none(ainline, kilitle.permissions.can_use_inline_bots)
-    webprev = get_on_none(webprev, kilitle.permissions.can_add_web_page_previews)
+    webprev = get_on_none(
+        webprev, kilitle.permissions.can_add_web_page_previews)
     gpoll = get_on_none(gpoll, kilitle.permissions.can_send_polls)
     adduser = get_on_none(adduser, kilitle.permissions.can_invite_users)
     cpin = get_on_none(cpin, kilitle.permissions.can_pin_messages)
@@ -116,9 +119,10 @@ def lock(client, message):
             can_invite_users=adduser,
             can_pin_messages=cpin
         ))
-        edit(message, f'`Bu sohbet için {kullanim} {"kilidi açıldı" if unlock else "kilitlendi"}!`')
+        edit(message, get_translation(
+            'locksUnlockSuccess' if unlock else 'locksLockSuccess', ['`', kullanim]))
     except BaseException as e:
-        edit(message, f'`Bunun için gerekli haklara sahip olduğuna emin misin?`\n**Hata:** {str(e)}')
+        edit(message, get_translation("lockPerm", ['`', '**', str(e)]))
         return
 
 
@@ -129,11 +133,4 @@ def get_on_none(item, defval):
     return item
 
 
-KOMUT.update({
-    "locks":
-    ".lock <kilitlenecek medya tipi> veya .unlock <kilitlenecek medya tipi>\
-\nKullanım: Sohbetteki birtakım şeyleri engelleyebilmeni sağlar. (sticker atmak, oyun oynamak vs.)\
-[Not: Yönetici hakları gerektirir!]\
-\n\nKilitleyebileceğin ve kilidini açabileceklerin şunlardır: \
-\n`all, msg, media, sticker, gif, game, inline, web, poll, invite, pin, info`"
-})
+KOMUT.update({"locks": get_translation("lockInfo")})

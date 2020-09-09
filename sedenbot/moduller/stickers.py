@@ -17,26 +17,28 @@
 from random import choice
 from requests import get
 
-from sedenbot import me
+from sedenbot import KOMUT, me
 from sedenecem.conv import PyroConversation
-from sedenecem.core import edit, sedenify, download_media, extract_args, sticker_resize as resizer
+from sedenecem.core import edit, sedenify, download_media, get_translation, extract_args, sticker_resize as resizer
 # ================= CONSTANT =================
 DIZCILIK = [
-    "Çıkartmayı dızlıyorum...",
-    "Yaşasın dızcılık...",
-    "Bu çıkartmayı kendi paketime davet ediyorum...",
-    "Bunu dızlamam lazım...",
-    "Hey bu güzel bir çıkartma!\nHemen dızlıyorum...",
-    "Çıkartmanı dızlıyorum\nhahaha.",
-    "Hey şuraya bak. (☉｡☉)!→\nBen bunu dızlarken...",
-    "Güller kırmızı menekşeler mavi, bu çıkartmayı paketime dızlayarak havalı olacağım...",
-    "Çıkartma hapsediliyor...",
-    "Bay dızcı bu çıkartmayı dızlıyor...",
-    "Sonunda Ecem'in seveceği bir çıkartma dızlıyorum...",
-    "Ecem, bu dız senin için...",
+    f'{get_translation("kangstr1")}',
+    f'{get_translation("kangstr2")}',
+    f'{get_translation("kangstr3")}',
+    f'{get_translation("kangstr4")}',
+    f'{get_translation("kangstr5")}',
+    f'{get_translation("kangstr6")}',
+    f'{get_translation("kangstr7")}',
+    f'{get_translation("kangstr8")}',
+    f'{get_translation("kangstr9")}',
+    f'{get_translation("kangstr10")}',
+    f'{get_translation("kangstr11")}',
+    f'{get_translation("kangstr12")}',
 ]
 # ================= CONSTANT =================
 # Copyright (c) @NaytSeyd, @frknkrc44 | 2020
+
+
 @sedenify(pattern='^.(d[ıi]zla|kang)', compat=False)
 def kang(client, message):
     myacc = me[0]
@@ -47,7 +49,7 @@ def kang(client, message):
 
     reply = message.reply_to_message
     if not reply:
-        edit(message, '`Bana dızlayabileceğim bir şey ver.`')
+        edit(message, f'`{get_translation("stickerUsage")}`')
         return
 
     anim = False
@@ -58,7 +60,7 @@ def kang(client, message):
         media = download_media(client, reply)
         anim = reply.sticker and reply.sticker.is_animated
     else:
-        edit(message, '`Bunu dızlayamam.`')
+        edit(message, f'`{get_translation("stickerError")}`')
         return
 
     if len(pack) < 1:
@@ -110,7 +112,7 @@ def kang(client, message):
         status = send_recv(conv, pname)
 
         if limit in status.text:
-            edit(message, f'`{pack} numaralı paket dolu.`')
+            edit(message, f'`{get_translation("stickerPackFull", [pack])}`')
             return False
 
         send_recv(conv, media, doc=True)
@@ -119,10 +121,11 @@ def kang(client, message):
         return True
 
     if anim:
-        name += '_anim'
-        nick = ' (Animasyonlu)'
+        pname += '_anim'
+        pnick += ' (Animated)'
     else:
-        media = resizer(media)
+        if not reply.sticker:
+            media = resizer(media)
 
     with PyroConversation(client, 'Stickers') as conv:
         if pack_created():
@@ -132,7 +135,7 @@ def kang(client, message):
         else:
             create_new(conv)
 
-    edit(message, f'Başarıyla dızlandı, erişmek için [buraya](https://telegram.me/addstickers/{pname}) dokunun.')
+    edit(message, get_translation("stickerAdded", ['`', pname]))
 
 
 def send_recv(conv, msg, doc=False):
@@ -141,3 +144,6 @@ def send_recv(conv, msg, doc=False):
     else:
         conv.send_msg(msg)
     return conv.recv_msg()
+
+
+KOMUT.update({"stickers": get_translation("stickerInfo")})

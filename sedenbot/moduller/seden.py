@@ -15,7 +15,8 @@
 #
 
 from sedenbot import KOMUT, CHANNEL
-from sedenecem.core import edit, reply, extract_args, sedenify
+from sedenecem.core import edit, reply, extract_args, sedenify, get_translation
+
 
 @sedenify(pattern='^.seden')
 def seden(message):
@@ -24,12 +25,11 @@ def seden(message):
         if seden in KOMUT:
             edit(message, str(KOMUT[seden]))
         else:
-            edit(message, '**Lütfen bir Seden modülü adı belirtin.**')
+            edit(message, f'**{get_translation("sedenUsage")}**')
     else:
-        edit(message, '**Lütfen hangi Seden modülü için yardım istediğinizi belirtin !\
-            \nKullanım:** `.seden <modül adı>`')
-        metin = f'**[Seden UserBot](https://t.me/{CHANNEL}) Yüklü Modüller:**\n'
-        for liste in KOMUT:
-            metin += '- `' + str(liste)
-            metin += '` \n'
+        edit(message, get_translation("sedenUsage2", ['**', '`']))
+        metin = "{}\n".format(get_translation('sedenShowLoadedModules', [
+                                '**', 'Seden UserBot', CHANNEL]))
+        for item in KOMUT:
+            metin += f'- `{item}`\n'
         reply(message, metin, preview=False)

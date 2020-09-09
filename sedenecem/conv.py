@@ -18,6 +18,7 @@ from time import sleep
 from os import remove
 from sedenbot import CONVERSATION
 
+
 class PyroConversation:
 
     def __init__(self, client, chat_id):
@@ -25,16 +26,13 @@ class PyroConversation:
         self.chat_id = chat_id
         self.count = 0
 
-
     def send_msg(self, text):
         self.client.send_message(self.chat_id, text)
-
 
     def send_doc(self, doc, delete=False):
         self.client.send_document(self.chat_id, doc)
         if delete:
             remove(doc)
-
 
     def recv_msg(self, read=True):
         conv = CONVERSATION[self.chat_id]
@@ -55,19 +53,15 @@ class PyroConversation:
     def forward_msg(self, msg):
         return msg.forward(self.chat_id)
 
-
     def init(self):
         CONVERSATION[self.chat_id] = []
-
 
     def stop(self):
         CONVERSATION[self.chat_id] = None
 
-
     def __enter__(self):
         self.init()
         return self
-
 
     def __exit__(self, a, b, c):
         self.stop()

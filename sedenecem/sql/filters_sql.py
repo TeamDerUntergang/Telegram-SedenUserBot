@@ -4,6 +4,7 @@ except ImportError:
     raise AttributeError
 from sqlalchemy import Column, UnicodeText, Numeric, String
 
+
 class Filters(BASE):
     __tablename__ = "filters"
     chat_id = Column(String(14), primary_key=True)
@@ -25,11 +26,13 @@ class Filters(BASE):
 
 Filters.__table__.create(checkfirst=True)
 
+
 def get_filter(chat_id, keyword):
     try:
         return SESSION.query(Filters).get((str(chat_id), keyword))
     finally:
         SESSION.close()
+
 
 def get_filters(chat_id):
     try:
@@ -37,6 +40,7 @@ def get_filters(chat_id):
             Filters.chat_id == str(chat_id)).all()
     finally:
         SESSION.close()
+
 
 def add_filter(chat_id, keyword, reply, f_mesg_id):
     to_check = get_filter(chat_id, keyword)
@@ -54,12 +58,12 @@ def add_filter(chat_id, keyword, reply, f_mesg_id):
         SESSION.commit()
         return False
 
+
 def remove_filter(chat_id, keyword):
     to_check = get_filter(chat_id, keyword)
     if not to_check:
         return False
     else:
-        rem = SESSION.query(Filters).get((str(chat_id), keyword))
-        SESSION.delete(rem)
+        SESSION.delete(to_check)
         SESSION.commit()
         return True

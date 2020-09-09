@@ -50,6 +50,10 @@
             "value": "Merhaba Seden! Seni Seviyorum ❤️",
             "required": false 
         },
+        "SEDEN_LANG": {
+            "description": "Botun dilini kalıcı olarak değişmek için. Türkçe yapmak için tr, İngilizce yapmak için en yazınız. Varsayılan dil ingilizce.",
+            "required": false 
+        },
         "CHROME_DRIVER": {
             "description": "Selenium tabanlı modüller için ChromeDriver konumu.",
             "value": "/usr/bin/chromedriver",

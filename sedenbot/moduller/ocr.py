@@ -18,7 +18,8 @@ from os import remove, path, makedirs
 from requests import post
 
 from sedenbot import KOMUT, DOWNLOAD_DIRECTORY, OCR_APIKEY
-from sedenecem.core import edit, extract_args, sedenify
+from sedenecem.core import edit, extract_args, sedenify, get_translation
+
 
 def ocr_file(filename,
              overlay=False,
@@ -38,17 +39,18 @@ def ocr_file(filename,
         )
     return r.json()
 
+
 @sedenify(pattern=r'^.ocr', compat=False)
 def ocr(client, message):
     if not OCR_APIKEY:
-        edit(message, '**[OCR Space](https://ocr.space/ocrapi)** `API key eksik! Lütfen ekleyin.`',
+        edit(message, get_translation("ocrApiMissing", ['**', 'OCR Space', '`']),
              preview=False)
         return
     match = extract_args(message)
     if len(match) < 1:
-        edit(message, '`Komut kullanımı hatalı.`')
+        edit(message, f'`{get_translation("wrongCommand")}`')
         return
-    edit(message, '`Okunuyor...`')
+    edit(message, f'`{get_translation("ocrReading")}`')
     if not path.isdir(DOWNLOAD_DIRECTORY):
         makedirs(DOWNLOAD_DIRECTORY)
     lang_code = extract_args(message)
@@ -59,12 +61,10 @@ def ocr(client, message):
     try:
         ParsedText = test_file['ParsedResults'][0]['ParsedText']
     except BaseException:
-        edit(message, '`Bunu okuyamadım.`\n`Sanırım yeni gözlüklere ihtiyacım var.`')
+        edit(message, f'`{get_translation("ocrError")}`')
     else:
-        edit(message, f'`İşte okuyabildiğim şey:`\n\n{ParsedText}')
+        edit(message, get_translation("ocrResult", ['`', ParsedText]))
     remove(downloaded_file_name)
 
-KOMUT.update({
-    'ocr':
-    ".ocr <dil>\nKullanım: Metin ayıklamak için bir resme veya çıkartmaya cevap verin.\n\nDil kodlarını [buradan](https://ocr.space/ocrapi) alın."
-})
+
+KOMUT.update({'ocr': get_translation("ocrInfo")})

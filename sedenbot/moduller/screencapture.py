@@ -19,7 +19,8 @@ from base64 import b64decode
 from re import match
 
 from sedenbot import KOMUT
-from sedenecem.core import edit, reply_doc, extract_args, sedenify, get_webdriver
+from sedenecem.core import edit, reply_doc, extract_args, sedenify, get_webdriver, get_translation
+
 
 @sedenify(pattern=r'^.ss')
 def ss(message):
@@ -28,9 +29,9 @@ def ss(message):
     if link_match:
         link = link_match.group()
     else:
-        edit(message, '`Ekran görüntüsü alabilmem için geçerli bir bağlantı vermelisin.`')
+        edit(message, f'`{get_translation("ssUsage")}`')
         return
-    edit(message, '`İşleniyor ...`')
+    edit(message, f'`{get_translation("processing")}`')
     driver = get_webdriver()
     driver.get(link)
     height = driver.execute_script(
@@ -41,10 +42,8 @@ def ss(message):
     )
     driver.set_window_size(width + 125, height + 125)
     wait_for = int(height / 1000)
-    edit(message, f'`Sayfanın ekran görüntüsü oluşturuluyor ...`\
-    \n`Sayfanın yüksekliği: {height} piksel`\
-    \n`Sayfanın genişliği: {width} piksel`\
-    \n`Sayfanın yüklenmesi için {wait_for} saniye beklendi.`')
+    edit(
+        message, f'`{get_translation("ssResult", [height, width, wait_for])}`')
     sleep(wait_for)
     im_png = driver.get_screenshot_as_base64()
     # Sayfanın ekran görüntüsü kaydedilir.
@@ -52,15 +51,11 @@ def ss(message):
     message_id = message.message_id
     if message.reply_to_message:
         message_id = message.reply_to_message
-    name = 'ekran_goruntusu.png'
+    name = 'screenshot.png'
     with open(name, 'wb') as out:
         out.write(b64decode(im_png))
-    edit(message, '`Ekran görüntüsü karşıya yükleniyor ...`')
+    edit(message, f'`{get_translation("ssUpload")}`')
     reply_doc(message, name, caption=input_str, delete_after_send=True)
 
-KOMUT.update({
-    "ss":
-    ".ss <url>\
-    \nKullanım: Belirtilen web sitesinden bir ekran görüntüsü alır ve gönderir.\
-    \nGeçerli bir site bağlantısı örneği: `https://devotag.com`"
-})
+
+KOMUT.update({"ss": get_translation("ssInfo")})

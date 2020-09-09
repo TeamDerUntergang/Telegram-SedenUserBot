@@ -16,8 +16,8 @@
 
 from requests import get
 
-from sedenbot import KOMUT, WEATHER
-from sedenecem.core import edit, extract_args, sedenify
+from sedenbot import KOMUT, WEATHER, SEDEN_LANG
+from sedenecem.core import edit, extract_args, sedenify, get_translation
 
 # ===== CONSTANT =====
 if WEATHER:
@@ -26,15 +26,16 @@ else:
     DEFCITY = None
 # ====================
 # Copyright (c) @frknkrc44 | 2020
-@sedenify(pattern='^.havadurumu')
+
+
+@sedenify(pattern='^.(havadurumu|w(eathe|tt)r)')
 def havadurumu(message):
     args = extract_args(message)
 
     if len(args) < 1:
         CITY = DEFCITY
         if not CITY:
-            edit(message,
-                 '`WEATHER değişkeniyle bir şehri varsayılan olarak belirt, ya da komutu yazarken hangi şehrin hava durumunu istediğini de belirt!`')
+            edit(message, f'`{get_translation("weatherErrorCity")}`')
             return
     else:
         CITY = args
@@ -44,18 +45,15 @@ def havadurumu(message):
 
     try:
         req = get(f'http://wttr.in/{CITY}?mqT0',
-                  headers={'User-Agent':'curl/7.66.0', 'Accept-Language':'tr'})
+                  headers={'User-Agent': 'curl/7.66.0', 'Accept-Language': SEDEN_LANG})
         data = req.text
         if '===' in data:
             raise Exception
         data = data.replace('`', '‛')
         edit(message, f'`{data}`', fix_markdown=True)
     except Exception as e:
-        edit(message, '`Hava durumu bilgisi alınamadı.`')
+        edit(message, f'`{get_translation("weatherErrorServer")}`')
         raise e
 
-KOMUT.update({
-    "havadurumu":
-    "Kullanım: .havadurumu şehir adı veya .havadurumu şehir adı\
-    \nBir bölgenin hava durumunu verir."
-})
+
+KOMUT.update({"havadurumu": get_translation('infoWeather')})

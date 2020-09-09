@@ -19,13 +19,14 @@ from subprocess import run as runapp
 from pybase64 import b64encode, b64decode
 
 from sedenbot import KOMUT
-from sedenecem.core import edit, reply_doc, extract_args, sedenify
+from sedenecem.core import edit, reply_doc, extract_args, sedenify, get_translation
+
 
 @sedenify(pattern='^.hash')
 def hash(message):
     hashtxt_ = extract_args(message)
     if len(hashtxt_) < 1:
-        edit(message, '`Komutun yanına bir metin yazın.`')
+        edit(message, f'`{get_translation("wrongCommand")}`')
         return
     hashtxt = open('hash.txt', 'w+')
     hashtxt.write(hashtxt_)
@@ -54,18 +55,19 @@ def hash(message):
         hashfile.close()
         reply_doc(message,
                   'hash.txt',
-                  caption='`Çok büyük, bunun yerine bir metin dosyası gönderiliyor. `')
+                  caption=f'`{get_translation("outputTooLarge")}`')
         runapp(['rm', 'hash.txt'], stdout=PIPE)
         message.delete()
     else:
         edit(message, ans)
+
 
 @sedenify(pattern='^.base64')
 def base64(message):
     argv = extract_args(message)
     args = argv.split(' ', 1)
     if len(args) < 2 or args[0] not in ['en', 'de']:
-        edit(message, '`Komut kullanımı hatalı.`')
+        edit(message, f'`{get_translation("wrongCommand")}`')
         return
     args[1] = args[1].replace('`', '')
     if args[0] == 'en':
@@ -75,11 +77,6 @@ def base64(message):
         lething = str(b64decode(bytes(args[1], 'utf-8')))[2:]
         edit(message, f'Input: `{args[1]}`\nDecoded: `{lething[:-1]}`')
 
-KOMUT.update({
-    "base64":
-    "Verilen dizenin base64 kodlamasını bulun. Örnek .base64 en merhaba"
-})
-KOMUT.update({
-    "hash":
-    "Bir txt dosyası yazıldığında md5, sha1, sha256, sha512 dizelerini bulun."
-})
+
+KOMUT.update({"base64": get_translation("base64Info")})
+KOMUT.update({"hash": get_translation("hashInfo")})
