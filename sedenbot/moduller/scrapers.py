@@ -385,7 +385,7 @@ def trt(message):
     source_lan = LANGUAGES[f'{reply_text.src.lower()}']
     transl_lan = LANGUAGES[f'{reply_text.dest.lower()}']
     reply_text = '{}\n\n{}'.format(get_translation(
-        'transHeader', [source_lan.title(), transl_lan.title()]), reply_text.text)
+        'transHeader', ['**', '`', source_lan.title(), transl_lan.title()]), reply_text.text)
 
     edit(message, reply_text)
 
