@@ -69,12 +69,12 @@ def get_translation(langKey, transKey):
     if langKey == 'en' or langKey not in get_language_keys():
         json = _get_translation_items_from_cache('en')
 
-        if not transKey in json:
+        if transKey not in json:
             return transKey
     else:
         json = _get_translation_items_from_cache(langKey)
 
-        if not transKey in json:
+        if transKey not in json:
             return get_translation('en', transKey)
 
     return json[transKey]

@@ -16,9 +16,8 @@
 
 from re import fullmatch, IGNORECASE
 
-from pyrogram import Message
 from sedenbot import KOMUT, LOG_ID
-from sedenecem.core import extract_args, sedenify, edit, get_me, get_messages, reply_msg, reply, forward, send_log, get_translation
+from sedenecem.core import extract_args, sedenify, edit, get_messages, reply_msg, reply, forward, send_log, get_translation
 
 
 @sedenify(incoming=True, outgoing=False)

@@ -15,9 +15,8 @@
 #
 
 from threading import Event
-from re import sub
 
-from sedenbot import KOMUT, SEDEN_LANG
+from sedenbot import KOMUT
 from sedenecem.core import (edit, reply, reply_img, send_log, extract_args,
                             extract_args_arr, sedenify, get_translation)
 

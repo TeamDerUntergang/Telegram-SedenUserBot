@@ -15,7 +15,7 @@
 #
 
 from sedenbot import KOMUT, LOG_ID
-from sedenecem.core import extract_args, sedenify, edit, get_messages, reply_msg, reply, forward, send_log, get_translation
+from sedenecem.core import extract_args, sedenify, edit, get_messages, reply_msg, forward, send_log, get_translation
 
 
 @sedenify(pattern='^.notes$')

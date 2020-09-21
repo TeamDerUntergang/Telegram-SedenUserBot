@@ -24,9 +24,15 @@ from importlib import import_module
 from logging import basicConfig, getLogger, INFO, DEBUG, CRITICAL
 from requests import get
 from pyrogram import Client, Filters, MessageHandler
-from dotenv import load_dotenv
+from dotenv import load_dotenv, set_key, unset_key
 import sedenecem.translator as _tr
-load_dotenv("config.env")
+
+
+def reload_env():
+    return load_dotenv("config.env", override=True)
+
+
+reload_env()
 
 if version_info[0] < 3 or version_info[1] < 8:
     LOGS.warn(get_translation("pythonVersionError"))
@@ -69,6 +75,14 @@ def get_translation(transKey, params: list = None):
     return ret
 
 
+def set_local_env(key: str, value: str):
+    return set_key('config.env', key, value)
+
+
+def unset_local_env(key: str):
+    return unset_key('config.env', key)
+
+
 def set_logger():
     # String session değerini dışarı yazdırmayı kapatır
     pyrogram_syncer = getLogger('pyrogram.client.ext.syncer')
@@ -103,7 +117,7 @@ if not API_HASH:
     LOGS.warn(f'{get_translation("apiHashError")}')
     quit(1)
 
-BOT_VERSION = "1.3rc1 Alpha"
+BOT_VERSION = "1.3rc2 Alpha"
 SUPPORT_GROUP = "SedenUserBotSupport"
 CHANNEL = "SedenUserBot"
 
@@ -163,6 +177,14 @@ PM_AUTO_BAN = sb(environ.get('PM_AUTO_BAN', "False"))
 PM_MSG_COUNT = environ.get('PM_MSG_COUNT', 'default')
 PM_MSG_COUNT = int(PM_MSG_COUNT) if PM_MSG_COUNT.isdigit() else 5
 PM_UNAPPROVED = environ.get('PM_UNAPPROVED', None)
+
+ENV_RESTRICTED_KEYS = [
+    'HEROKU_KEY',
+    'HEROKU_APPNAME',
+    'SESSION',
+    'API_ID',
+    'API_HASH',
+    'DATABASE_URL']
 
 
 def load_brain():

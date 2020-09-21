@@ -18,7 +18,6 @@ from re import findall, search, sub
 from json import loads, JSONDecodeError, decoder
 from urllib.parse import unquote, urlparse
 from os import popen, path, mkdir, chmod
-from random import choice
 from bs4 import BeautifulSoup
 from humanize import naturalsize
 from requests import get, Session

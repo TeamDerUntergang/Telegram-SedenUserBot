@@ -21,11 +21,13 @@ from getpass import getuser
 from sys import executable, argv
 from operator import add, sub, mul, truediv, pow, xor, neg
 from ast import Add, Sub, Mult, Div, Pow, BitXor, USub, parse, Num, BinOp, UnaryOp
-from pyrogram.api import functions
+from requests import get
+from math import floor
+from heroku3 import from_key
 
 from sedenbot.moduller.lovers import saniye
 from sedenbot.moduller.ecem import ecem
-from sedenbot import KOMUT, ALIVE_MESAJI, BOT_VERSION, CHANNEL
+from sedenbot import KOMUT, ALIVE_MESAJI, BOT_VERSION, CHANNEL, HEROKU_KEY, HEROKU_APPNAME
 from sedenecem.core import edit, reply, reply_doc, send_log, extract_args, sedenify, get_translation
 # ================= CONSTANT =================
 KULLANICIMESAJI = ALIVE_MESAJI or get_translation('sedenAlive')
@@ -95,6 +97,10 @@ def pip3(message):
 
 
 @sedenify(pattern='^.(restart|yb)$', compat=False)
+def _restart(client, message):
+    return restart(client, message)
+
+
 def restart(client, message):
     edit(message, f'`{get_translation("restart")}`')
     send_log(f'{get_translation("restartLog")}')
@@ -106,7 +112,7 @@ def restart(client, message):
 
 
 @sedenify(pattern='^.(shutdown|kapat)$', compat=False)
-def restart(client, message):
+def shutdown(client, message):
     edit(message, f'`{get_translation("shutdown")}`')
     send_log(f'{get_translation("shutdownLog")}')
     try:
@@ -269,6 +275,99 @@ def _eval(node):
         raise TypeError(f'`{get_translation("safeEval")}`')
 
 
+@sedenify(pattern='^.quota$')
+def dyno(message):
+    if not HEROKU_KEY:
+        edit(message, f"`{get_translation('notHeroku')}`")
+        return
+
+    edit(message, f"`{get_translation('processing')}`")
+
+    heroku = from_key(HEROKU_KEY)
+    heroku_app = None
+    heroku_applications = heroku.apps()
+    if not HEROKU_APPNAME:
+        edit(
+            message,
+            f'`{get_translation("updateHerokuVariables", ["HEROKU_APPNAME "])}`')
+
+    for app in heroku_applications:
+        if app.name == HEROKU_APPNAME:
+            heroku_app = app
+            break
+
+    if heroku_app is None:
+        edit(
+            message,
+            f'`{get_translation("updateHerokuVariables", ["HEROKU_APPNAME "])}`')
+        return
+
+    acc_id = heroku.account().id
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36',
+        'Authorization': f'Bearer {HEROKU_KEY}',
+        'Accept': 'application/vnd.heroku+json; version=3.account-quotas',
+    }
+
+    req = get(
+        f'https://api.heroku.com/accounts/{acc_id}/actions/get-quota',
+        headers=headers)
+
+    if req.status_code != 200:
+        edit(message, f"`{get_translation('covidError')}`")
+        return
+
+    json = req.json()
+
+    acc_quota = json['account_quota']
+    acc_quota_used = json['quota_used']
+    acc_quota_remaining = acc_quota - acc_quota_used
+    acc_quota_percent = floor(acc_quota_used / acc_quota * 100)
+    acc_quota_rem_percent = 100 - acc_quota_percent
+
+    def get_app_quota():
+        for app in json['apps']:
+            if app['app_uuid'] == heroku_app.id:
+                return app['quota_used']
+        return 0
+
+    app_quota = get_app_quota()
+    app_quota_percent = floor(app_quota / acc_quota * 100)
+    app_quota = app_quota / 60
+    app_quota_hrs = int(app_quota / 60)
+    app_quota_min = int(app_quota % 60)
+
+    acc_remaining = acc_quota_remaining / 60
+    acc_remaining_hrs = int(acc_remaining / 60)
+    acc_remaining_min = int(acc_remaining % 60)
+
+    acc_total = acc_quota / 60
+    acc_total_hrs = int(acc_total / 60)
+    acc_total_min = int(acc_total % 60)
+
+    acc_used = acc_quota_used / 60
+    acc_used_hrs = int(acc_used / 60)
+    acc_used_min = int(acc_used % 60)
+
+    edit(
+        message,
+        get_translation(
+            'herokuQuotaInfo',
+            ['`', '**',
+             get_translation(
+                 'herokuQuotaInHM', [acc_total_hrs, acc_total_min]),
+             get_translation(
+                 'herokuQuotaInHM', [acc_used_hrs, acc_used_min]),
+             acc_quota_percent,
+             get_translation(
+                 'herokuQuotaInHM', [acc_remaining_hrs, acc_remaining_min]),
+             acc_quota_rem_percent,
+             get_translation(
+                 'herokuQuotaInHM', [app_quota_hrs, app_quota_min]),
+             app_quota_percent]))
+
+
 KOMUT.update({"neofetch": get_translation("neofetchInfo")})
 KOMUT.update({"botver": get_translation("botverInfo")})
 KOMUT.update({"pip": get_translation("pipInfo")})
@@ -280,3 +379,4 @@ KOMUT.update({"echo": get_translation("echoInfo")})
 KOMUT.update({"eval": get_translation("evalInfo")})
 KOMUT.update({"term": get_translation("termInfo")})
 KOMUT.update({"alive": get_translation("aliveInfo")})
+KOMUT.update({"quota": get_translation("herokuInfo")})

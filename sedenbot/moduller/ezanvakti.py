@@ -19,7 +19,7 @@ from functools import reduce
 from requests import get
 from bs4 import BeautifulSoup
 
-from sedenbot import KOMUT, SEDEN_LANG
+from sedenbot import KOMUT
 from sedenecem.core import edit, extract_args, sedenify, get_translation
 
 # Copyright (c) @NaytSeyd, @frknkrc44 | 2020

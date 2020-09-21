@@ -17,7 +17,7 @@
 from datetime import datetime as DateTime
 from speedtest import Speedtest
 
-from sedenbot import KOMUT, SEDEN_LANG
+from sedenbot import KOMUT
 from sedenecem.core import extract_args, sedenify, edit, reply_doc, get_translation
 
 
