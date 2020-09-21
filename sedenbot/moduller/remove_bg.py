@@ -24,13 +24,17 @@ from sedenecem.core import sedenify, edit, reply_doc, get_translation
 @sedenify(pattern='^.rbg$', compat=False)
 def rbg(client, message):
     if not RBG_APIKEY:
-        edit(message, get_translation("rbgApiMissing", ['**', 'Remove.BG', '`']),
-             preview=False)
+        edit(
+            message, get_translation(
+                "rbgApiMissing", [
+                    '**', 'Remove.BG', '`']), preview=False)
         return
 
     reply = message.reply_to_message
 
-    if reply and (reply.photo or (reply.document and 'image' in reply.document.mime_typereply.document)):
+    if reply and (
+            reply.photo or (
+            reply.document and 'image' in reply.document.mime_typereply.document)):
         edit(message, f'`{get_translation("processing")}`')
     else:
         edit(message, f'`{get_translation("rbgUsage")}`')

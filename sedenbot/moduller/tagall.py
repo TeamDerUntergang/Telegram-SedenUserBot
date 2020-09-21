@@ -15,7 +15,7 @@
 #
 
 from sedenbot import KOMUT
-from sedenecem.core import sedenify, reply
+from sedenecem.core import sedenify, reply, get_translation
 
 # Copyright (c) @NaytSeyd | 2020
 
@@ -44,9 +44,4 @@ def admin(client, message):
     message.delete()
 
 
-KOMUT.update({
-    "tagall":
-    ".tagall\
-    \nKullanım: Bu komutu kullandığınızda sohbet içerisinde ki herkesi etiketler.\n\n.admin \
-    \nKullanım: Bu komutu kullandığınızda sohbet içerisinde ki yöneticileri etiketler."
-})
+KOMUT.update({"tagall": get_translation("tagallInfo")})

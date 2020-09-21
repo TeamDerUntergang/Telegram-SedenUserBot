@@ -61,8 +61,9 @@ def paste(client, message):
         dogbin_final_url = DOGBIN_URL + key
 
         if response['isUrl']:
-            reply_text = get_translation('dogbinPasteResult2', [
-                                         '`', dogbin_final_url, f'{DOGBIN_URL}v/{key}'])
+            reply_text = get_translation(
+                'dogbinPasteResult2', [
+                    '`', dogbin_final_url, f'{DOGBIN_URL}v/{key}'])
         else:
             reply_text = get_translation(
                 "dogbinPasteResult", ['`', dogbin_final_url])

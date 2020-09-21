@@ -43,8 +43,10 @@ def ocr_file(filename,
 @sedenify(pattern=r'^.ocr', compat=False)
 def ocr(client, message):
     if not OCR_APIKEY:
-        edit(message, get_translation("ocrApiMissing", ['**', 'OCR Space', '`']),
-             preview=False)
+        edit(
+            message, get_translation(
+                "ocrApiMissing", [
+                    '**', 'OCR Space', '`']), preview=False)
         return
     match = extract_args(message)
     if len(match) < 1:

@@ -37,6 +37,8 @@ BRAIN_CHECKER = []
 BLACKLIST = []
 VALID_PROXY_URL = []
 CONVERSATION = {}
+PM_COUNT = {}
+PM_LAST_MSG = {}
 
 # Ayrıntılı konsol günlügü
 LOG_VERBOSE = sb(environ.get("LOG_VERBOSE", "False"))
@@ -101,7 +103,7 @@ if not API_HASH:
     LOGS.warn(f'{get_translation("apiHashError")}')
     quit(1)
 
-BOT_VERSION = "1.2 Beta"
+BOT_VERSION = "1.3rc1 Alpha"
 SUPPORT_GROUP = "SedenUserBotSupport"
 CHANNEL = "SedenUserBot"
 
@@ -156,6 +158,12 @@ LOG_ID = int(LOG_ID) if LOG_ID and resr(r'^-?\d+$', LOG_ID) else None
 # Daha fazla bilgi: https://docs.pyrogram.org/topics/test-servers
 DEEPGRAM = sb(environ.get('DEEPGRAM', "False"))
 
+# PM'den izinsiz dürtülmenizi engeller
+PM_AUTO_BAN = sb(environ.get('PM_AUTO_BAN', "False"))
+PM_MSG_COUNT = environ.get('PM_MSG_COUNT', 'default')
+PM_MSG_COUNT = int(PM_MSG_COUNT) if PM_MSG_COUNT.isdigit() else 5
+PM_UNAPPROVED = environ.get('PM_UNAPPROVED', None)
+
 
 def load_brain():
     if path.exists("learning-data-root.check"):
@@ -203,7 +211,7 @@ class PyroClient(Client):
                 CONVERSATION[chat.id].append(message)
             elif chat.username and chat.username in CONVERSATION:
                 CONVERSATION[chat.username].append(message)
-        except:
+        except BaseException:
             pass
         message.continue_propagation()
 

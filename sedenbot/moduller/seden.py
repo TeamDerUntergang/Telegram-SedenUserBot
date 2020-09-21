@@ -29,7 +29,7 @@ def seden(message):
     else:
         edit(message, get_translation("sedenUsage2", ['**', '`']))
         metin = "{}\n".format(get_translation('sedenShowLoadedModules', [
-                                '**', 'Seden UserBot', CHANNEL]))
+            '**', 'Seden UserBot', CHANNEL]))
         for item in KOMUT:
             metin += f'- `{item}`\n'
         reply(message, metin, preview=False)

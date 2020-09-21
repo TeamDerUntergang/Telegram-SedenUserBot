@@ -79,7 +79,7 @@ def direct(message):
 
             result = urlparse(link)
             all([result.scheme, result.netloc, result.path])
-        except:
+        except BaseException:
             reply += f'`{get_translation("directUrlNotFound")}`\n'
             continue
         try:
@@ -103,7 +103,7 @@ def direct(message):
                 reply += androidfilehost(link)
             else:
                 reply += f'{get_translation("directUrlNotFound", [link])}\n'
-        except:
+        except BaseException:
             reply += f'{get_translation("directError", [link])}\n'
     edit(message, reply, preview=False)
 

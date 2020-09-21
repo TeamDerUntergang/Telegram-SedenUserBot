@@ -44,8 +44,11 @@ def havadurumu(message):
         CITY = CITY[:CITY.find(',')].strip()
 
     try:
-        req = get(f'http://wttr.in/{CITY}?mqT0',
-                  headers={'User-Agent': 'curl/7.66.0', 'Accept-Language': SEDEN_LANG})
+        req = get(
+            f'http://wttr.in/{CITY}?mqT0',
+            headers={
+                'User-Agent': 'curl/7.66.0',
+                'Accept-Language': SEDEN_LANG})
         data = req.text
         if '===' in data:
             raise Exception

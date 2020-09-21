@@ -36,7 +36,7 @@ def deepfry(client, message):
         frycount = int(text[1])
         if frycount < 1:
             raise ValueError
-    except:  # pylint: disable=W0702
+    except BaseException:
         frycount = 1
 
     MAX_LIMIT = 5
@@ -88,16 +88,19 @@ def deepfry(img: Image, fry: bool) -> Image:
     width, height = img.width, img.height
 
     temp_num = uniform(.8, .9) if fry else .75
-    img = img.resize(
-        (int(width ** temp_num), int(height ** temp_num)), resample=Image.LANCZOS)
+    img = img.resize((int(width ** temp_num),
+                      int(height ** temp_num)),
+                     resample=Image.LANCZOS)
 
     temp_num = uniform(.85, .95) if fry else .88
-    img = img.resize(
-        (int(width ** temp_num), int(height ** temp_num)), resample=Image.BILINEAR)
+    img = img.resize((int(width ** temp_num),
+                      int(height ** temp_num)),
+                     resample=Image.BILINEAR)
 
     temp_num = uniform(.89, .98) if fry else .9
-    img = img.resize(
-        (int(width ** temp_num), int(height ** temp_num)), resample=Image.BICUBIC)
+    img = img.resize((int(width ** temp_num),
+                      int(height ** temp_num)),
+                     resample=Image.BICUBIC)
     img = img.resize((width, height), resample=Image.BICUBIC)
 
     temp_num = randint(3, 7) if fry else 4
@@ -138,7 +141,8 @@ def check_media(reply_message):
             data = True
         elif reply_message.document:
             name = reply_message.document.file_name
-            if name and '.' in name and name[name.find('.')+1:] in ['png', 'jpg', 'jpeg', 'webp']:
+            if name and '.' in name and name[name.find(
+                    '.') + 1:] in ['png', 'jpg', 'jpeg', 'webp']:
                 data = True
 
     return data

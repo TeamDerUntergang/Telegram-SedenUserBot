@@ -40,7 +40,7 @@ def birakmamseni(message):
     try:
         response = post(url=url + path, headers=headers)
         count = response.json()['counter'].lstrip('0')
-    except:  # pylint: disable=W0702
+    except BaseException:
         edit(message, f'`{get_translation("covidError")}`')
         return
 

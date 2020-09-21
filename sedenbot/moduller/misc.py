@@ -47,16 +47,18 @@ def founder(message):
 
 @sedenify(pattern='^.readme$')
 def readme(message):
-    edit(message,
-         "[Seden README.md](https://github.com/TeamDerUntergang/Telegram-SedenUserBot/blob/seden/README.md)",
-         preview=False)
+    edit(
+        message,
+        "[Seden README.md](https://github.com/TeamDerUntergang/Telegram-SedenUserBot/blob/seden/README.md)",
+        preview=False)
 
 
 @sedenify(pattern='^.repo$')
 def repo(message):
-    edit(message,
-         "[Seden Repo](https://github.com/TeamDerUntergang/Telegram-SedenUserBot)",
-         preview=False)
+    edit(
+        message,
+        "[Seden Repo](https://github.com/TeamDerUntergang/Telegram-SedenUserBot)",
+        preview=False)
 
 
 @sedenify(pattern='^.repeat')

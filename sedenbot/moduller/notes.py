@@ -94,7 +94,7 @@ def get_note(message):
     try:
         try:
             from sedenecem.sql.notes_sql import get_note
-        except:
+        except BaseException:
             edit(message, f'`{get_translation("nonSqlMode")}`')
             return
 
@@ -115,7 +115,7 @@ def get_note(message):
                 edit(message, f'`{get_translation("noteError2")}`')
         else:
             edit(message, f'`{get_translation("noteNoFound")}`')
-    except:
+    except BaseException:
         pass
 
 

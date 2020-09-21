@@ -35,8 +35,7 @@ def magisk(message):
         "Beta":
         "https://raw.githubusercontent.com/topjohnwu/magisk_files/master/beta.json",
         "Canary (Debug)":
-        "https://raw.githubusercontent.com/topjohnwu/magisk_files/canary/debug.json"
-    }
+        "https://raw.githubusercontent.com/topjohnwu/magisk_files/canary/debug.json"}
     releases = f'`{get_translation("magiskReleases")}`\n'
     for name, release_url in magisk_dict.items():
         data = get(release_url).json()
@@ -51,15 +50,17 @@ def phh(message):
     get_phh = get(
         f'https://api.github.com/repos/phhusson/treble_experimentations/releases/latest').json()
     search = extract_args(message)
-    releases = '{}\n'.format(get_translation('androidPhhHeader', [
-                             '`', "{} ".format(search) if len(search) > 0 else ""]))
+    releases = '{}\n'.format(
+        get_translation(
+            'androidPhhHeader', [
+                '`', "{} ".format(search) if len(search) > 0 else ""]))
     count = 0
     for i in range(len(get_phh)):
         try:
             name = get_phh['assets'][i]['name']
             if not name.endswith('img.xz'):
                 continue
-            elif not search in name:
+            elif search not in name:
                 continue
             count += 1
             url = get_phh['assets'][i]['browser_download_url']
@@ -87,10 +88,15 @@ def device(message):
                      'certified-android-devices/master/by_device.json').text)
     results = data.get(codename)
     if results:
-        reply = "{}\n".format(get_translation("deviceSearch", ['**', codename]))
+        reply = "{}\n".format(
+            get_translation(
+                "deviceSearch", [
+                    '**', codename]))
         for item in results:
             reply += get_translation('deviceSearchResultChild',
-                                     ['**', item['brand'], item['name'], item['model']])
+                                     ['**', item['brand'],
+                                      item['name'],
+                                      item['model']])
     else:
         reply = get_translation("deviceError", ['`', codename])
     edit(message, reply)
@@ -122,7 +128,10 @@ def codename(message):
         results = [i for i in devices if device.lower(
         ) in i["name"].lower() or device.lower() in i["model"].lower()]
         if results:
-            reply = "{}\n".format(get_translation("codenameSearch", ['**', brand, device]))
+            reply = "{}\n".format(
+                get_translation(
+                    "codenameSearch", [
+                        '**', brand, device]))
             if len(results) > 8:
                 results = results[:8]
             for item in results:
@@ -187,14 +196,15 @@ def ofox(message):
             '//div[contains(@id, "release-beta-header")]')
         if beta:
             beta.click()
-    except:
+    except BaseException:
         pass
 
     sleep(1)
 
     ofrp_map = {}
 
-    for i in driver.find_elements_by_xpath('//div[contains(@class, "MuiAccordionDetails-root")]'):
+    for i in driver.find_elements_by_xpath(
+            '//div[contains(@class, "MuiAccordionDetails-root")]'):
         version = i.find_elements_by_xpath(
             './/p[contains(@class, "MuiTypography-body1")]')
 
@@ -209,19 +219,20 @@ def ofox(message):
             if g < len(clcks):
                 try:
                     clcks[g].click()
-                except:
+                except BaseException:
                     driver.execute_script(
                         "window.scrollTo(0, document.body.scrollHeight);")
                     sleep(1)
                     try:
                         clcks[g].click()
-                    except:
+                    except BaseException:
                         pass
 
-            frow = lists[g*2]
-            srow = lists[(g*2)+1]
+            frow = lists[g * 2]
+            srow = lists[(g * 2) + 1]
 
-            while len(name_str := frow.find_elements_by_xpath('.//span[contains(@class, "MuiListItemText-primary")]')) < 1:
+            while len(name_str := frow.find_elements_by_xpath(
+                    './/span[contains(@class, "MuiListItemText-primary")]')) < 1:
                 sleep(1)
 
             # dummy but don't delete
@@ -281,7 +292,7 @@ def specs(message):
             result = f'{get_translation("specsError2")}' if len(
                 result) < 1 else result
             return result
-        except:
+        except BaseException:
             return f'{get_translation("specsError2")}'
 
     title = get_spec('specs-phone-name-title', 'class', 'h1')
@@ -310,8 +321,35 @@ def specs(message):
     sarus = sub(r'\s\s+', ', ', get_spec('sar-us'))
     sareu = sub(r'\s\s+', ', ', get_spec('sar-eu'))
 
-    edit(message, get_translation('specsResult', ['**', '`', title, launch, body, sarus, sareu, os, cpuname, cpuchip, gpuname, storage,
-                                                  stortyp, dispsize, dispres, bcampx, bcamft, bcamvd, fcampx, fcamft, fcamvd, battery, wlan, bluetooth, gps, sensors, link]))
+    edit(message,
+         get_translation('specsResult',
+                         ['**',
+                          '`',
+                          title,
+                          launch,
+                          body,
+                          sarus,
+                          sareu,
+                          os,
+                          cpuname,
+                          cpuchip,
+                          gpuname,
+                          storage,
+                          stortyp,
+                          dispsize,
+                          dispres,
+                          bcampx,
+                          bcamft,
+                          bcamvd,
+                          fcampx,
+                          fcamft,
+                          fcamvd,
+                          battery,
+                          wlan,
+                          bluetooth,
+                          gps,
+                          sensors,
+                          link]))
 
 # @frknkrc44, GSMArena üzerinden cihaz bulma
 
@@ -342,7 +380,8 @@ def find_device(query, proxy):
     for item in res:
         name = str(item.find('span'))
         name = sub('(<|</)span>', '', name)
-        if name[name.find('>')+1:].lower() == raw_query or sub('<br(>|/>)', ' ', name).lower() == raw_query:
+        if name[name.find('>') + 1:].lower() == raw_query or sub('<br(>|/>)',
+                                                                 ' ', name).lower() == raw_query:
             link = f"https://www.gsmarena.com/{item.find('a')['href']}"
             return link
     return None
@@ -386,7 +425,7 @@ def _try_proxy(proxy):
         if req.status_code == 200:
             return (200, req.text)
         raise Exception
-    except:
+    except BaseException:
         return (404, None)
 
 

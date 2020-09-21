@@ -51,7 +51,7 @@ def blacklist(message):
     snips = None
     try:
         snips = sql.get_chat_blacklist(message.chat.id)
-    except:
+    except BaseException:
         message.continue_propagation()
 
     msg_removed = False

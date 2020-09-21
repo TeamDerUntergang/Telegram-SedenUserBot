@@ -61,7 +61,7 @@ def save_snip(message):
 def snip_list(message):
     try:
         from sedenecem.sql.snips_sql import get_snips
-    except:
+    except BaseException:
         edit(message, f'`{get_translation("nonSqlMode")}`')
         return
 
@@ -99,7 +99,7 @@ def get_snip(message):
     try:
         try:
             from sedenecem.sql.snips_sql import get_snip
-        except:
+        except BaseException:
             edit(message, f'`{get_translation("nonSqlMode")}`')
             return
 
@@ -120,7 +120,7 @@ def get_snip(message):
                 edit(message, f'`{get_translation("snipError2")}`')
         else:
             edit(message, f'`{get_translation("snipNotFound")}`')
-    except:
+    except BaseException:
         pass
 
 

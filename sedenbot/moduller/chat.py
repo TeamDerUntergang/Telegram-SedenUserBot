@@ -22,7 +22,8 @@ from sedenecem.core import edit, sedenify, send_log, get_translation
 @sedenify(pattern='.chatid$', private=False)
 def chatid(message):
     edit(
-        message, f"{get_translation('chatidInfo', ['`', str(message.chat.id)])}")
+        message,
+        f"{get_translation('chatidInfo', ['`', str(message.chat.id)])}")
 
 
 @sedenify(pattern='^.kickme$', compat=False, private=False)
@@ -74,13 +75,26 @@ def keep_read(client, message):
         from sedenecem.sql.keep_read_sql import is_kread
     except AttributeError:
         return
+
+    if is_muted(message.chat.id):
+        client.read_history(message.chat.id)
+
+    message.continue_propagation()
+
+
+def is_muted(chat_id):
+    try:
+        from sedenecem.sql.keep_read_sql import is_kread
+    except AttributeError:
+        return False
+
     kread = is_kread()
     if kread:
         for i in kread:
-            if i.groupid == str(message.chat.id):
-                client.read_history(message.chat.id)
+            if i.groupid == str(chat_id):
+                return True
 
-    message.continue_propagation()
+    return False
 
 
 KOMUT.update({"chat": get_translation('infoChatID')})

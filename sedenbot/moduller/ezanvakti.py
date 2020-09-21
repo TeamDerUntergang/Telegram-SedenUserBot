@@ -38,24 +38,33 @@ def ezanvakti(message):
             raise ValueError
         request = get(f'https://namazvakitleri.diyanet.gov.tr/tr-TR/{knum}')
         result = BeautifulSoup(request.text, 'html.parser')
-    except:  # pylint: disable=W0702
+    except BaseException:
         edit(message, f'`{get_translation("ezanvaktiErrorInfo", [konum])}`')
         return
 
     res1 = result.body.findAll('div', {'class': ['body-content']})
     res1 = res1[0].findAll('script')
     res1 = sub(
-        r'<script>|</script>|\r|{.*?}|\[.*?\]|\n    ', '', str(res1[0]), flags=DOTALL)
+        r'<script>|</script>|\r|{.*?}|\[.*?\]|\n    ', '', str(res1[0]),
+        flags=DOTALL)
     res1 = sub('\n\n', '\n', res1)[:-1].split('\n')
 
     def get_val(st):
-        return [i.split('=')[1].replace('"', '').strip() for i in st[:-1].split(';')]
+        return [i.split('=')[1].replace('"', '').strip()
+                for i in st[:-1].split(';')]
 
     res2 = get_val(res1[1])
     res3 = get_val(res1[2])
 
-    vakitler = get_translation('ezanvaktiShowInfo', [
-                               '**', '`', res2[1], res3[0], res3[1], res3[2], res3[3], res3[4], res3[5]])
+    vakitler = get_translation(
+        'ezanvaktiShowInfo',
+        ['**', '`', res2[1],
+         res3[0],
+         res3[1],
+         res3[2],
+         res3[3],
+         res3[4],
+         res3[5]])
 
     edit(message, vakitler)
 
@@ -64,7 +73,7 @@ def find_loc(konum):
     if konum.isdigit():
         plaka = int(konum)
         if plaka > 0 and plaka < 82:
-            return int(sehirler[plaka-1].split()[2])
+            return int(sehirler[plaka - 1].split()[2])
         else:
             return -1
     else:
@@ -74,7 +83,7 @@ def find_loc(konum):
         try:
             index = sehir_ad.index(konum)
             return int(sehirler[index].split()[2])
-        except:
+        except BaseException:
             return -1
 
 

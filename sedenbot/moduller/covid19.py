@@ -29,7 +29,7 @@ def covid(message):
         request = get(
             'https://covid19.saglik.gov.tr/covid19api?getir=sondurum')
         result = loads(request.text)
-    except:  # pylint: disable=W0702
+    except BaseException:
         edit(message, f'`{get_translation("covidError")}`')
         return
 
@@ -39,20 +39,21 @@ def covid(message):
     def del_dots(res):
         return res.replace('.', '')
 
-    sonuclar = (f'**{get_translation("covidData")}**\n' +
-                f'\n**{get_translation("covidDate")}** {result["tarih"]}\n' +
-                f'\n**{get_translation("covidTotal")}**\n' +
-                f'**Test:** `{del_dots(result["toplam_test"])}`\n' +
-                f'**{get_translation("covidCases")}** `{del_dots(result["toplam_vaka"])}`\n' +
-                f'**{get_translation("covidDeaths")}** `{del_dots(result["toplam_vefat"])}`\n' +
-                f'**{get_translation("covidSeriouslyill")}** `{del_dots(result["agir_hasta_sayisi"])}`\n' +
-                f'**{get_translation("covidPneumonia")}** `%{result["hastalarda_zaturre_oran"]}`\n' +
-                f'**{get_translation("covidHealed")}** `{del_dots(result["toplam_iyilesen"])}`\n' +
-                f'\n**{get_translation("covidToday")}**\n' +
-                f'**Test:** `{del_dots(result["gunluk_test"])}`\n' +
-                f'**{get_translation("covidCases")}** `{del_dots(result["gunluk_vaka"])}`\n' +
-                f'**{get_translation("covidDeaths")}** `{del_dots(result["gunluk_vefat"])}`\n' +
-                f'**{get_translation("covidHealed")}** `{del_dots(result["gunluk_iyilesen"])}`')
+    sonuclar = (
+        f'**{get_translation("covidData")}**\n' +
+        f'\n**{get_translation("covidDate")}** {result["tarih"]}\n' +
+        f'\n**{get_translation("covidTotal")}**\n' +
+        f'**Test:** `{del_dots(result["toplam_test"])}`\n' +
+        f'**{get_translation("covidCases")}** `{del_dots(result["toplam_vaka"])}`\n' +
+        f'**{get_translation("covidDeaths")}** `{del_dots(result["toplam_vefat"])}`\n' +
+        f'**{get_translation("covidSeriouslyill")}** `{del_dots(result["agir_hasta_sayisi"])}`\n' +
+        f'**{get_translation("covidPneumonia")}** `%{result["hastalarda_zaturre_oran"]}`\n' +
+        f'**{get_translation("covidHealed")}** `{del_dots(result["toplam_iyilesen"])}`\n' +
+        f'\n**{get_translation("covidToday")}**\n' +
+        f'**Test:** `{del_dots(result["gunluk_test"])}`\n' +
+        f'**{get_translation("covidCases")}** `{del_dots(result["gunluk_vaka"])}`\n' +
+        f'**{get_translation("covidDeaths")}** `{del_dots(result["gunluk_vefat"])}`\n' +
+        f'**{get_translation("covidHealed")}** `{del_dots(result["gunluk_iyilesen"])}`')
 
     edit(message, sonuclar)
 

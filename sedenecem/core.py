@@ -24,6 +24,7 @@ from traceback import format_exc
 from selenium.webdriver import Chrome, ChromeOptions
 from PIL import Image
 from pyrogram import Filters, MessageHandler, Chat, ContinuePropagation, StopPropagation, Message
+from pyrogram.api import functions
 from sedenbot import SUPPORT_GROUP, LOG_ID, BLACKLIST, BRAIN_CHECKER, CHROME_DRIVER, SEDEN_LANG, me, app, get_translation
 
 MARKDOWN_FIX_CHAR = '\u2064'
@@ -36,10 +37,12 @@ def sedenify(**args):
     outgoing = args.get('outgoing', True)
     incoming = args.get('incoming', False)
     disable_edited = args.get('disable_edited', False)
+    disable_notify = args.get('disable_notify', False)
     compat = args.get('compat', True)
     brain = args.get('brain', False)
     private = args.get('private', True)
     group = args.get('group', True)
+    bot = args.get('bot', True)
 
     if pattern and '.' in pattern[:2]:
         args['pattern'] = pattern = pattern.replace('.', '[.?]')
@@ -59,12 +62,17 @@ def sedenify(**args):
                 if message.chat.type == 'channel':
                     return
 
+                if not bot and message.chat.type == 'bot':
+                    message.continue_propagation()
+
                 if not private and message.chat.type in ['private', 'bot']:
-                    edit(message, f'`{get_translation("groupUsage")}`')
+                    if not disable_notify:
+                        edit(message, f'`{get_translation("groupUsage")}`')
                     return
 
                 if not group and message.chat.type in ['group', 'supergroup']:
-                    edit(message, f'`{get_translation("privateUsage")}`')
+                    if not disable_notify:
+                        edit(message, f'`{get_translation("privateUsage")}`')
                     return
 
                 if not compat:
@@ -74,12 +82,17 @@ def sedenify(**args):
             except RetardsException:
                 try:
                     app.stop()
-                except:
+                except BaseException:
                     pass
                 execl(executable, 'killall', executable)
             except ContinuePropagation as c:
                 raise c
             except Exception as e:
+                """
+                if disable_notify:
+                    return
+                """
+
                 try:
                     date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
@@ -90,11 +103,16 @@ def sedenify(**args):
                         link = get_translation("supportGroup", [SUPPORT_GROUP])
                         text = get_translation("sedenErrorText", ['**', link])
 
-                    ftext = get_translation("sedenErrorText2", [date, message.chat.id, message.from_user.id if message.from_user else "Unknown",
-                                                                message.text, format_exc(), exc_info()[1]])
+                    ftext = get_translation(
+                        "sedenErrorText2",
+                        [date, message.chat.id, message.from_user.id
+                         if message.from_user else "Unknown", message.text,
+                         format_exc(),
+                         exc_info()[1]])
 
                     process = Popen(
-                        ['git', 'log', '--pretty=format:"%an: %s"', '-10'], stdout=PIPE, stderr=PIPE)
+                        ['git', 'log', '--pretty=format:"%an: %s"', '-10'],
+                        stdout=PIPE, stderr=PIPE)
                     out, err = process.communicate()
                     out = f'{out.decode()}\n{err.decode()}'.strip()
 
@@ -137,7 +155,7 @@ def sedenify(**args):
 
 def extract_args(message, markdown=True):
     text = message.text.markdown if markdown else message.text
-    if not ' ' in text:
+    if ' ' not in text:
         return ''
 
     text = sub(r'\s+', ' ', text)
@@ -157,24 +175,41 @@ def edit(message, text, preview=True, fix_markdown=False, parse='md'):
             reply(message, text, preview=preview, parse=parse)
             return
         message.edit_text(
-            text.strip(), disable_web_page_preview=not preview, parse_mode=parse)
-    except:
+            text.strip(),
+            disable_web_page_preview=not preview,
+            parse_mode=parse)
+    except BaseException:
         pass
 
 
-def reply(message, text, preview=True, fix_markdown=False, delete_orig=False, parse='md'):
+def reply(
+        message,
+        text,
+        preview=True,
+        fix_markdown=False,
+        delete_orig=False,
+        parse='md'):
     try:
         if fix_markdown:
             text += MARKDOWN_FIX_CHAR
-        message.reply_text(
-            text.strip(), disable_web_page_preview=not preview, parse_mode=parse)
+        ret = message.reply_text(
+            text.strip(),
+            disable_web_page_preview=not preview,
+            parse_mode=parse)
         if delete_orig:
             message.delete()
-    except:
+        return ret
+    except BaseException:
         pass
 
 
-def reply_img(message, photo, caption='', fix_markdown=False, delete_orig=False, delete_file=False):
+def reply_img(
+        message,
+        photo,
+        caption='',
+        fix_markdown=False,
+        delete_orig=False,
+        delete_file=False):
     try:
         if len(caption) > 0 and fix_markdown:
             caption += MARKDOWN_FIX_CHAR
@@ -184,33 +219,50 @@ def reply_img(message, photo, caption='', fix_markdown=False, delete_orig=False,
 
         if delete_file:
             remove(photo)
-    except:
+    except BaseException:
         pass
 
 
-def reply_audio(message, audio, caption='', fix_markdown=False, delete_orig=False):
+def reply_audio(
+        message,
+        audio,
+        caption='',
+        fix_markdown=False,
+        delete_orig=False):
     try:
         if len(caption) > 0 and fix_markdown:
             caption += MARKDOWN_FIX_CHAR
         message.reply_audio(audio, caption=caption.strip())
         if delete_orig:
             message.delete()
-    except:
+    except BaseException:
         pass
 
 
-def reply_voice(message, voice, caption='', fix_markdown=False, delete_orig=False):
+def reply_voice(
+        message,
+        voice,
+        caption='',
+        fix_markdown=False,
+        delete_orig=False):
     try:
         if len(caption) > 0 and fix_markdown:
             caption += MARKDOWN_FIX_CHAR
         message.reply_voice(voice, caption=caption.strip())
         if delete_orig:
             message.delete()
-    except:
+    except BaseException:
         pass
 
 
-def reply_doc(message, doc, caption='', fix_markdown=False, delete_orig=False, progress=None, delete_after_send=False):
+def reply_doc(
+        message,
+        doc,
+        caption='',
+        fix_markdown=False,
+        delete_orig=False,
+        progress=None,
+        delete_after_send=False):
     try:
         if len(caption) > 0 and fix_markdown:
             caption += MARKDOWN_FIX_CHAR
@@ -235,7 +287,7 @@ def reply_sticker(message, sticker, delete_orig=False):
         message.reply_sticker(sticker)
         if delete_orig:
             message.delete()
-    except:
+    except BaseException:
         pass
 
 
@@ -314,7 +366,7 @@ def send_sticker(client, chat, sticker):
     try:
         client.send_sticker(chat if isinstance(
             chat, int) else chat.id, sticker)
-    except:
+    except BaseException:
         pass
 
 
@@ -324,11 +376,16 @@ def send_doc(client, chat, doc, caption='', fix_markdown=False):
             caption += MARKDOWN_FIX_CHAR
         client.send_document(chat if isinstance(chat, int)
                              else chat.id, doc, caption=caption)
-    except:
+    except BaseException:
         pass
 
 
-def download_media(client, data, file_name=None, progress=None, sticker_orig=False):
+def download_media(
+        client,
+        data,
+        file_name=None,
+        progress=None,
+        sticker_orig=False):
     if not file_name:
         if data.document:
             file_name = (data.document.file_name
@@ -356,7 +413,8 @@ def download_media(client, data, file_name=None, progress=None, sticker_orig=Fal
             return None
 
     if progress:
-        return client.download_media(data, file_name=file_name, progress=progress)
+        return client.download_media(
+            data, file_name=file_name, progress=progress)
 
     return client.download_media(data, file_name=file_name)
 
@@ -376,7 +434,7 @@ def get_webdriver():
         prefs = {'download.default_directory': './'}
         options.add_experimental_option('prefs', prefs)
         return Chrome(executable_path=CHROME_DRIVER, options=options)
-    except:
+    except BaseException:
         raise Exception('CHROME_DRIVER not found!')
         return None
 
@@ -412,7 +470,7 @@ def get_messages(chat_id, msg_ids=None, client=app):
         ret = client.get_messages(
             chat_id=(chat_id or 'me'), message_ids=msg_ids)
         return [ret] if ret and isinstance(ret, Message) else ret
-    except:
+    except BaseException:
         return []
 
 

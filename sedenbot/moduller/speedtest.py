@@ -54,16 +54,33 @@ def speed_test(message):
         response = spdtst.results.share()
         speedtest_image = response
         if as_text:
-            edit(message, get_translation('speedtestResultText', ['**', ms, convert_from_bytes(
-                download_speed), convert_from_bytes(upload_speed), ping_time, i_s_p, i_s_p_rating, '']))
+            edit(message,
+                 get_translation('speedtestResultText',
+                                 ['**',
+                                  ms,
+                                  convert_from_bytes(download_speed),
+                                  convert_from_bytes(upload_speed),
+                                  ping_time,
+                                  i_s_p,
+                                  i_s_p_rating,
+                                  '']))
         else:
-            reply_doc(message,
-                      speedtest_image,
-                      caption=get_translation('speedtestResultDoc', ['**', ms]))
+            reply_doc(
+                message, speedtest_image, caption=get_translation(
+                    'speedtestResultDoc', [
+                        '**', ms]))
             message.delete()
     except Exception as exc:
-        edit(message, get_translation('speedtestResultText', ['**', ms, convert_from_bytes(
-            download_speed), convert_from_bytes(upload_speed), ping_time, i_s_p, i_s_p_rating, f'ERROR: {str(exc)}']))
+        edit(message,
+             get_translation('speedtestResultText',
+                             ['**',
+                              ms,
+                              convert_from_bytes(download_speed),
+                              convert_from_bytes(upload_speed),
+                              ping_time,
+                              i_s_p,
+                              i_s_p_rating,
+                              f'ERROR: {str(exc)}']))
 
 
 def convert_from_bytes(size):

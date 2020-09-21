@@ -38,7 +38,7 @@ def lyrics(message):
             args = args.split('-')
             artist = args[0].strip()
             song = args[1].strip()
-        except:
+        except BaseException:
             edit(message, f'`{get_translation("lyricsError2")}`')
             return
 

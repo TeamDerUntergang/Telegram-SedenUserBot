@@ -173,7 +173,7 @@ def execute_command(command):
         islem = Popen(command, stdout=PIPE, stderr=PIPE,
                       universal_newlines=True)
         sonuc, _ = islem.communicate()
-    except:  # pylint: disable=W0702
+    except BaseException:
         pass
     return sonuc, islem.returncode
 

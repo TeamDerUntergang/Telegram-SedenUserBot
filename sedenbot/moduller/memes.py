@@ -529,7 +529,7 @@ def shout(message):
         result[0] = text[0]
         result = "".join(result)
         msg = "\n" + result
-        edit(message, '`'+msg+'`')
+        edit(message, '`' + msg + '`')
 
 
 @sedenify(pattern='^.owo')
@@ -699,28 +699,28 @@ def iqless(message):
 
 @sedenify(pattern='^.mizah$')
 def mizahshow(message):
-    edit(message,
-         '⚠️⚠️⚠️MmMmMmMizahh Şoww😨😨😨😨😱😱😱😱😱 \n'
-         '😱😱⚠️⚠️ 😂😂😂😂😂😂😂😂😂😂😂😂😂😂😱😵 \n'
-         '😂😂👍👍👍👍👍👍👍👍👍👍👍👍👍 MiZah \n'
-         'ŞeLaLesNdEn b1r yUdm aLdım✔️✔️✔️✔️ \n'
-         'AHAHAHAHAHAHHAHAHAHAHAHAHAHAHAHAHAHHAHAHAHAHA \n'
-         'HAHAHAHAHAHAHHAHAHAHAHAHAHA😂😂😂😂😂😂😂😂 \n'
-         '😂 KOMİK LAN KOMİİİK \n'
-         'heLaL LaN ✔️✔️✔️✔️✔️✔️✔️✔️👏👏👏👏👏👏👏👏 \n'
-         '👏 EfSaNe mMmMiZah şooooovv 👏👏👏👏👏😂😂😂😂 \n'
-         '😂😂😂😂😂😂⚠️ \n'
-         '💯💯💯💯💯💯💯💯💯 \n'
-         'KNK AYNI BİİİZ 😂😂😂👏👏 \n'
-         '💯💯⚠️⚠️♿️AÇ YOLU POST SAHİBİ VE ONU ♿️SAVUNANLAR \n'
-         'GELIYOR ♿️♿️ DÜÜTT♿️ \n'
-         'DÜÜÜÜT♿️DÜÜT♿️💯💯⚠️ \n'
-         '♿️KOMİİİK ♿️ \n'
-         'CJWJCJWJXJJWDJJQUXJAJXJAJXJWJFJWJXJAJXJWJXJWJFIWIXJQJJQJASJAXJ \n'
-         'AJXJAJXJJAJXJWJFWJJFWIIFIWICIWIFIWICJAXJWJFJEICIIEICIEIFIWICJSXJJS \n'
-         'CJEIVIAJXBWJCJIQICIWJX💯💯💯💯💯💯😂😂😂😂😂😂😂 \n'
-         '😂⚠️😂😂😂😂😂😂⚠️⚠️⚠️😂😂😂😂♿️♿️♿️😅😅 \n'
-         '😅😂👏💯⚠️👏♿️🚨')
+    edit(
+        message, '⚠️⚠️⚠️MmMmMmMizahh Şoww😨😨😨😨😱😱😱😱😱 \n'
+        '😱😱⚠️⚠️ 😂😂😂😂😂😂😂😂😂😂😂😂😂😂😱😵 \n'
+        '😂😂👍👍👍👍👍👍👍👍👍👍👍👍👍 MiZah \n'
+        'ŞeLaLesNdEn b1r yUdm aLdım✔️✔️✔️✔️ \n'
+        'AHAHAHAHAHAHHAHAHAHAHAHAHAHAHAHAHAHHAHAHAHAHA \n'
+        'HAHAHAHAHAHAHHAHAHAHAHAHAHA😂😂😂😂😂😂😂😂 \n'
+        '😂 KOMİK LAN KOMİİİK \n'
+        'heLaL LaN ✔️✔️✔️✔️✔️✔️✔️✔️👏👏👏👏👏👏👏👏 \n'
+        '👏 EfSaNe mMmMiZah şooooovv 👏👏👏👏👏😂😂😂😂 \n'
+        '😂😂😂😂😂😂⚠️ \n'
+        '💯💯💯💯💯💯💯💯💯 \n'
+        'KNK AYNI BİİİZ 😂😂😂👏👏 \n'
+        '💯💯⚠️⚠️♿️AÇ YOLU POST SAHİBİ VE ONU ♿️SAVUNANLAR \n'
+        'GELIYOR ♿️♿️ DÜÜTT♿️ \n'
+        'DÜÜÜÜT♿️DÜÜT♿️💯💯⚠️ \n'
+        '♿️KOMİİİK ♿️ \n'
+        'CJWJCJWJXJJWDJJQUXJAJXJAJXJWJFJWJXJAJXJWJXJWJFIWIXJQJJQJASJAXJ \n'
+        'AJXJAJXJJAJXJWJFWJJFWIIFIWICIWIFIWICJAXJWJFJEICIIEICIEIFIWICJSXJJS \n'
+        'CJEIVIAJXBWJCJIQICIWJX💯💯💯💯💯💯😂😂😂😂😂😂😂 \n'
+        '😂⚠️😂😂😂😂😂😂⚠️⚠️⚠️😂😂😂😂♿️♿️♿️😅😅 \n'
+        '😅😂👏💯⚠️👏♿️🚨')
 
 
 @sedenify(pattern='^.h$')
@@ -1078,10 +1078,8 @@ def kuculme(message):
         "◼️◼️◼️◼️◼️\n◼️◼️◼️◼️◼️\n◼️🔴🔵🌕♓♎⛎🔴🔵🌕♓♎⛎◼️◼️\n◼️◼️◼️◼️◼️\n◼️◼️◼️◼️◼️",
         "◼️◼️◼️◼️◼️\n◼️◼️◼️◼️◼️\n◼️◼️🔴🔵🌕♓♎⛎◼️◼️\n◼️◼️◼️◼️◼️\n◼️◼️◼️◼️◼️",
         "◼️◼️◼️◼️◼️\n◼️◼️◼️◼️◼️\n◼️◼️◼️◼️◼️\n◼️◼️◼️◼️◼️\n◼️◼️◼️◼️◼️",
-        "◼️◼️◼️◼️\n◼️◼️◼️◼️\n◼️◼️◼️◼️\n◼️◼️◼️◼️",
-        "◼️◼️◼️\n◼️◼️◼️\n◼️◼️◼️",
-        "◼️◼️\n◼️◼️",
-        "◼️"]
+        "◼️◼️◼️◼️\n◼️◼️◼️◼️\n◼️◼️◼️◼️\n◼️◼️◼️◼️", "◼️◼️◼️\n◼️◼️◼️\n◼️◼️◼️",
+        "◼️◼️\n◼️◼️", "◼️"]
     for i in animation_ttl:
         sleep(animation_interval)
         edit(message, animation_chars[i % 30])

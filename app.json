@@ -68,6 +68,20 @@
             "value": "False",
             "required": false
         },
+        "PM_AUTO_BAN": {
+            "description": "PM Otomatik Yasaklama Özelliği. 'Hey! Bu bir bot.' modülüdür.",
+            "value": "False",
+            "required": false
+        },
+        "PM_MSG_COUNT": {
+            "description": "PM Otomatik Yasaklama Özelliği için Mesaj Sınırı Belirleme. Varsayılan 5 olarak ayarlanmıştır.",
+            "value": "5",
+            "required": false
+        },
+        "PM_UNAPPROVED": {
+            "description": "PM Otomatik Yasaklama Özelliği için Kişisel Mesaj Ayarlama. Varsayılan olarak Kendi Mesajımız Vardır.",
+            "required": false
+        },
         "OCR_APIKEY": {
             "description": ".ocr komutu için OCR API Key. https://ocr.space/ocrapi adresinden alın.",
             "required": false

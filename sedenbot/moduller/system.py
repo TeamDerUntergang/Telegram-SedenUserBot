@@ -39,7 +39,7 @@ def neofetch(message):
         islem = Popen(['neofetch', '--stdout'], stdout=PIPE, stderr=PIPE)
         sonuc, _ = islem.communicate()
         edit(message, sonuc.decode(), parse=None)
-    except:
+    except BaseException:
         edit(message, f'`{get_translation("neofetchNotFound")}`')
 
 
@@ -51,8 +51,16 @@ def botver(message):
                            stdout=PIPE, stderr=PIPE, universal_newlines=True)
         sonuc, _ = degisiklik.communicate()
 
-        edit(message, get_translation('sedenShowBotVersion', [
-             '**', '`', 'Seden UserBot', CHANNEL, BOT_VERSION, sonuc]), preview=False, fix_markdown=True)
+        edit(message,
+             get_translation('sedenShowBotVersion',
+                             ['**',
+                              '`',
+                              'Seden UserBot',
+                              CHANNEL,
+                              BOT_VERSION,
+                              sonuc]),
+             preview=False,
+             fix_markdown=True)
     else:
         edit(message, f'`{get_translation("sedenGitNotFound")}`')
 
@@ -188,7 +196,7 @@ def terminal(message):
     try:
         from subprocess import getoutput
         sonuc = getoutput(command)
-    except:
+    except BaseException:
         pass
 
     if len(sonuc) > 4096:
@@ -201,7 +209,9 @@ def terminal(message):
         return
 
     edit(
-        message, f'`{curruser}:~{"#" if uid == 0 else "$"} {command}\n{sonuc}`', fix_markdown=True)
+        message,
+        f'`{curruser}:~{"#" if uid == 0 else "$"} {command}\n{sonuc}`',
+        fix_markdown=True)
 
     send_log(get_translation('termLog', [command]))
 

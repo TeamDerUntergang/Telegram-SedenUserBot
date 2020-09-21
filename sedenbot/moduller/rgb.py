@@ -61,7 +61,7 @@ def sticklet(client, message):
         font = ImageFont.truetype(FONT_FILE, size=int(fontsize))
 
     width, height = draw.multiline_textsize(sticktext, font=font)
-    draw.multiline_text(((512-width)/2, (512-height)/2),
+    draw.multiline_text(((512 - width) / 2, (512 - height) / 2),
                         sticktext, font=font, fill=(R, G, B))
 
     image_stream = BytesIO()
@@ -82,7 +82,7 @@ def sticklet(client, message):
     message.delete()
     try:
         remove(image_stream.name)
-    except:
+    except BaseException:
         pass
 
 

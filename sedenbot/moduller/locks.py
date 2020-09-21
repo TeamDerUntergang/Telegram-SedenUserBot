@@ -84,7 +84,8 @@ def lock(client, message):
     else:
         if not kilit:
             edit(
-                message, f"{get_translation('locksUnlockNoArgs' if unlock else 'locksLockNoArgs')}")
+                message,
+                f"{get_translation('locksUnlockNoArgs' if unlock else 'locksLockNoArgs')}")
             return
         else:
             edit(message, get_translation("lockError", ['`', kilit]))
@@ -119,15 +120,17 @@ def lock(client, message):
             can_invite_users=adduser,
             can_pin_messages=cpin
         ))
-        edit(message, get_translation(
-            'locksUnlockSuccess' if unlock else 'locksLockSuccess', ['`', kullanim]))
+        edit(
+            message, get_translation(
+                'locksUnlockSuccess' if unlock else 'locksLockSuccess', [
+                    '`', kullanim]))
     except BaseException as e:
         edit(message, get_translation("lockPerm", ['`', '**', str(e)]))
         return
 
 
 def get_on_none(item, defval):
-    if item == None:
+    if item is None:
         return defval
 
     return item

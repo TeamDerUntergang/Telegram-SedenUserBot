@@ -32,12 +32,12 @@ def filter_incoming(message):
 
     try:
         from sedenecem.sql.filters_sql import get_filters
-    except:
+    except BaseException:
         message.continue_propagation()
 
     try:
         filters = get_filters(message.chat.id)
-    except:
+    except BaseException:
         message.continue_propagation()
 
     if not filters:
@@ -65,7 +65,7 @@ def filter_incoming(message):
 def add_filter(message):
     try:
         from sedenecem.sql.filters_sql import add_filter
-    except:
+    except BaseException:
         edit(message, f'`{get_translation("nonSqlMode")}`')
         return
     args = extract_args(message, markdown=True).split(' ', 1)
@@ -104,7 +104,7 @@ def add_filter(message):
 def stop_filter(message):
     try:
         from sedenecem.sql.filters_sql import remove_filter
-    except:
+    except BaseException:
         edit(message, f'`{get_translation("nonSqlMode")}`')
         return
     filt = extract_args(message)
@@ -118,7 +118,7 @@ def stop_filter(message):
 def filters(message):
     try:
         from sedenecem.sql.filters_sql import get_filters
-    except:
+    except BaseException:
         edit(message, f'`{get_translation("nonSqlMode")}`')
         return
     transact = f'`{get_translation("noFilter")}`'

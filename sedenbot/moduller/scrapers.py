@@ -32,8 +32,15 @@ from bs4 import BeautifulSoup
 from pyrogram import InputMediaPhoto
 
 from sedenbot import KOMUT, SEDEN_LANG
-from sedenecem.core import (edit, send_log, reply_doc, reply_voice, extract_args,
-                            sedenify, get_webdriver, get_translation)
+from sedenecem.core import (
+    edit,
+    send_log,
+    reply_doc,
+    reply_voice,
+    extract_args,
+    sedenify,
+    get_webdriver,
+    get_translation)
 
 CARBONLANG = 'auto'
 TTS_LANG = SEDEN_LANG
@@ -118,10 +125,12 @@ def img(message):
     driver.get(url)
     count = 1
     files = []
-    for i in driver.find_elements_by_xpath('//div[contains(@class,"isv-r PNCib MSM1fd BUooTd")]'):
+    for i in driver.find_elements_by_xpath(
+            '//div[contains(@class,"isv-r PNCib MSM1fd BUooTd")]'):
         i.click()
         try_count = 0
-        while len(element := driver.find_elements_by_xpath('//img[contains(@class,"n3VNCb") and contains(@src,"http")]')) < 1 and try_count < 20:
+        while len(element := driver.find_elements_by_xpath(
+                '//img[contains(@class,"n3VNCb") and contains(@src,"http")]')) < 1 and try_count < 20:
             try_count += 1
             sleep(.1)
         if len(element) < 1:
@@ -132,7 +141,8 @@ def img(message):
             with open(filename, 'wb') as result:
                 result.write(get(link).content)
             ftype = guess_type(filename)
-            if not ftype[0] or ftype[0].split('/')[1] not in ['png', 'jpg', 'jpeg']:
+            if not ftype[0] or ftype[0].split(
+                    '/')[1] not in ['png', 'jpg', 'jpeg']:
                 remove(filename)
                 continue
         except Exception as e:
@@ -163,7 +173,7 @@ def google(message):
         page = page.replace("page=", "")
         match = match.replace("page=" + page[0], "")
         page = int(page)
-    except:
+    except BaseException:
         page = 1
     msg = do_gsearch(match, page)
     edit(message, get_translation("googleResult", ['**', '`', match, msg]),
@@ -190,10 +200,11 @@ def do_gsearch(query, page):
 
     query = parse_key(query)
     page = find_page(page)
-    req = get(f'https://www.google.com/search?q={query}&start={find_page(page)}',
-              headers={
-                  'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36',
-                  'Content-Type': 'text/html'})
+    req = get(
+        f'https://www.google.com/search?q={query}&start={find_page(page)}',
+        headers={
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36',
+            'Content-Type': 'text/html'})
     soup = BeautifulSoup(req.text, 'html.parser')
     res1 = soup.findAll('div', {'class': ['rc']})
     out = ""
@@ -210,10 +221,11 @@ def ddgo(message):
     if len(query) < 1:
         edit(message, f'`{get_translation("wrongCommand")}`')
         return
-    req = get(f'https://duckduckgo.com/lite?q={query}',
-              headers={
-                  'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36',
-                  'Content-Type': 'text/html'})
+    req = get(
+        f'https://duckduckgo.com/lite?q={query}',
+        headers={
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36',
+            'Content-Type': 'text/html'})
     soup = BeautifulSoup(req.text, 'html.parser')
     res1 = soup.findAll('table', {'border': 0})
     res1 = res1[-1].findAll('tr')
@@ -384,8 +396,12 @@ def trt(message):
 
     source_lan = LANGUAGES[f'{reply_text.src.lower()}']
     transl_lan = LANGUAGES[f'{reply_text.dest.lower()}']
-    reply_text = '{}\n\n{}'.format(get_translation(
-        'transHeader', ['**', '`', source_lan.title(), transl_lan.title()]), reply_text.text)
+    reply_text = '{}\n\n{}'.format(
+        get_translation(
+            'transHeader',
+            ['**', '`', source_lan.title(),
+             transl_lan.title()]),
+        reply_text.text)
 
     edit(message, reply_text)
 
@@ -420,7 +436,7 @@ def lang(message):
         else:
             edit(message, get_translation("scraperTts", ['`', tts_langs()]))
             return
-    edit(message,  get_translation(
+    edit(message, get_translation(
         "scraperResult", ['`', scraper, LANG.title()]))
 
     send_log(get_translation("scraperLog", ['`', scraper, LANG.title()]))

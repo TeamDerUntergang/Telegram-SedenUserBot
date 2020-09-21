@@ -34,7 +34,7 @@ def github(message):
     try:
         user_info = get(f'https://api.github.com/users/{args}')
         json = loads(user_info.text)
-    except:  # pylint: disable=W0702
+    except BaseException:
         edit(message, f'`{get_translation("gitError")}`')
         return
 
@@ -77,7 +77,7 @@ def github(message):
         repos = []
         for item in json:
             repos.append(f'[{item["name"]}]({item["html_url"]})')
-    except:
+    except BaseException:
         pass
 
     def format_info(key, value):
