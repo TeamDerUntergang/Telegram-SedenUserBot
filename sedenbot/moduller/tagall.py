@@ -17,8 +17,6 @@
 from sedenbot import KOMUT
 from sedenecem.core import sedenify, reply, get_translation
 
-# Copyright (c) @NaytSeyd | 2020
-
 
 @sedenify(pattern='^.tagall$', compat=False, private=False)
 def tagall(client, message):

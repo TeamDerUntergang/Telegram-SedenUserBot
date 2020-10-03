@@ -15,7 +15,8 @@
 #
 
 from sedenbot import KOMUT, LOG_ID
-from sedenecem.core import extract_args, sedenify, edit, get_messages, reply_msg, forward, send_log, get_translation
+from sedenecem.core import (extract_args, sedenify, edit, get_messages,
+                            reply_msg, forward, send_log, get_translation)
 
 
 @sedenify(pattern='^.addsnip')
@@ -47,7 +48,7 @@ def save_snip(message):
                     return
                 msg_id = msg_o.message_id
                 send_log(get_translation(
-                    'snipsLog', [message.chat.id, keyword]))
+                    'snipsLog', ['`', message.chat.id, keyword]))
         else:
             edit(message, f'`{get_translation("wrongCommand")}`')
 

@@ -14,12 +14,21 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from os import remove
 from random import choice
 from requests import get
 
 from sedenbot import KOMUT, me
 from sedenecem.conv import PyroConversation
-from sedenecem.core import edit, sedenify, download_media, get_translation, extract_args, sticker_resize as resizer
+from sedenecem.core import (
+    edit,
+    sedenify,
+    download_media,
+    download_media_wc,
+    reply_doc,
+    get_translation,
+    extract_args,
+    sticker_resize as resizer)
 # ================= CONSTANT =================
 DIZCILIK = [
     f'{get_translation("kangstr1")}',
@@ -36,7 +45,6 @@ DIZCILIK = [
     f'{get_translation("kangstr12")}',
 ]
 # ================= CONSTANT =================
-# Copyright (c) @NaytSeyd, @frknkrc44 | 2020
 
 
 @sedenify(pattern='^.(d[ıi]zla|kang)', compat=False)
@@ -144,6 +152,23 @@ def send_recv(conv, msg, doc=False):
     else:
         conv.send_msg(msg)
     return conv.recv_msg()
+
+
+@sedenify(pattern='^.getsticker$')
+def getsticker(message):
+    reply = message.reply_to_message
+    if not reply or not reply.sticker:
+        edit(message, f'`{get_translation("replySticker")}`')
+        return
+
+    photo = download_media_wc(reply)
+
+    reply_doc(
+        reply,
+        photo,
+        caption=f'**Sticker ID:** `{reply.sticker.file_id}`\n**Emoji**: `{reply.sticker.emoji}`')
+    message.delete()
+    remove(photo)
 
 
 KOMUT.update({"stickers": get_translation("stickerInfo")})

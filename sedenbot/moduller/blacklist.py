@@ -13,15 +13,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-# @NaytSeyd tarafından portlanmıştır.
-#
 
 from io import BytesIO
 from re import escape, search, IGNORECASE
 from importlib import import_module
 
 from sedenbot import KOMUT, LOGS
-from sedenecem.core import edit, reply, send_log, reply_doc, extract_args, sedenify, get_translation
+from sedenecem.core import (edit, reply, send_log, reply_doc,
+                            extract_args, sedenify, get_translation)
 
 
 def blacklist_init():

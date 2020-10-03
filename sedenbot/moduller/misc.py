@@ -62,8 +62,8 @@ def repo(message):
 
 
 @sedenify(pattern='^.repeat')
-# Copyright (c) Gegham Zakaryan | 2019
 def repeat(message):
+    """Copyright (c) Gegham Zakaryan | 2019"""
     args = extract_args(message).split(' ', 1)
     if len(args) < 2:
         edit(message, f'`{get_translation("wrongCommand")}`')

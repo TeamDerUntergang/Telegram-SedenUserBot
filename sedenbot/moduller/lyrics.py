@@ -18,7 +18,8 @@ from os import remove
 from lyricsgenius import Genius
 
 from sedenbot import KOMUT, GENIUS_TOKEN
-from sedenecem.core import edit, reply_doc, extract_args, sedenify, get_translation
+from sedenecem.core import (edit, reply_doc, extract_args,
+                            sedenify, get_translation)
 
 
 @sedenify(pattern='^.lyrics')

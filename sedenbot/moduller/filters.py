@@ -17,7 +17,16 @@
 from re import fullmatch, IGNORECASE
 
 from sedenbot import KOMUT, LOG_ID
-from sedenecem.core import extract_args, sedenify, edit, get_messages, reply_msg, reply, forward, send_log, get_translation
+from sedenecem.core import (
+    extract_args,
+    sedenify,
+    edit,
+    get_messages,
+    reply_msg,
+    reply,
+    forward,
+    send_log,
+    get_translation)
 
 
 @sedenify(incoming=True, outgoing=False)
@@ -89,7 +98,7 @@ def add_filter(message):
                     return
                 msg_id = msg_o.message_id
                 send_log(get_translation(
-                    'filter_log', [message.chat.id, keyword]))
+                    'filterLog', ['`', message.chat.id, keyword]))
         else:
             edit(message, f'`{get_translation("wrongCommand")}`')
 

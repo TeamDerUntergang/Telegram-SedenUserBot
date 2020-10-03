@@ -20,8 +20,6 @@ from json import loads
 from sedenbot import KOMUT
 from sedenecem.core import edit, sedenify, get_translation
 
-# Copyright (c) @frknkrc44 | 2020
-
 
 @sedenify(pattern='^.covid(|19)$')
 def covid(message):

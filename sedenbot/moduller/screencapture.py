@@ -19,7 +19,8 @@ from base64 import b64decode
 from re import match
 
 from sedenbot import KOMUT
-from sedenecem.core import edit, reply_doc, extract_args, sedenify, get_webdriver, get_translation
+from sedenecem.core import (edit, reply_doc, extract_args,
+                            sedenify, get_webdriver, get_translation)
 
 
 @sedenify(pattern=r'^.ss')
@@ -46,7 +47,6 @@ def ss(message):
         message, f'`{get_translation("ssResult", [height, width, wait_for])}`')
     sleep(wait_for)
     im_png = driver.get_screenshot_as_base64()
-    # Sayfanın ekran görüntüsü kaydedilir.
     driver.close()
     message_id = message.message_id
     if message.reply_to_message:

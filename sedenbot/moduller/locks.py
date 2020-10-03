@@ -17,7 +17,8 @@
 from pyrogram import ChatPermissions
 
 from sedenbot import KOMUT
-from sedenecem.core import edit, extract_args, sedenify, get_translation
+from sedenecem.core import (edit, extract_args,
+                            sedenify, get_translation)
 
 
 @sedenify(pattern=r'^.(un|)lock', compat=False, private=False)

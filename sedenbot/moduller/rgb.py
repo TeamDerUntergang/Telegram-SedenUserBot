@@ -22,7 +22,8 @@ from textwrap import wrap
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 
 from sedenbot import KOMUT
-from sedenecem.core import extract_args, sedenify, edit, send_sticker, get_translation
+from sedenecem.core import (extract_args, sedenify, edit,
+                            send_sticker, get_translation)
 
 
 @sedenify(pattern='^.rgb', compat=False)
@@ -31,19 +32,16 @@ def sticklet(client, message):
     G = randint(0, 256)
     B = randint(0, 256)
 
-    # Giriş metnini al
     sticktext = extract_args(message)
 
     if len(sticktext) < 1:
         edit(message, f'`{get_translation("wrongCommand")}`')
         return
 
-    # Komutu düzenle
     edit(message, f'`{get_translation("rgbProcessing")}`')
 
     # https://docs.python.org/3/library/textwrap.html#textwrap.wrap
     sticktext = wrap(sticktext, width=10)
-    # Listeyi bir dizeye dönüştür
     sticktext = '\n'.join(sticktext)
 
     image = Image.new('RGBA', (512, 512), (255, 255, 255, 0))

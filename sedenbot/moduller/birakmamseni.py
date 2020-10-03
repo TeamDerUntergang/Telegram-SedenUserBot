@@ -19,11 +19,10 @@ from requests import post
 from sedenbot import KOMUT
 from sedenecem.core import edit, sedenify, get_translation
 
-# Copyright (c) @Adem68 | 2020
-
 
 @sedenify(pattern='^.b[ıi]rakmamseni$')
 def birakmamseni(message):
+    """Copyright (c) @Adem68 | 2020"""
     url = 'https://birakmamseni.org/'
     path = 'api/counter'
 

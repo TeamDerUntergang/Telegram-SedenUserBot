@@ -22,8 +22,6 @@ from bs4 import BeautifulSoup
 from sedenbot import KOMUT
 from sedenecem.core import edit, extract_args, sedenify, get_translation
 
-# Copyright (c) @NaytSeyd, @frknkrc44 | 2020
-
 
 @sedenify(pattern='^.ezanvakti')
 def ezanvakti(message):

@@ -29,8 +29,6 @@ from sedenbot import SUPPORT_GROUP, LOG_ID, BLACKLIST, BRAIN_CHECKER, CHROME_DRI
 
 MARKDOWN_FIX_CHAR = '\u2064'
 
-# Copyright (c) @NaytSeyd, @frknkrc44 | 2020
-
 
 def sedenify(**args):
     pattern = args.get('pattern', None)
@@ -408,7 +406,7 @@ def download_media(
         elif data.video_note:
             file_name = f'{data.video_note.file_id}.mp4'
         elif data.sticker:
-            file_name = f'{data.sticker.file_id}.{"tgs" if data.sticker.is_animated else ("webp" if sticker_orig else "png")}'
+            file_name = f'{data.sticker.file_name}.{"TGS" if data.sticker.is_animated else ("webp" if sticker_orig else "png")}'
         else:
             return None
 

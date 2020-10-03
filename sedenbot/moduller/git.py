@@ -20,8 +20,6 @@ from requests import get
 from sedenbot import KOMUT
 from sedenecem.core import sedenify, edit, extract_args, get_translation
 
-# Copyright (c) @frknkrc44 | 2020
-
 
 @sedenify(pattern='^.github')
 def github(message):

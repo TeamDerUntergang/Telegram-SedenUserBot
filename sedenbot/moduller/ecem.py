@@ -228,7 +228,7 @@ ECEM_STRINGS = [
     "LAN HATIRLATMA sjjdjdjdkdkdkdkdk bir fotoğraf çekilelim mi NE SJSKSKSKSK",
     "Yemin ederim daha fazla sevenini görmedim jdjdkdkdkd", ]
 # ================= CONSTANT =================
-# Copyright (c) @NaytSeyd, @Sedenogen | 2020
+"""Copyright (c) @Sedenogen | 2020"""
 
 
 @sedenify(pattern='^.ecem$')

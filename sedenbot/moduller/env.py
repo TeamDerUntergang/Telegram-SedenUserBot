@@ -18,7 +18,15 @@ from time import sleep
 from heroku3 import from_key
 
 from sedenbot.moduller.system import restart
-from sedenbot import KOMUT, HEROKU_KEY, HEROKU_APPNAME, set_local_env, unset_local_env, environ, reload_env, ENV_RESTRICTED_KEYS
+from sedenbot import (
+    KOMUT,
+    HEROKU_KEY,
+    HEROKU_APPNAME,
+    set_local_env,
+    unset_local_env,
+    environ,
+    reload_env,
+    ENV_RESTRICTED_KEYS)
 from sedenecem.core import edit, sedenify, extract_args, get_translation
 
 
@@ -39,7 +47,7 @@ def manage_env(client, message):
         heroku_applications = heroku.apps()
         if not HEROKU_APPNAME:
             edit(
-                ups,
+                message,
                 f'`{get_translation("updateHerokuVariables", ["HEROKU_APPNAME "])}`')
         for app in heroku_applications:
             if app.name == HEROKU_APPNAME:
@@ -48,7 +56,7 @@ def manage_env(client, message):
                 break
         if heroku_app is None:
             edit(
-                ups,
+                message,
                 f'`{get_translation("updateHerokuVariables", ["HEROKU_APPNAME "])}`')
             return
 
@@ -58,7 +66,7 @@ def manage_env(client, message):
         items = action[1].split(' ', 1)
 
         if len(items) < 2 or len(
-                items[1]) < 1 or items[0] in ENV_RESTRICTED_KEYS:
+                items[1]) < 1 or items[0].upper() in ENV_RESTRICTED_KEYS:
             edit(message, f"`{get_translation('wrongCommand')}`")
             return
 
@@ -77,7 +85,7 @@ def manage_env(client, message):
     elif action[0] == 'get':
         items = action[1].split(' ', 1)
 
-        if len(items[0]) < 1 or items[0] in ENV_RESTRICTED_KEYS:
+        if len(items[0]) < 1 or items[0].upper() in ENV_RESTRICTED_KEYS:
             edit(message, f"`{get_translation('wrongCommand')}`")
             return
 
@@ -101,7 +109,7 @@ def manage_env(client, message):
     elif action[0] == 'rem':
         items = action[1].split(' ', 1)
 
-        if len(items[0]) < 1 or items[0] in ENV_RESTRICTED_KEYS:
+        if len(items[0]) < 1 or items[0].upper() in ENV_RESTRICTED_KEYS:
             edit(message, f"`{get_translation('wrongCommand')}`")
             return
 

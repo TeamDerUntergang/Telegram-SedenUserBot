@@ -17,10 +17,12 @@
 from sqlalchemy.exc import IntegrityError
 
 from sedenbot.moduller.chat import is_muted
-from sedenbot import PM_COUNT, KOMUT, PM_AUTO_BAN, PM_LAST_MSG, LOGS, PM_UNAPPROVED, PM_MSG_COUNT
-from sedenecem.core import sedenify, send_log, me, edit, reply, get_translation
+from sedenbot import (PM_COUNT, KOMUT, PM_AUTO_BAN,
+                      PM_LAST_MSG, LOGS, PM_UNAPPROVED, PM_MSG_COUNT)
+from sedenecem.core import (sedenify, send_log, me,
+                            edit, reply, get_translation)
 # ========================= CONSTANTS ============================
-DEF_UNAPPROVED_MSG = PM_UNAPPROVED or get_translation('pmpermitMessage', ['`'])
+UNAPPROVED_MSG = PM_UNAPPROVED or get_translation('pmpermitMessage', ['`'])
 # =================================================================
 
 
@@ -29,10 +31,6 @@ DEF_UNAPPROVED_MSG = PM_UNAPPROVED or get_translation('pmpermitMessage', ['`'])
 def permitpm(client, message):
     if message.from_user and message.from_user.is_self:
         message.continue_propagation()
-
-    UNAPPROVED_MSG = DEF_UNAPPROVED_MSG
-    if 'PM_USER_MSG' in globals() and PM_USER_MSG:
-        UNAPPROVED_MSG = PM_USER_MSG
 
     if not PM_AUTO_BAN:
         message.continue_propagation()
@@ -152,9 +150,6 @@ def notifon(message):
 
 @sedenify(outgoing=True, pattern="^.approve$", compat=False)
 def approvepm(client, message):
-    UNAPPROVED_MSG = DEF_UNAPPROVED_MSG
-    if 'PM_USER_MSG' in globals() and PM_USER_MSG:
-        UNAPPROVED_MSG = PM_USER_MSG
     try:
         from sedenecem.sql.pm_permit_sql import approve
     except BaseException:
@@ -164,6 +159,9 @@ def approvepm(client, message):
     if message.reply_to_message:
         reply = message.reply_to_message
         replied_user = reply.from_user
+        if replied_user.is_self:
+            edit(message, f'`{get_translation("cannotApproveMyself")}`')
+            return
         aname = replied_user.id
         name0 = str(replied_user.first_name)
         uid = replied_user.id
@@ -177,14 +175,13 @@ def approvepm(client, message):
 
     try:
         approve(uid)
+        for message in _find_unapproved_msg(client, message.chat.id):
+            message.delete()
     except IntegrityError:
         edit(message, f'`{get_translation("pmApproveError2")}`')
         return
 
     edit(message, get_translation("pmApproveSuccess", [name0, uid, '`']))
-
-    for message in _find_unapproved_msg(client, message.chat.id):
-        message.delete()
 
     send_log(get_translation("pmApproveLog", [name0, uid]))
 
@@ -200,6 +197,9 @@ def disapprovepm(message):
     if message.reply_to_message:
         reply = message.reply_to_message
         replied_user = reply.from_user
+        if replied_user.is_self:
+            edit(message, f'`{get_translation("cannotDisapproveMyself")}`')
+            return
         aname = replied_user.id
         name0 = str(replied_user.first_name)
         uid = replied_user.id
@@ -223,6 +223,9 @@ def blockpm(client, message):
     if message.reply_to_message:
         reply = message.reply_to_message
         replied_user = reply.from_user
+        if replied_user.is_self:
+            edit(message, f'`{get_translation("cannotBlockMyself")}`')
+            return
         aname = replied_user.id
         name0 = str(replied_user.first_name)
         uid = replied_user.id
@@ -252,6 +255,9 @@ def unblockpm(client, message):
     if message.reply_to_message:
         reply = message.reply_to_message
         replied_user = reply.from_user
+        if replied_user.is_self:
+            edit(message, f'`{get_translation("cannotUnblockMyself")}`')
+            return
         aname = replied_user.id
         name0 = str(replied_user.first_name)
         uid = replied_user.id
@@ -263,26 +269,7 @@ def unblockpm(client, message):
         edit(message, f'`{get_translation("pmUnblockedUsage")}`')
 
 
-@sedenify(pattern="^.(rem|set)permitmsg")
-def set_permit_msg(message):
-    txt = message.text.split(' ', 1)
-    act = txt[0][1:4]
-    global PM_USER_MSG
-    if act == 'rem':
-        PM_USER_MSG = None
-        UNAPPROVED_MSG = DEF_UNAPPROVED_MSG
-        edit(message, get_translation("remPermitMsg", ['`', UNAPPROVED_MSG]))
-    elif len(txt) < 2:
-        edit(message, f'`{get_translation("setPermitUsage")}`')
-    else:
-        PM_USER_MSG = UNAPPROVED_MSG = txt[1]
-        edit(message, get_translation("setPermitMsg", ['`', UNAPPROVED_MSG]))
-
-
 def _find_unapproved_msg(client, chat_id):
-    UNAPPROVED_MSG = DEF_UNAPPROVED_MSG
-    if 'PM_USER_MSG' in globals() and PM_USER_MSG:
-        UNAPPROVED_MSG = PM_USER_MSG
     return client.search_messages(
         chat_id,
         from_user='me',

@@ -23,28 +23,8 @@ from humanize import naturalsize
 from requests import get, Session
 
 from sedenbot import KOMUT
-from sedenecem.core import edit, extract_args, sedenify, get_webdriver, get_translation
-
-
-def load_bins():
-    # CloudMail.ru ve MEGA.nz ayarlama
-    if not path.exists('bin'):
-        mkdir('bin')
-
-    binaries = {
-        "https://raw.githubusercontent.com/NaytSeyd/megadown/master/megadown":
-        "bin/megadown",
-        "https://raw.githubusercontent.com/NaytSeyd/cmrudl.py/master/cmrudl.py":
-        "bin/cmrudl"
-    }
-
-    for binary, pth in binaries.items():
-        with open(pth, 'wb') as load:
-            load.write(get(binary).content)
-        chmod(pth, 0o755)
-
-
-load_bins()
+from sedenecem.core import (edit, extract_args, sedenify,
+                            get_webdriver, get_translation)
 
 
 @sedenify(pattern=r'^.direct')
@@ -84,12 +64,8 @@ def direct(message):
         try:
             if check(link, 'zippyshare.com'):
                 reply += zippy_share(link)
-            elif check(link, ['mega.nz', 'mega.co.nz']):
-                reply += mega_dl(link)
             elif check(link, 'yadi.sk'):
                 reply += yandex_disk(link)
-            elif check(link, 'cloud.mail.ru'):
-                reply += cm_ru(link)
             elif check(link, 'mediafire.com'):
                 reply += mediafire(link)
             elif check(link, 'sourceforge.net'):
@@ -136,39 +112,6 @@ def yandex_disk(link: str) -> str:
     except KeyError:
         reply += f'`{get_translation("yadiskError")}`\n'
         return reply
-    return reply
-
-
-def mega_dl(link: str) -> str:
-    reply = ''
-    command = f'bin/megadown -q -m {link}'
-    result = popen(command).read()
-    try:
-        data = loads(result)
-    except JSONDecodeError:
-        reply += f'`{get_translation("urlError")}`\n'
-        return reply
-    dl_url = data['url']
-    name = data['file_name']
-    size = naturalsize(int(data['file_size']))
-    reply += f'[{name} ({size})]({dl_url})\n'
-    return reply
-
-
-def cm_ru(link: str) -> str:
-    reply = ''
-    command = f'bin/cmrudl -s {link}'
-    result = popen(command).read()
-    result = result.splitlines()[-1]
-    try:
-        data = loads(result)
-    except decoder.JSONDecodeError:
-        reply += f'`{get_translation("urlError")}`\n'
-        return reply
-    dl_url = data['download']
-    name = data['file_name']
-    size = naturalsize(int(data['file_size']))
-    reply += f'[{name} ({size})]({dl_url})\n'
     return reply
 
 

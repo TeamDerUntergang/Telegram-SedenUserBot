@@ -46,7 +46,7 @@ CONVERSATION = {}
 PM_COUNT = {}
 PM_LAST_MSG = {}
 
-# Ayrıntılı konsol günlügü
+# Console verbose logging
 LOG_VERBOSE = sb(environ.get("LOG_VERBOSE", "False"))
 
 basicConfig(
@@ -54,12 +54,10 @@ basicConfig(
     level=DEBUG if LOG_VERBOSE else INFO,
 )
 
-# Copyright (c) @NaytSeyd, @frknkrc44 | 2020
-
 #
-# Bot dili
+# Bot lang
 #
-# Eğer yanlış yazılırsa varsayılan dil ingilizcedir.
+# If missted, the default lang is English.
 SEDEN_LANG = environ.get('SEDEN_LANG', 'en')
 
 
@@ -84,11 +82,11 @@ def unset_local_env(key: str):
 
 
 def set_logger():
-    # String session değerini dışarı yazdırmayı kapatır
+    # Turns off out printing Session value
     pyrogram_syncer = getLogger('pyrogram.client.ext.syncer')
     pyrogram_syncer.setLevel(CRITICAL)
 
-    # Bazı önemsiz çıktıları kapatır
+    # Closes some junk outputs
     pyrogram_session = getLogger('pyrogram.session.session')
     pyrogram_session.setLevel(CRITICAL)
 
@@ -97,16 +95,16 @@ set_logger()
 
 LOGS = getLogger(__name__)
 
-# Yapılandırmanın önceden kullanılan değişkeni kullanarak düzenlenip düzenlenmediğini kontrol edin.
-# Temel olarak, yapılandırma dosyası için kontrol.
+# Check that the config is edited using the previously used variable.
+# Basically, check for config file.
 CONFIG_CHECK = environ.get(
-    "___________LUTFEN_______BU_____SATIRI_____SILIN__________", None)
+    "___________DELETE_______THIS_____LINE__________", None)
 
 if CONFIG_CHECK:
     LOGS.warn(f'{get_translation("removeFirstLine")}')
     quit(1)
 
-# Telegram APP ID ve HASH
+# Telegram APP ID and HASH
 API_ID = environ.get("API_ID", None)
 if not API_ID:
     LOGS.warn(f'{get_translation("apiIdError")}')
@@ -117,20 +115,20 @@ if not API_HASH:
     LOGS.warn(f'{get_translation("apiHashError")}')
     quit(1)
 
-BOT_VERSION = "1.3rc2 Alpha"
+BOT_VERSION = "1.3rc3 Alpha"
 SUPPORT_GROUP = "SedenUserBotSupport"
 CHANNEL = "SedenUserBot"
 
-# Hava durumu varsayılan şehir
+# Weather default city
 WEATHER = environ.get("WEATHER", None)
 
-# Genius modülü
+# Genius module
 GENIUS_TOKEN = environ.get("GENIUS_TOKEN", None) or environ.get("GENIUS", None)
 
-# Alive Mesajını değiştirme
+# Change Alive Message
 ALIVE_MESAJI = environ.get("ALIVE_MESAJI", None)
 
-# Chrome sürücüsü ve Google Chrome dosyaları
+# Chrome Driver and Headless Google Chrome Binaries
 CHROME_DRIVER = environ.get("CHROME_DRIVER", "chromedriver")
 
 # OCR API key
@@ -139,40 +137,39 @@ OCR_APIKEY = environ.get("OCR_APIKEY", None)
 # RBG API key
 RBG_APIKEY = environ.get("RBG_APIKEY", None)
 
-# SQL Veritabanı
+# SQL Database URL
 DATABASE_URL = environ.get("DATABASE_URL", None)
 
-# İndirme konumu
+# Download directory
 DOWNLOAD_DIRECTORY = environ.get("DOWNLOAD_DIRECTORY", "./downloads")
 
-# SedenBot String Session
+# SedenBot Session
 SESSION = environ.get("SESSION", 'sedenuserbot')
 
-# SedenBot güncellemesi için depo adresi
+# SedenBot repo url for updater
 REPO_URL = environ.get(
     "REPO_URL", "https://github.com/TeamDerUntergang/SedenUserBot")
 
-# Heroku bilgileri
+# Heroku Credentials for updater
 HEROKU_KEY = environ.get("HEROKU_KEY", None)
 HEROKU_APPNAME = environ.get("HEROKU_APPNAME", None)
 
-# Bot kayıtları için sohbet numarası
+# Chat ID for Bot Logs
 LOG_ID = environ.get("LOG_ID", None)
 LOG_ID = int(LOG_ID) if LOG_ID and resr(r'^-?\d+$', LOG_ID) else None
 
-# Test sunucusuna bağlantı kur
+# Connect to the test server
 #
-# Normal kullanıcılar için değildir
-# Ayrı hesabınız olur ama normal sunucudaki
-# mesajlara erişemezsiniz veya oradan bu hesaba
-# ulaşım sağlayamazsınız
+# You'll have a separate account,
+# but you won't be able to access
+# or access messages on the regular server
 #
-# Deep Telegram adıyla da bilinir
+# Also known as Deep Telegram
 #
-# Daha fazla bilgi: https://docs.pyrogram.org/topics/test-servers
+# For more information: https://docs.pyrogram.org/topics/test-servers
 DEEPGRAM = sb(environ.get('DEEPGRAM', "False"))
 
-# PM'den izinsiz dürtülmenizi engeller
+# PmPermit PM Auto Ban Stuffs
 PM_AUTO_BAN = sb(environ.get('PM_AUTO_BAN', "False"))
 PM_MSG_COUNT = environ.get('PM_MSG_COUNT', 'default')
 PM_MSG_COUNT = int(PM_MSG_COUNT) if PM_MSG_COUNT.isdigit() else 5

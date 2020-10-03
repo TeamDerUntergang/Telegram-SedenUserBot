@@ -1,106 +1,109 @@
 {
-    "name": "Telegram SedenBot",
-    "description": "Python3 ile çalışan modüler Telegram botu olan Seden UserBot.",
-    "logo": "https://i.imgur.com/ZLi4nDP.jpg",
-    "keywords": [
-      "telegram",
-      "userbot",
-      "python",
-      "seden",
-      "module",
-      "pyrogram",
-      "postgresql"
+    "addons": [
+        {
+            "plan": "heroku-postgresql"
+        }
     ],
-    "repository": "https://github.com/TeamDerUntergang/Telegram-SedenUserBot",
-    "website": "https://devotag.com",
-    "success_url": "https://t.me/SedenUserBotSupport",
-    "stack": "container",
+    "description": "A modular Telegram userbot running on Python 3.8 with an sqlalchemy database,",
     "env": {
-        "API_ID": {
-            "description": "Bu değeri https://my.telegram.org adresinden alın.",
-            "required": true
+        "ALIVE_MESAJI": {
+            "description": "Custom message for .alive command. We have our own alive message by default.",
+            "required": false,
+            "value": "Hello Seden! I am alive \u2764\ufe0f"
         },
         "API_HASH": {
-            "description": "Bu değeri https://my.telegram.org adresinden alın.",
+            "description": "Get this value from my.telegram.org.",
             "required": true
         },
-        "SESSION": {
-            "description": "python3 SedenStringSession.py dosyasını yerel olarak çalıştırarak bu değeri alın.",
+        "API_ID": {
+            "description": "Get this value from my.telegram.org.",
             "required": true
+        },
+        "CHROME_DRIVER": {
+            "description": "ChromeDriver location for selenium based modules.",
+            "required": false,
+            "value": "/usr/bin/chromedriver"
+        },
+        "DOWNLOAD_DIRECTORY": {
+            "description": "Download location for many modules (.download etc..)",
+            "required": false,
+            "value": "./downloads/"
+        },
+        "GENIUS_TOKEN": {
+            "description": "Get this value from https://genius.com/developers.",
+            "required": false
         },
         "HEROKU_APPNAME": {
-            "description": "Heroku uygulama adınızı buraya ekleyin. Güncellemeler için zorunludur.",
+            "description": "Add the Heroku app name here. Required for updates.",
             "required": true
         },
         "HEROKU_KEY": {
-            "description": "Heroku API Key, 'https://dashboard.heroku.com/account' adresinden alın. Güncellemeler için zorunludur.",
-            "required": true
-        },
-        "REPO_URL": {
-            "description": "Güncelleme yapmak için gerekli olan değişkendir. Varsayılan olarak kendi repo adresimiz eklidir.",
-            "value": "https://github.com/TeamDerUntergang/Telegram-SedenUserBot",
+            "description": "Your Heroku API key, get it from 'https://dashboard.heroku.com/account. Required for updates.",
             "required": true
         },
         "LOG_ID": {
-            "description": "Log grubu için grup ID. Değeri 0 yaparsanız botunuz log tutmaz. Değeri boş bırakırsanız kayıtlı mesajlara log gönderir.",
+            "description": "Chat ID of the Log group. If value is 0, log feature not work. If value is left blank, logs send in Saved Messages",
             "required": false
         },
-        "ALIVE_MESAJI": {
-            "description": "Botunuzun .alive komutunda yazdığı mesajı değiştermeye yarar. Varsayılan olarak kendi mesajımız mevcuttur.",
-            "value": "Merhaba Seden! Seni Seviyorum ❤️",
-            "required": false 
-        },
-        "SEDEN_LANG": {
-            "description": "Botun dilini kalıcı olarak değişmek için. Türkçe yapmak için tr, İngilizce yapmak için en yazınız. Varsayılan dil ingilizce.",
-            "required": false 
-        },
-        "CHROME_DRIVER": {
-            "description": "Selenium tabanlı modüller için ChromeDriver konumu.",
-            "value": "/usr/bin/chromedriver",
-            "required": false  
-        },
-        "GENIUS_TOKEN": {
-            "description": "Genius API Key, 'https://genius.com/developers' adresinden alın.",
-            "required": false     
-        },
         "LOG_VERBOSE": {
-            "description": "Konsol günlüğünde ayrıntıya ihtiyacınız varsa, bunu True olarak ayarlayın.",
-            "value": "False",
+            "description": "If you need verbosity on the console logging.",
+            "required": false,
+            "value": "False"
+        },
+        "OCR_APIKEY": {
+            "description": "OCR API Key for .ocr command. Get from https://ocr.space/ocrapi",
             "required": false
         },
         "PM_AUTO_BAN": {
-            "description": "PM Otomatik Yasaklama Özelliği. 'Hey! Bu bir bot.' modülüdür.",
-            "value": "False",
-            "required": false
+            "description": "PM Auto Ban Feature. Also known as 'bleep blop, this is a bot...'.",
+            "required": false,
+            "value": "False"
         },
         "PM_MSG_COUNT": {
-            "description": "PM Otomatik Yasaklama Özelliği için Mesaj Sınırı Belirleme. Varsayılan 5 olarak ayarlanmıştır.",
-            "value": "5",
-            "required": false
+            "description": "Custom PM Message Count for PM Auto Ban feature. Also known as Pmpermit Module.",
+            "required": false,
+            "value": "5"
         },
         "PM_UNAPPROVED": {
-            "description": "PM Otomatik Yasaklama Özelliği için Kişisel Mesaj Ayarlama. Varsayılan olarak Kendi Mesajımız Vardır.",
-            "required": false
-        },
-        "OCR_APIKEY": {
-            "description": ".ocr komutu için OCR API Key. https://ocr.space/ocrapi adresinden alın.",
+            "description": "Custom message for PM Auto Ban feature. Also known as Pmpermit Module.",
             "required": false
         },
         "RBG_APIKEY": {
-            "description": ".rbg komutu için remove.bg API Key. https://www.remove.bg/api adresinden alın.",
+            "description": "RBG API Key for .rbg command. Get from https://www.remove.bg/api",
             "required": false
         },
-        "DOWNLOAD_DIRECTORY": {
-            "description": "Birçok modül için indirme konumu (GDrive, .download vb..)",
-            "value": "./downloads/",
-            "required": false
+        "REPO_URL": {
+            "description": "It helps your bot updates, if you maintain a fork repo you can add your repo URL here.",
+            "required": true,
+            "value": "https://github.com/TeamDerUntergang/Telegram-SedenUserBot"
+        },
+        "SEDEN_LANG": {
+            "description": "It permanently changes your bot's lang. Default is English (en).",
+            "required": false,
+            "value": "en"
+        },
+        "SESSION": {
+            "description": "Get this value by running python3 session.py in terminal.",
+            "required": true
         },
         "WEATHER": {
-            "description": "Seden UserBot'un hava durumu modülü için varsayılan şehri ayarlayın.",
+            "description": "Set the default city for Seden UserBot's Weather Module.",
             "required": false
         }
     },
-    "addons": [{
-        "plan": "heroku-postgresql"
-    }]
+    "keywords": [
+        "telegram",
+        "userbot",
+        "python",
+        "seden",
+        "module",
+        "pyrogram",
+        "postgresql"
+    ],
+    "logo": "https://i.resimyukle.xyz/7eaU8d.png",
+    "name": "Telegram SedenBot",
+    "repository": "https://github.com/TeamDerUntergang/Telegram-SedenUserBot",
+    "stack": "container",
+    "success_url": "https://telegram.dog/SedenUserBotSupport",
+    "website": "https://teamderuntergang.github.io/"
 }

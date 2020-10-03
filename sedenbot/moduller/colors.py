@@ -20,7 +20,8 @@ from os import remove
 from PIL import Image, ImageColor
 
 from sedenbot import KOMUT
-from sedenecem.core import edit, reply_img, extract_args, sedenify, get_translation
+from sedenecem.core import (edit, reply_img, extract_args,
+                            sedenify, get_translation)
 
 
 @sedenify(pattern='^.color')

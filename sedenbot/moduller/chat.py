@@ -36,7 +36,7 @@ def kickme(client, message):
 def unmutechat(message):
     try:
         from sedenecem.sql.keep_read_sql import unkread
-    except AttributeError:
+    except BaseException:
         edit(message, f'`{get_translation("nonSqlMode")}`')
         return
     status = unkread(str(message.chat.id))
@@ -52,7 +52,7 @@ def unmutechat(message):
 def mutechat(message):
     try:
         from sedenecem.sql.keep_read_sql import kread
-    except AttributeError:
+    except BaseException:
         edit(message, f'`{get_translation("nonSqlMode")}`')
         return
     status = kread(str(message.chat.id))
@@ -73,7 +73,7 @@ def keep_read(client, message):
 
     try:
         from sedenecem.sql.keep_read_sql import is_kread
-    except AttributeError:
+    except BaseException:
         return
 
     if is_muted(message.chat.id):
@@ -85,7 +85,7 @@ def keep_read(client, message):
 def is_muted(chat_id):
     try:
         from sedenecem.sql.keep_read_sql import is_kread
-    except AttributeError:
+    except BaseException:
         return False
 
     kread = is_kread()

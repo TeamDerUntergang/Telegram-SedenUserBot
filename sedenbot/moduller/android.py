@@ -22,7 +22,8 @@ from bs4 import BeautifulSoup
 from requests import get
 
 from sedenbot import KOMUT, VALID_PROXY_URL
-from sedenecem.core import edit, extract_args, sedenify, get_webdriver, get_translation
+from sedenecem.core import (edit, extract_args, sedenify,
+                            get_webdriver, get_translation)
 
 GITHUB = 'https://github.com'
 
@@ -261,8 +262,6 @@ def ofox(message):
 
     edit(message, f'**OrangeFox Recovery ({args}):**\n{out}')
 
-# Copyright (c) @frknkrc44 | 2020
-
 
 @sedenify(pattern=r'^.specs')
 def specs(message):
@@ -351,10 +350,9 @@ def specs(message):
                           sensors,
                           link]))
 
-# @frknkrc44, GSMArena üzerinden cihaz bulma
-
 
 def find_device(query, proxy):
+    """@frknkrc44, GSMArena üzerinden cihaz bulma"""
     raw_query = query.lower()
 
     def replace_query(query):

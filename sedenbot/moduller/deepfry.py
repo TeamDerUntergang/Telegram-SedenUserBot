@@ -21,9 +21,8 @@ from random import randint, uniform
 from PIL import Image, ImageEnhance, ImageOps
 
 from sedenbot import KOMUT
-from sedenecem.core import edit, reply_img, sedenify, download_media, get_translation
-
-# Copyright (c) @NaytSeyd, @frknkrc44 | 2020
+from sedenecem.core import (edit, reply_img, sedenify,
+                            download_media, get_translation)
 
 
 @sedenify(pattern='^.(deepf|f)ry', compat=False)

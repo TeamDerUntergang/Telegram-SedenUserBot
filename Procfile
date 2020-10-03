@@ -1,1 +1,1 @@
-worker: python3 seden.py
+seden: python3 seden.py

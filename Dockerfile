@@ -14,18 +14,18 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-# Copyright (c) @NaytSeyd | 2020
+# We're Using NaytSeyd's Special Docker
 FROM naytseyd/sedenbot:j1xlte
 
-# Çalışma dizini
+# Working Directory
 ENV PATH="/root/DerUntergang/seden/bin:$PATH"
 WORKDIR /root/DerUntergang/seden
 
-# Repoyu klonla
+# Clone Repo
 RUN git clone -b seden https://github.com/TeamDerUntergang/Telegram-SedenUserBot /root/DerUntergang/seden
 
-# Oturum ve yapılandırmayı kopyala (varsa)
+# Copies session and config (if it exists)
 COPY ./sample_config.env ./sedenbot.session* ./config.env* /root/DerUntergang/seden/
 
-# Botu çalıştır
+# Run Bot
 CMD ["python3","seden.py"]

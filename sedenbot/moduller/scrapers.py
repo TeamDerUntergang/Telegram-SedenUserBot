@@ -16,7 +16,7 @@
 
 from os import remove, path
 from time import sleep
-from re import findall
+from re import findall, sub
 from urllib.parse import quote_plus
 from urllib.error import HTTPError
 from mimetypes import guess_type
@@ -30,6 +30,8 @@ from emoji import get_emoji_regexp
 from requests import get
 from bs4 import BeautifulSoup
 from pyrogram import InputMediaPhoto
+
+from traceback import format_exc
 
 from sedenbot import KOMUT, SEDEN_LANG
 from sedenecem.core import (
@@ -100,7 +102,6 @@ def carbon(message):
     driver.quit()
 
 
-# @frknkrc44 tarafından baştan yazıldı
 @sedenify(pattern='^.img')
 def img(message):
     query = extract_args(message)
@@ -185,32 +186,75 @@ def google(message):
 def do_gsearch(query, page):
 
     def find_page(num):
+        if num < 1:
+            num = 1
         return (num - 1) * 10
 
     def parse_key(keywords):
         return keywords.replace(' ', '+')
 
+    def replacer(st):
+        return sub(
+            r'[`\*_]',
+            '',
+            st).replace(
+            '\n',
+            ' ').replace(
+            '(',
+            '〈').replace(
+                ')',
+                '〉').replace(
+                    '!',
+            'ⵑ').strip()
+
+    def link_replacer(link):
+        rep = {'(': '%28', ')': '%29', '[': '%5B', '[': '%5D', '%': '½'}
+        for i in rep.keys():
+            link = link.replace(i, rep[i])
+        return link
+
     def get_result(res):
-        link = res.find('a')['href']
-        title = res.find('h3').text
-        desc = res.find('span', {'class': ['st']}).text
+        link = res.findAll('a', {'class': ['fuLhoc', 'ZWRArf']})[0]
+        href = f"https://google.com{link_replacer(link['href'])}"
+        title = link.findAll('span', {'class': ['CVA68e', 'qXLe6d']})[0].text
+        title = replacer(title)
+        desc = res.findAll('span', {'class': ['qXLe6d', 'FrIlee']})[-1].text
+        desc = replacer(desc)
         if len(desc.strip()) < 1:
             desc = f'{get_translation("googleDesc")}'
-        return f'[{title}]({link})\n`{desc}`'
+        return f'[{title}]({href})\n{desc}'
 
     query = parse_key(query)
     page = find_page(page)
     req = get(
-        f'https://www.google.com/search?q={query}&start={find_page(page)}',
+        f'https://www.google.com/search?q={query}&gbv=1&sei=2oR3X4nhGY611fAP_5-EkAw&start={find_page(page)}',
         headers={
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (compatible; Konqueror/2.2-12; Linux)',
             'Content-Type': 'text/html'})
     soup = BeautifulSoup(req.text, 'html.parser')
-    res1 = soup.findAll('div', {'class': ['rc']})
+    res1 = soup.findAll('div', {'class': ['ezO2md']})
+
+    def is_right_class(res):
+        ret = res.find('span', {'class': ['qXLe6d', 'dXDvrc']})
+
+        if not ret:
+            return False
+
+        ret = ret.parent
+
+        return ret.name == 'a' and 'fuLhoc' in ret['class']
+
+    res1 = [res for res in res1 if is_right_class(res)]
+
     out = ""
     for i in range(0, len(res1)):
         res = res1[i]
-        out += f"{i+1}-{get_result(res)}\n\n"
+        try:
+            out += f"{i+1} - {get_result(res)}\n\n"
+        except Exception as e:
+            print(format_exc())
+            print(res)
+            pass
 
     return out
 

@@ -19,7 +19,8 @@ from subprocess import run as runapp
 from pybase64 import b64encode, b64decode
 
 from sedenbot import KOMUT
-from sedenecem.core import edit, reply_doc, extract_args, sedenify, get_translation
+from sedenecem.core import (edit, reply_doc, extract_args,
+                            sedenify, get_translation)
 
 
 @sedenify(pattern='^.hash')
