@@ -14,23 +14,30 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from sedenbot import KOMUT, CHANNEL
-from sedenecem.core import (edit, reply, extract_args,
-                            sedenify, get_translation)
+from PIL import Image
 
 
-@sedenify(pattern='^.seden')
-def seden(message):
-    seden = extract_args(message).lower()
-    if seden:
-        if seden in KOMUT:
-            edit(message, str(KOMUT[seden]))
+def sticker_resize(photo):
+    image = Image.open(photo)
+    if (image.width and image.height) < 512:
+        size1 = image.width
+        size2 = image.height
+        if image.width > image.height:
+            scale = 512 / size1
+            size1new = 512
+            size2new = size2 * scale
         else:
-            edit(message, f'**{get_translation("sedenUsage")}**')
+            scale = 512 / size2
+            size1new = size1 * scale
+            size2new = 512
+        size1new = floor(size1new)
+        size2new = floor(size2new)
+        sizenew = (size1new, size2new)
+        image = image.resize(sizenew)
     else:
-        edit(message, get_translation("sedenUsage2", ['**', '`']))
-        metin = "{}\n".format(get_translation('sedenShowLoadedModules', [
-            '**', 'Seden UserBot', CHANNEL]))
-        for item in KOMUT:
-            metin += f'- `{item}`\n'
-        reply(message, metin, preview=False)
+        maxsize = (512, 512)
+        image.thumbnail(maxsize)
+
+    temp = 'temp.png'
+    image.save(temp, 'PNG')
+    return temp

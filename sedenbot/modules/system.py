@@ -23,14 +23,15 @@ from operator import add, sub, mul, truediv, pow, xor, neg
 from ast import (Add, Sub, Mult, Div, Pow, BitXor, USub,
                  parse, Num, BinOp, UnaryOp)
 
-from sedenbot.moduller.lovers import saniye
-from sedenbot.moduller.ecem import ecem
-from sedenbot.moduller.horeke import restart, shutdown
-from sedenbot import KOMUT, ALIVE_MESAJI, BOT_VERSION, CHANNEL, HEROKU_KEY, HEROKU_APPNAME
+from pyrogram.api.functions.help import GetNearestDc
+from sedenbot.modules.lovers import saniye
+from sedenbot.modules.ecem import ecem
+from sedenbot.modules.horeke import restart, shutdown
+from sedenbot import KOMUT, ALIVE_MSG, BOT_VERSION, CHANNEL, HEROKU_KEY, HEROKU_APPNAME
 from sedenecem.core import (edit, reply, reply_doc, send_log,
                             extract_args, sedenify, get_translation)
 # ================= CONSTANT =================
-KULLANICIMESAJI = ALIVE_MESAJI or get_translation('sedenAlive')
+KULLANICIMESAJI = ALIVE_MSG or get_translation('sedenAlive')
 # ============================================
 
 
@@ -113,7 +114,7 @@ def alive(message):
     elif KULLANICIMESAJI.lower() == 'saniye':
         saniye(message)
         return
-    edit(message, f'`{KULLANICIMESAJI}`')
+    edit(message, f'{KULLANICIMESAJI}')
 
 
 @sedenify(pattern='^.echo')
@@ -128,7 +129,7 @@ def echo(message):
 
 @sedenify(pattern='^.dc$', compat=False)
 def dc(client, message):
-    sonuc = client.send(functions.help.GetNearestDc())
+    sonuc = client.send(GetNearestDc())
 
     edit(message, get_translation('sedenNearestDC', [
          '**', '`', sonuc.country, sonuc.nearest_dc, sonuc.this_dc]))

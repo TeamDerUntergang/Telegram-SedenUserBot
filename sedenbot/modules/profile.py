@@ -18,7 +18,8 @@ from pyrogram.errors import UsernameOccupied
 from pyrogram.api import functions
 
 from sedenbot import KOMUT
-from sedenecem.core import edit, extract_args, sedenify
+from sedenecem.core import (edit, extract_args, sedenify,
+                            send_log, get_translation)
 # ====================== CONSTANT ===============================
 BIO_SUCCESS = "```Biyografi başarıyla değiştirildi.```"
 
@@ -70,14 +71,55 @@ def username(client, message):
         edit(message, USERNAME_TAKEN)
 
 
-KOMUT.update({
-    "profile":
-    ".username <yeni kullanıcı adı>\
-\nKullanımı: Telegram'daki kullanıcı adınızı değişir.\
-\n\n.name <isim> or .name <isim> <soyisim>\
-\nKullanımı: Telegram'daki isminizi değişir. (Ad ve soyad ilk boşluğa dayanarak birleştirilir.)\
-\n\n.setbio <yeni biyografi>\
-\nKullanımı: Telegram'daki biyografinizi bu komutu kullanarak değiştirin..\
-\n\n.reserved\
-\nKullanımı: Rezerve ettiğiniz kullanıcı adlarını gösterir."
-})
+@sedenify(pattern="^.block$", compat=False)
+def blockpm(client, message):
+    if message.reply_to_message:
+        reply = message.reply_to_message
+        replied_user = reply.from_user
+        if replied_user.is_self:
+            edit(message, f'`{get_translation("cannotBlockMyself")}`')
+            return
+        aname = replied_user.id
+        name0 = str(replied_user.first_name)
+        uid = replied_user.id
+    else:
+        aname = message.chat
+        if not aname.type == 'private':
+            edit(message, f'`{get_translation("pmApproveError")}`')
+            return
+        name0 = aname.first_name
+        uid = aname.id
+
+    client.block_user(uid)
+
+    edit(message, f'`{get_translation("pmBlocked")}`')
+
+    try:
+        from sedenecem.sql.pm_permit_sql import dissprove
+        dissprove(uid)
+    except BaseException:
+        pass
+
+    send_log(get_translation("pmBlockedLog", [name0, uid]))
+
+
+@sedenify(pattern="^.unblock$", compat=False)
+def unblockpm(client, message):
+    if message.reply_to_message:
+        reply = message.reply_to_message
+        replied_user = reply.from_user
+        if replied_user.is_self:
+            edit(message, f'`{get_translation("cannotUnblockMyself")}`')
+            return
+        aname = replied_user.id
+        name0 = str(replied_user.first_name)
+        uid = replied_user.id
+        client.unblock_user(uid)
+        edit(message, f'`{get_translation("pmUnblocked")}`')
+
+        send_log(get_translation("pmUnblockedLog", [name0, replied_user.id]))
+    else:
+        edit(message, f'`{get_translation("pmUnblockedUsage")}`')
+
+
+KOMUT.update({"profile": get_translation("profileInfo")})

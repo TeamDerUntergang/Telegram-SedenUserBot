@@ -18,8 +18,6 @@ from random import choice
 
 from sedenbot import KOMUT, SUPPORT_GROUP
 from sedenecem.core import edit, extract_args, sedenify, get_translation
-from sedenbot.moduller.notes import get_note
-from sedenbot.moduller.snips import get_snip
 
 
 @sedenify(pattern='^.random')
@@ -32,6 +30,43 @@ def random(message):
 
     edit(message, get_translation(
         "randomResult", ['**', '`', items, choice(args)]))
+
+
+@sedenify(pattern='^.chatid$', private=False)
+def chatid(message):
+    edit(
+        message,
+        f"{get_translation('chatidResult', ['`', str(message.chat.id)])}")
+
+
+@sedenify(pattern='^.id$')
+def userid(message):
+    reply = message.reply_to_message
+    if reply:
+        if not reply.forward_from:
+            user_id = reply.from_user.id
+            if reply.from_user.username:
+                name = '@' + reply.from_user.username
+            else:
+                name = '**' + reply.from_user.first_name + '**'
+        else:
+            user_id = reply.forward_from.id
+            if reply.forward_from.username:
+                name = "@" + reply.forward_from.username
+            else:
+                name = "*" + reply.forward_from.first_name + "*"
+        edit(
+            message, get_translation(
+                "useridResult", [
+                    '**', name, '`', user_id]))
+    else:
+        edit(message, f'`{get_translation("wrongCommand")}`')
+
+
+@sedenify(pattern='^.kickme$', compat=False, private=False)
+def kickme(client, message):
+    edit(message, f'`{get_translation("kickmeResult")}`')
+    client.leave_chat(message.chat.id, 'me')
 
 
 @sedenify(pattern='^.support$')
@@ -83,17 +118,6 @@ def repeat(message):
     edit(message, replyText)
 
 
-@sedenify(pattern='^.call')
-def call_notes(message):
-    args = extract_args(message)
-    if args.startswith('#'):
-        get_note(message)
-    elif args.startswith('$'):
-        get_snip(message)
-    else:
-        edit(message, f"`{get_translation('wrongCommand')}`")
-
-
 @sedenify(pattern='^.crash$')
 def crash(message):
     edit(message, f'`{get_translation("testLogId")}`')
@@ -106,4 +130,6 @@ KOMUT.update({'repo': get_translation("repoInfo")})
 KOMUT.update({"readme": get_translation("readmeInfo")})
 KOMUT.update({"founder": get_translation("founderInfo")})
 KOMUT.update({"repeat": get_translation("repeatInfo")})
-KOMUT.update({"call": get_translation("callInfo")})
+KOMUT.update({"kickme": get_translation("kickmeInfo")})
+KOMUT.update({"id": get_translation("useridInfo")})
+KOMUT.update({"chatid": get_translation("chatidInfo")})

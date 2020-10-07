@@ -16,8 +16,9 @@
 
 from time import sleep
 from heroku3 import from_key
+from dotenv import dotenv_values
 
-from sedenbot.moduller.system import restart
+from sedenbot.modules.system import restart
 from sedenbot import (
     KOMUT,
     HEROKU_KEY,
@@ -34,7 +35,8 @@ from sedenecem.core import edit, sedenify, extract_args, get_translation
 def manage_env(client, message):
     action = extract_args(message).split(' ', 1)
 
-    if len(action) < 2 or action[0] not in ['get', 'set', 'rem']:
+    if len(action) < 2 or action[0] not in [
+            'get', 'set', 'rem', 'copy', 'move']:
         edit(message, f"`{get_translation('wrongCommand')}`")
         return
 
@@ -127,6 +129,52 @@ def manage_env(client, message):
             return
 
         edit(message, get_translation('envRemSuccess', ['`', '**', items[0]]))
+        sleep(2)
+        restart(client, message)
+    elif action[0] in ['copy', 'move']:
+        items = action[1].split(' ', 1)
+
+        if len(items) < 2 or len(items[0]) < 1 or items[0].upper() in ENV_RESTRICTED_KEYS or items[1].upper(
+        ) in ENV_RESTRICTED_KEYS or items[0].upper() == items[1].upper():
+            edit(message, f"`{get_translation('wrongCommand')}`")
+            return
+
+        items[0] = items[0].upper()
+        items[1] = items[1].upper()
+
+        if heroku_mode and items[0] in heroku_env:
+            value = heroku_env[items[0]]
+        elif not heroku_mode and (value := environ.get(items[0], None)):
+            pass
+        else:
+            edit(
+                message, get_translation(
+                    'envNotFound', [
+                        '`', '**', items[0]]))
+            return
+
+        if heroku_mode:
+            heroku_env[items[1]] = value
+        else:
+            set_local_env(items[1], value)
+
+        if action[0] == 'move':
+            if heroku_mode and items[0] in heroku_env:
+                del heroku_env[items[0]]
+            elif not heroku_mode and (value := environ.get(items[0], None)):
+                unset_local_env(items[0])
+            edit(
+                message, get_translation(
+                    'envMoveSuccess', [
+                        '`', '**', items[0], items[1]]))
+            sleep(2)
+            restart(client, message)
+            return
+
+        edit(
+            message, get_translation(
+                'envCopySuccess', [
+                    '`', '**', items[0], items[1]]))
         sleep(2)
         restart(client, message)
 

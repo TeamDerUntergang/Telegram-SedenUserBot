@@ -16,7 +16,7 @@
 
 from re import fullmatch, IGNORECASE
 
-from sedenbot import KOMUT, LOG_ID
+from sedenbot import KOMUT, LOGS, LOG_ID
 from sedenecem.core import (
     extract_args,
     sedenify,
@@ -27,6 +27,20 @@ from sedenecem.core import (
     forward,
     send_log,
     get_translation)
+
+
+def filters_init():
+    try:
+        global sql
+        from importlib import import_module
+        sql = import_module('sedenecem.sql.filters_sql')
+    except Exception as e:
+        sql = None
+        LOGS.warn(f'{get_translation("filtersSqlLog")}')
+        raise e
+
+
+filters_init()
 
 
 @sedenify(incoming=True, outgoing=False)

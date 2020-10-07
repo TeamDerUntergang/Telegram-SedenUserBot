@@ -23,7 +23,7 @@ from cowpy import cow
 from requests import get
 
 from sedenbot import KOMUT
-from sedenecem.core import edit, extract_args, sedenify, get_translation
+from sedenecem.core import edit, extract_args, sedenify, get_translation, parse_cmd
 # ================= CONSTANT =================
 ZALGS = [[
     "̖",
@@ -364,8 +364,8 @@ CRYS = [
 @sedenify(pattern=r'^.(\w+)say')
 def cowsay(message):
     ext = message.text.split(' ', 1)
-    arg = ext[0]
-    arg = arg[1:arg.find('say')]
+    arg = parse_cmd(ext[0])
+    arg = arg[:arg.find('say')]
     textx = message.reply_to_message
     if textx and textx.text:
         text = textx.text
@@ -389,7 +389,7 @@ def kek(message):
     uio = ["/", "\\"]
     for i in range(1, 15):
         sleep(0.3)
-        edit(message, ':' + uio[i % 2])
+        edit(message, f':{uio[i % len(uio)]}')
 
 
 @sedenify(pattern='^.fp$')
@@ -500,36 +500,6 @@ def zalgofy(message):
         reply_text.append(charac)
 
     edit(message, ''.join(reply_text))
-
-
-@sedenify(pattern='^.shout')
-def shout(message):
-    textx = message.reply_to_message
-    shout = extract_args(message)
-    if len(shout) > 0:
-        pass
-    elif textx:
-        shout = textx.text
-    else:
-        edit(message, f'`{get_translation("wrongCommand")}`')
-        return
-
-    if message.forward_from:
-        return
-    else:
-        msg = "```"
-        messagestr = message.text
-        messagestr = messagestr[7:]
-        text = "".join(messagestr)
-        result = []
-        result.append(' '.join([s for s in text]))
-        for pos, symbol in enumerate(text[1:]):
-            result.append(symbol + ' ' + '  ' * pos + symbol)
-        result = list("\n".join(result))
-        result[0] = text[0]
-        result = "".join(result)
-        msg = "\n" + result
-        edit(message, '`' + msg + '`')
 
 
 @sedenify(pattern='^.owo')
@@ -763,7 +733,7 @@ def run(message):
     edit(message, choice(RUNS))
 
 
-@sedenify(pattern=r'^.f (.*)')
+@sedenify(pattern='^.f (.*)')
 def payf(message):
     paytext = extract_args(message)
     pay = "{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}".format(

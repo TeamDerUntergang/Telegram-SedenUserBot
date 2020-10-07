@@ -22,14 +22,14 @@ from PIL import Image, ImageEnhance, ImageOps
 
 from sedenbot import KOMUT
 from sedenecem.core import (edit, reply_img, sedenify,
-                            download_media, get_translation)
+                            download_media, get_translation, parse_cmd)
 
 
 @sedenify(pattern='^.(deepf|f)ry', compat=False)
 def deepfry(client, message):
 
     text = message.text.split(' ', 1)
-    fry = text[0][1:4] == 'fry'
+    fry = parse_cmd(text[0])[:3] == 'fry'
 
     try:
         frycount = int(text[1])

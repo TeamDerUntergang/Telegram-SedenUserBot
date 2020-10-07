@@ -18,16 +18,17 @@ from pyrogram import ChatPermissions
 
 from sedenbot import KOMUT
 from sedenecem.core import (edit, extract_args,
-                            sedenify, get_translation)
+                            sedenify, get_translation, parse_cmd)
 
 
 @sedenify(pattern=r'^.(un|)lock', compat=False, private=False)
 def lock(client, message):
-    text = message.text
-    unlock = text[1:3] == 'un'
+    text = message.text.split(' ', 1)
+
+    unlock = parse_cmd(text[0])[:2] == 'un'
     kilit = ''
     if ' ' in text:
-        kilit = extract_args(message).lower()
+        kilit = text[1].lower()
     msg = None
     media = None
     sticker = None

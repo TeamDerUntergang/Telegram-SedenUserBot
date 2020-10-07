@@ -18,7 +18,8 @@ from threading import Event
 
 from sedenbot import KOMUT
 from sedenecem.core import (edit, reply, reply_img, send_log, extract_args,
-                            extract_args_arr, sedenify, get_translation)
+                            extract_args_arr, sedenify, get_translation,
+                            spam_allowed, increment_spam_count)
 
 
 @sedenify(pattern='^.tspam')
@@ -28,10 +29,17 @@ def tspam(message):
         edit(message, f'`{get_translation("spamWrong")}`')
         return
     message.delete()
+
+    if not spam_allowed():
+        return
+
     for metin in tspam.replace(' ', ''):
         message.reply(metin)
+        count = increment_spam_count()
+        if not count:
+            break
 
-    send_log(f'`{get_translation("tspamLog")}`')
+    send_log(f'{get_translation("tspamLog")}')
 
 
 @sedenify(pattern='^.spam')
@@ -44,13 +52,21 @@ def spam(message):
     if not arr[0].isdigit():
         edit(message, f'`{get_translation("spamWrong")}`')
         return
+
     message.delete()
+
+    if not spam_allowed():
+        return
+
     miktar = int(arr[0])
     metin = spam.replace(arr[0], '', 1).strip()
     for i in range(0, miktar):
         reply(message, metin)
+        count = increment_spam_count()
+        if not count:
+            break
 
-    send_log(f'`{get_translation("spamLog")}`')
+    send_log(f'{get_translation("spamLog")}')
 
 
 @sedenify(pattern='^.picspam')
@@ -60,12 +76,19 @@ def picspam(message):
         edit(message, f'`{get_translation("spamWrong")}`')
         return
     message.delete()
+
+    if not spam_allowed():
+        return
+
     miktar = int(arr[0])
     link = arr[1]
     for i in range(0, miktar):
         reply_img(message, link)
+        count = increment_spam_count()
+        if not count:
+            break
 
-    send_log(f'`{get_translation("picspamLog")}`')
+    send_log(f'{get_translation("picspamLog")}')
 
 
 @sedenify(pattern='^.delayspam')
@@ -81,13 +104,20 @@ def delayspam(message):
     spam_message = delayspam.replace(arr[0], '', 1)
     spam_message = spam_message.replace(arr[1], '', 1).strip()
     message.delete()
+
+    if not spam_allowed():
+        return
+
     delaySpamEvent = Event()
     for i in range(0, miktar):
         if i != 0:
             delaySpamEvent.wait(gecikme)
         message.reply(spam_message)
+        count = increment_spam_count()
+        if not count:
+            break
 
-    send_log(f'`{get_translation("delayspamLog")}`')
+    send_log(f'{get_translation("delayspamLog")}')
 
 
 KOMUT.update({"spammer": get_translation('spamInfo')})

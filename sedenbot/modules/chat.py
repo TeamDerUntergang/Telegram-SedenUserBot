@@ -15,21 +15,22 @@
 #
 
 from time import sleep
-from sedenbot import KOMUT
+from sedenbot import KOMUT, LOGS
 from sedenecem.core import edit, sedenify, send_log, get_translation
 
 
-@sedenify(pattern='.chatid$', private=False)
-def chatid(message):
-    edit(
-        message,
-        f"{get_translation('chatidInfo', ['`', str(message.chat.id)])}")
+def chat_init():
+    try:
+        global sql
+        from importlib import import_module
+        sql = import_module('sedenecem.sql.keep_read_sql')
+    except Exception as e:
+        sql = None
+        LOGS.warn(f'{get_translation("chatSqlLog")}')
+        raise e
 
 
-@sedenify(pattern='^.kickme$', compat=False, private=False)
-def kickme(client, message):
-    edit(message, f'`{get_translation("kickmeInfo")}`')
-    client.leave_chat(message.chat.id, 'me')
+chat_init()
 
 
 @sedenify(pattern='^.unmutechat$')
@@ -82,6 +83,24 @@ def keep_read(client, message):
     message.continue_propagation()
 
 
+@sedenify(pattern='^.call')
+def call_notes(message):
+    try:
+        from sedenbot.modules.notes import get_note
+        from sedenbot.modules.snips import get_snip
+    except BaseException:
+        edit(message, f'`{get_translation("nonSqlMode")}`')
+        return
+
+    args = extract_args(message)
+    if args.startswith('#'):
+        get_note(message)
+    elif args.startswith('$'):
+        get_snip(message)
+    else:
+        edit(message, f"`{get_translation('wrongCommand')}`")
+
+
 def is_muted(chat_id):
     try:
         from sedenecem.sql.keep_read_sql import is_kread
@@ -97,4 +116,5 @@ def is_muted(chat_id):
     return False
 
 
-KOMUT.update({"chat": get_translation('infoChatID')})
+KOMUT.update({"chat": get_translation('chatInfo')})
+KOMUT.update({"call": get_translation("callInfo")})

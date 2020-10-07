@@ -16,7 +16,7 @@
 
 from sqlalchemy.exc import IntegrityError
 
-from sedenbot.moduller.chat import is_muted
+from sedenbot.modules.chat import is_muted
 from sedenbot import (PM_COUNT, KOMUT, PM_AUTO_BAN,
                       PM_LAST_MSG, LOGS, PM_UNAPPROVED, PM_MSG_COUNT)
 from sedenecem.core import (sedenify, send_log, me,
@@ -24,6 +24,20 @@ from sedenecem.core import (sedenify, send_log, me,
 # ========================= CONSTANTS ============================
 UNAPPROVED_MSG = PM_UNAPPROVED or get_translation('pmpermitMessage', ['`'])
 # =================================================================
+
+
+def pmpermit_init():
+    try:
+        global sql
+        from importlib import import_module
+        sql = import_module('sedenecem.sql.pm_permit_sql')
+    except Exception as e:
+        sql = None
+        LOGS.warn(f'{get_translation("pmpermitSqlLog")}')
+        raise e
+
+
+pmpermit_init()
 
 
 @sedenify(incoming=True, outgoing=False, disable_edited=True,
@@ -218,63 +232,15 @@ def disapprovepm(message):
     send_log(get_translation("pmDisapprove", [name0, uid, '`']))
 
 
-@sedenify(pattern="^.block$", compat=False)
-def blockpm(client, message):
-    if message.reply_to_message:
-        reply = message.reply_to_message
-        replied_user = reply.from_user
-        if replied_user.is_self:
-            edit(message, f'`{get_translation("cannotBlockMyself")}`')
-            return
-        aname = replied_user.id
-        name0 = str(replied_user.first_name)
-        uid = replied_user.id
-    else:
-        aname = message.chat
-        if not aname.type == 'private':
-            edit(message, f'`{get_translation("pmApproveError")}`')
-            return
-        name0 = aname.first_name
-        uid = aname.id
-
-    client.block_user(uid)
-
-    edit(message, f'`{get_translation("pmBlocked")}`')
-
-    try:
-        from sedenecem.sql.pm_permit_sql import dissprove
-        dissprove(uid)
-    except BaseException:
-        pass
-
-    send_log(get_translation("pmBlockedLog", [name0, uid]))
-
-
-@sedenify(pattern="^.unblock$", compat=False)
-def unblockpm(client, message):
-    if message.reply_to_message:
-        reply = message.reply_to_message
-        replied_user = reply.from_user
-        if replied_user.is_self:
-            edit(message, f'`{get_translation("cannotUnblockMyself")}`')
-            return
-        aname = replied_user.id
-        name0 = str(replied_user.first_name)
-        uid = replied_user.id
-        client.unblock_user(uid)
-        edit(message, f'`{get_translation("pmUnblocked")}`')
-
-        send_log(get_translation("pmUnblockedLog", [name0, replied_user.id]))
-    else:
-        edit(message, f'`{get_translation("pmUnblockedUsage")}`')
-
-
 def _find_unapproved_msg(client, chat_id):
-    return client.search_messages(
-        chat_id,
-        from_user='me',
-        limit=10,
-        query=UNAPPROVED_MSG)
+    try:
+        return client.search_messages(
+            chat_id,
+            from_user='me',
+            limit=10,
+            query=UNAPPROVED_MSG)
+    except BaseException:
+        return []
 
 
 KOMUT.update({"pmpermit": get_translation("pmpermitInfo")})

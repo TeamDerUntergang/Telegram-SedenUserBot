@@ -16,7 +16,6 @@
 
 from io import BytesIO
 from re import escape, search, IGNORECASE
-from importlib import import_module
 
 from sedenbot import KOMUT, LOGS
 from sedenecem.core import (edit, reply, send_log, reply_doc,
@@ -26,10 +25,12 @@ from sedenecem.core import (edit, reply, send_log, reply_doc,
 def blacklist_init():
     try:
         global sql
+        from importlib import import_module
         sql = import_module('sedenecem.sql.blacklist_sql')
     except Exception as e:
         sql = None
         LOGS.warn(f'{get_translation("blacklistSqlLog")}')
+        raise e
 
 
 blacklist_init()

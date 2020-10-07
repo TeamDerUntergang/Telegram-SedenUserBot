@@ -6,7 +6,7 @@
     ],
     "description": "A modular Telegram userbot running on Python 3.8 with an sqlalchemy database,",
     "env": {
-        "ALIVE_MESAJI": {
+        "ALIVE_MSG": {
             "description": "Custom message for .alive command. We have our own alive message by default.",
             "required": false,
             "value": "Hello Seden! I am alive \u2764\ufe0f"
@@ -18,6 +18,10 @@
         "API_ID": {
             "description": "Get this value from my.telegram.org.",
             "required": true
+        },
+        "BOT_PREFIX": {
+            "description": "It changes your bot pattern (default pattern is '.'(dot).",
+            "required": false
         },
         "CHROME_DRIVER": {
             "description": "ChromeDriver location for selenium based modules.",
@@ -89,6 +93,12 @@
         "WEATHER": {
             "description": "Set the default city for Seden UserBot's Weather Module.",
             "required": false
+        }
+    },
+    "formation": {
+        "seden": {
+            "quantity": 1,
+            "size": "free"
         }
     },
     "keywords": [

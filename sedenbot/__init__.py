@@ -26,6 +26,7 @@ from requests import get
 from pyrogram import Client, Filters, MessageHandler
 from dotenv import load_dotenv, set_key, unset_key
 import sedenecem.translator as _tr
+from traceback import format_exc
 
 
 def reload_env():
@@ -78,6 +79,8 @@ def set_local_env(key: str, value: str):
 
 
 def unset_local_env(key: str):
+    if key in environ:
+        del environ[key]
     return unset_key('config.env', key)
 
 
@@ -115,7 +118,7 @@ if not API_HASH:
     LOGS.warn(f'{get_translation("apiHashError")}')
     quit(1)
 
-BOT_VERSION = "1.3rc3 Alpha"
+BOT_VERSION = "1.3rc4 Alpha"
 SUPPORT_GROUP = "SedenUserBotSupport"
 CHANNEL = "SedenUserBot"
 
@@ -126,7 +129,7 @@ WEATHER = environ.get("WEATHER", None)
 GENIUS_TOKEN = environ.get("GENIUS_TOKEN", None) or environ.get("GENIUS", None)
 
 # Change Alive Message
-ALIVE_MESAJI = environ.get("ALIVE_MESAJI", None)
+ALIVE_MSG = environ.get("ALIVE_MSG", None)
 
 # Chrome Driver and Headless Google Chrome Binaries
 CHROME_DRIVER = environ.get("CHROME_DRIVER", "chromedriver")
@@ -174,6 +177,9 @@ PM_AUTO_BAN = sb(environ.get('PM_AUTO_BAN', "False"))
 PM_MSG_COUNT = environ.get('PM_MSG_COUNT', 'default')
 PM_MSG_COUNT = int(PM_MSG_COUNT) if PM_MSG_COUNT.isdigit() else 5
 PM_UNAPPROVED = environ.get('PM_UNAPPROVED', None)
+
+# Bot Prefix (Defaults to dot)
+BOT_PREFIX = environ.get('BOT_PREFIX', None)
 
 ENV_RESTRICTED_KEYS = [
     'HEROKU_KEY',
@@ -253,7 +259,7 @@ app = PyroClient(
 
 
 def __get_modules():
-    folder = 'sedenbot/moduller'
+    folder = 'sedenbot/modules'
     modules = [
         f[:-3] for f in listdir(folder)
         if isfile(f"{folder}/{f}") and f[-3:] == '.py' and f != '__init__.py'
@@ -262,15 +268,15 @@ def __get_modules():
 
 
 def __import_modules():
-    modules = __get_modules()
+    modules = sorted(__get_modules())
     LOGS.info(get_translation("loadedModules", [modules]))
     for module in modules:
         try:
             LOGS.info(get_translation("loadedModules2", [module]))
-            import_module(f'sedenbot.moduller.{module}')
+            import_module(f'sedenbot.modules.{module}')
         except Exception as e:
             if LOG_VERBOSE:
-                raise e
+                LOGS.warn(format_exc())
             LOGS.warn(get_translation("loadedModulesError", [module]))
 
 

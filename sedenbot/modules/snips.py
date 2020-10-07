@@ -14,9 +14,23 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from sedenbot import KOMUT, LOG_ID
+from sedenbot import KOMUT, LOGS, LOG_ID
 from sedenecem.core import (extract_args, sedenify, edit, get_messages,
                             reply_msg, forward, send_log, get_translation)
+
+
+def snips_init():
+    try:
+        global sql
+        from importlib import import_module
+        sql = import_module('sedenecem.sql.snips_sql')
+    except Exception as e:
+        sql = None
+        LOGS.warn(f'{get_translation("snipsSqlLog")}')
+        raise e
+
+
+snips_init()
 
 
 @sedenify(pattern='^.addsnip')
