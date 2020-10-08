@@ -8,8 +8,8 @@ sedenbot.db
 sedenbot.session*
 sedenbot/__pycache__/*
 sedenbot/.DS_Store/*
-sedenbot/moduller/.DS_Store/*
-sedenbot/moduller/__pycache__/*
+sedenbot/modules/.DS_Store/*
+sedenbot/modules/__pycache__/*
 sedenecem/sql/.DS_Store/*
 sedenecem/sql/__pycache__/*
 sedenecem/.DS_Store/*
