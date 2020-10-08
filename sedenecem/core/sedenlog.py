@@ -16,7 +16,7 @@
 
 from os import remove
 from sedenbot import app, LOG_ID
-from .send import *
+from .send import send, send_doc
 
 
 def send_log(text, fix_markdown=False):

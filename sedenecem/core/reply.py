@@ -14,8 +14,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from .misc import MARKDOWN_FIX_CHAR, download_media_wc
 from os import remove
+from .misc import MARKDOWN_FIX_CHAR, download_media_wc
 
 
 def reply(
