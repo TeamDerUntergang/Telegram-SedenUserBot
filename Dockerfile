@@ -18,14 +18,7 @@
 FROM naytseyd/sedenbot:j1xlte
 
 # Working Directory
-ENV PATH="/root/DerUntergang/seden/bin:$PATH"
-WORKDIR /root/DerUntergang/seden
+WORKDIR /DerUntergang/
 
 # Clone Repo
-RUN git clone -b seden https://github.com/TeamDerUntergang/Telegram-SedenUserBot /root/DerUntergang/seden
-
-# Copies session and config (if it exists)
-COPY ./sample_config.env ./sedenbot.session* ./config.env* /root/DerUntergang/seden/
-
-# Run Bot
-CMD ["python3","seden.py"]
+RUN git clone -b seden https://github.com/TeamDerUntergang/Telegram-SedenUserBot.git /DerUntergang/
