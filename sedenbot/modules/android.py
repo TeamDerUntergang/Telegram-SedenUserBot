@@ -177,84 +177,21 @@ def ofox(message):
         return
 
     OFOX_REPO = f'{get_translation("ofrpUrl")}'
-    OFOX_URL = f'{OFOX_REPO}/device/{args}'
 
     edit(message, f'`{get_translation("ofrpConnect")}`')
 
-    driver = get_webdriver()
-    driver.get(OFOX_URL)
+    releases = ofrp_get_packages(args)
 
-    notfound = driver.find_elements_by_xpath(
-        '//img[contains(@alt,"Not Found")]')
-
-    if len(notfound) > 0:
+    if len(releases) < 1:
         edit(message, get_translation("ofrpNotFound", ['`', args, OFOX_REPO]),
              preview=False)
         return
 
-    try:
-        beta = driver.find_element_by_xpath(
-            '//div[contains(@id, "release-beta-header")]')
-        if beta:
-            beta.click()
-    except BaseException:
-        pass
-
-    sleep(1)
-
-    ofrp_map = {}
-
-    for i in driver.find_elements_by_xpath(
-            '//div[contains(@class, "MuiAccordionDetails-root")]'):
-        version = i.find_elements_by_xpath(
-            './/p[contains(@class, "MuiTypography-body1")]')
-
-        if len(version) < 1:
-            continue
-
-        clcks = i.find_elements_by_xpath(
-            './/div[contains(@class, "MuiPaper-root MuiAccordion-root jss66 MuiAccordion-rounded MuiPaper-elevation1 MuiPaper-rounded")]')
-        lists = i.find_elements_by_xpath(
-            './/li[contains(@class, "MuiListItem-root MuiListItem-gutters")]')
-        for g in range(len(version)):
-            if g < len(clcks):
-                try:
-                    clcks[g].click()
-                except BaseException:
-                    driver.execute_script(
-                        "window.scrollTo(0, document.body.scrollHeight);")
-                    sleep(1)
-                    try:
-                        clcks[g].click()
-                    except BaseException:
-                        pass
-
-            frow = lists[g * 2]
-            srow = lists[(g * 2) + 1]
-
-            while len(name_str := frow.find_elements_by_xpath(
-                    './/span[contains(@class, "MuiListItemText-primary")]')) < 1:
-                sleep(1)
-
-            # dummy but don't delete
-            _ = srow.find_elements_by_xpath(
-                './/p[contains(@class, "MuiListItemText-secondary")]')
-
-            date_str = frow.find_elements_by_xpath(
-                './/p[contains(@class, "MuiListItemText-secondary")]')
-
-            link = f"https://files.orangefox.tech/OrangeFox-{'Stable' if 'Stable' in name_str[0].text else 'Beta'}/{args}/{name_str[0].text}"
-
-            ofrp_map[version[g].text] = [date_str[0].text, link]
-
-    driver.quit()
-
     out = ''
 
-    for key in ofrp_map.keys():
-        item = ofrp_map[key]
-        out += f"[{key}{' (Beta)' if not 'Stable' in item[1] else ''}]({item[1]})\n"
-        out += f"{item[0] if len(item[0].strip()) > 0 else get_translation('ofrpErrorDate')}\n\n"
+    for release in releases:
+        out += f"[{release.version}{' (Beta)' if release.is_beta() else ''}]({release.file_url}) **{release.file_size}**\n"
+        out += f"{release.date or get_translation('ofrpErrorDate')}\n\n"
 
     if len(out) < 1:
         edit(message, f'`{get_translation("ofrpError")}`')
@@ -315,7 +252,6 @@ def specs(message):
     wlan = get_spec('wlan')
     bluetooth = get_spec('bluetooth')
     gps = get_spec('gps')
-    usb = get_spec('usb')
     sensors = get_spec('sensors')
     sarus = sub(r'\s\s+', ', ', get_spec('sar-us'))
     sareu = sub(r'\s\s+', ', ', get_spec('sar-eu'))
@@ -417,7 +353,7 @@ def _xget_random_proxy():
 
 def _try_proxy(proxy):
     try:
-        prxy = f"{proxy[0]}:{proxy[1]}"
+        prxy = f"http://{proxy[0]}:{proxy[1]}"
         req = get('https://www.gsmarena.com/',
                   proxies={"http": prxy, "https": prxy}, timeout=1)
         if req.status_code == 200:
@@ -429,7 +365,9 @@ def _try_proxy(proxy):
 
 def get_random_proxy():
     proxy = _xget_random_proxy()
-    proxy = f"{proxy[0]}:{proxy[1]}"
+    if not proxy:
+        return None
+    proxy = f"http://{proxy[0]}:{proxy[1]}"
     VALID_PROXY_URL.clear()
     VALID_PROXY_URL.append(proxy)
 
@@ -439,6 +377,73 @@ def get_random_proxy():
     }
 
     return proxy_dict
+
+
+class OFRPRelease:
+    def __init__(self, device, type, json):
+        self.type = type
+        self.device = device
+        self.date = json['date']
+        self.unixtime = json['unixtime']
+        self.version = json['version']
+
+        url = f'https://api.orangefox.download/v2/device/{device}/releases/{type}/{self.version}'
+        res = ofrp_get(url)
+
+        if not res:
+            self.file_name = None
+            self.file_size = None
+            self.file_url = None
+            self.changelog = None
+
+        json = loads(res)
+
+        self.file_name = json['file_name']
+        self.file_size = json['size_human']
+        self.file_url = json['url']
+        self.changelog = json['changelog']
+
+    def is_beta(self):
+        return self.type == 'beta'
+
+
+def ofrp_get(url):
+    try:
+        head = {
+            "Accept-Language": "en-US,en;q=0.8",
+            "User-Agent": "ArabyBot (compatible; Mozilla/5.0; GoogleBot; FAST Crawler 6.4; http://www.araby.com;)",
+            "Referer": "https://orangefox.download/en",
+        }
+        req = get(url, headers=head)
+        if '{' not in req.text:
+            raise BaseException
+        return req.text
+    except BaseException:
+        return None
+
+
+def ofrp_get_packages(device):
+    url = f'https://api.orangefox.download/v2/device/{device}/releases'
+    res = ofrp_get(url)
+
+    if not res:
+        return []
+
+    out = []
+
+    json = loads(res)
+
+    if 'stable' in json:
+        stable = json['stable']
+        stable = [OFRPRelease(device, 'stable', x) for x in stable]
+        out += stable
+
+    if 'beta' in json:
+        beta = json['beta']
+        beta = [OFRPRelease(device, 'beta', x) for x in beta]
+        out += beta
+
+    return out
 
 
 KOMUT.update({"android": get_translation("androidInfo")})

@@ -82,7 +82,6 @@ def sedenify(**args):
                     app.stop()
                 except BaseException:
                     pass
-                execl(executable, 'killall', executable)
             except ContinuePropagation as c:
                 raise c
             except Exception as e:

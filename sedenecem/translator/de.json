@@ -374,7 +374,7 @@
     "sedenQueryUd": "%1Abfrage:%1\n%2%3%2\n%1Bedeutung:%1\n%2%4%2\n\n%1Beispiel:%1\n%2%5%2",
     "sedenSetAlive": "Neue lebendige Botschaft ist %1",
     "sedenShowBotVersion": "%1[%3](https://t.me/%4)%1\n%1Version:%1 %2v%5%2\n%1\u00c4nderungen (Commits):%1 %2%6%2",
-    "sedenShowLoadedModules": "%1[%2](https://t.me/%3)\nGeladene Module:%1",
+    "sedenShowLoadedModules": "%1Geladene Module:%1 %2%3%2\n%1Module:%1",
     "sedenUsage": "Bitte geben sie ein Seden Modul an.",
     "sedenUsage2": "%1Bitte geben sie an, mit welchem Seden Modul sie hilfe suchen!\nVerwendung:%1 %2.seden <modulnamen>%2",
     "sedenVersion": "Bot version; Seden v%1",

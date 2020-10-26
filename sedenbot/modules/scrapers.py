@@ -460,10 +460,15 @@ def deEmojify(inputString):
 @sedenify(pattern='^.lang')
 def lang(message):
     arr = extract_args(message).split(' ', 1)
+
+    if len(arr) != 2:
+        edit(message, f'`{get_translation("wrongCommand")}`')
+        return
+
     util = arr[0].lower()
     arg = arr[1].lower()
     if util == "trt":
-        scraper = f'{get_translation("scraper1")}'
+        scraper = get_translation("scraper1")
         global TRT_LANG
         if arg in LANGUAGES:
             TRT_LANG = arg
@@ -472,7 +477,7 @@ def lang(message):
             edit(message, get_translation("scraperTrt", ['`', LANGUAGES]))
             return
     elif util == "tts":
-        scraper = f'{get_translation("scraper2")}'
+        scraper = get_translation("scraper2")
         global TTS_LANG
         if arg in tts_langs():
             TTS_LANG = arg

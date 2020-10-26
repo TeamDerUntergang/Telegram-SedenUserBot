@@ -28,8 +28,8 @@ from sedenecem.core import (edit, reply_img, sedenify,
 @sedenify(pattern='^.(deepf|f)ry', compat=False)
 def deepfry(client, message):
 
-    text = message.text.split(' ', 1)
-    fry = parse_cmd(text[0])[:3] == 'fry'
+    text = (message.text or message.caption).split(' ', 1)
+    fry = parse_cmd(text[0]) == 'fry'
 
     try:
         frycount = int(text[1])
@@ -43,6 +43,9 @@ def deepfry(client, message):
         frycount = MAX_LIMIT
 
     reply = message.reply_to_message
+
+    if not reply and message.caption:
+        reply = message
 
     if reply:
         data = check_media(reply)

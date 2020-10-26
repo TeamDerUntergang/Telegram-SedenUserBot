@@ -374,7 +374,7 @@
     "sedenQueryUd": "%1Sorgu:%1\n%2%3%2\n%1S\u00f6yleyi\u015f:%1\n%2%4%2\n\n%1\u00d6rnek:%1\n%2%5%2",
     "sedenSetAlive": "Alive mesaj\u0131, %1 olarak ayarland\u0131",
     "sedenShowBotVersion": "%1[%3](https://t.me/%4)%1\n%1S\u00fcr\u00fcm:%1 %2v%5%2\n%1De\u011fi\u015fiklikler:%1 %2%6%2",
-    "sedenShowLoadedModules": "%1[%2](https://t.me/%3) Y\u00fckl\u00fc mod\u00fcller:%1",
+    "sedenShowLoadedModules": "%1Y\u00fcklenen mod\u00fcl say\u0131s\u0131:%1 %2%3%2\nMod\u00fcller:%1",
     "sedenUsage": "L\u00fctfen bir Seden mod\u00fcl\u00fc ad\u0131 belirtin.",
     "sedenUsage2": "%1L\u00fctfen hangi Seden mod\u00fcl\u00fc i\u00e7in yard\u0131m istedi\u011finizi belirtin!\nKullan\u0131m:%1 %2.seden <mod\u00fcl ad\u0131>%2",
     "sedenVersion": "Bot s\u00fcr\u00fcm\u00fc; Seden v%1",

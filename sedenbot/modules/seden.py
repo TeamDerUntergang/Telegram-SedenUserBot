@@ -32,7 +32,7 @@ def seden(message):
     else:
         edit(message, get_translation("sedenUsage2", ['**', '`']))
         metin = "{}\n".format(get_translation('sedenShowLoadedModules', [
-            '**', 'Seden UserBot', CHANNEL]))
+            '**', '`', len(cmds)]))
         for item in cmds:
             metin += f'• `{item}`\n'
         reply(message, metin, preview=False)

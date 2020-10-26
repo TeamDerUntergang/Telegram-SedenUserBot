@@ -23,8 +23,34 @@ SPAM_COUNT = [0]
 _parsed_prefix = escape(BOT_PREFIX or '.')
 
 
+def reply(
+        message,
+        text,
+        preview=True,
+        fix_markdown=False,
+        delete_orig=False,
+        parse='md'):
+    try:
+        if fix_markdown:
+            text += MARKDOWN_FIX_CHAR
+        ret = message.reply_text(
+            text.strip(),
+            disable_web_page_preview=not preview,
+            parse_mode=parse)
+        if delete_orig:
+            message.delete()
+        return ret
+    except BaseException:
+        pass
+
+
 def extract_args(message, markdown=True):
-    text = message.text.markdown if markdown else message.text
+    if not (message.text or message.caption):
+        return
+
+    text = message.text or message.caption
+
+    text = text.markdown if markdown else text
     if ' ' not in text:
         return ''
 
@@ -57,7 +83,7 @@ def download_media(
         data,
         file_name=None,
         progress=None,
-        sticker_orig=False):
+        sticker_orig=True):
     if not file_name:
         if data.document:
             file_name = (data.document.file_name
@@ -80,7 +106,7 @@ def download_media(
         elif data.video_note:
             file_name = f'{data.video_note.file_id}.mp4'
         elif data.sticker:
-            file_name = f'{data.sticker.file_name}.{"TGS" if data.sticker.is_animated else ("webp" if sticker_orig else "png")}'
+            file_name = f'sticker.{("tgs" if sticker_orig else "TGS") if data.sticker.is_animated else ("webp" if sticker_orig else "png")}'
         else:
             return None
 
@@ -104,7 +130,6 @@ def forward(message, chat_id):
         return message.forward(chat_id or 'me')
     except Exception as e:
         raise e
-        return None
 
 
 def get_messages(chat_id, msg_ids=None, client=app):
@@ -137,5 +162,5 @@ def get_cmd(message):
 
 
 def parse_cmd(text):
-    return (text[len(_parsed_prefix):text.find(' ')]
-            if ' ' in text else text[len(_parsed_prefix):]).strip()
+    return (text[len(_parsed_prefix) - 1:text.find(' ')]
+            if ' ' in text else text[len(_parsed_prefix) - 1:]).strip()

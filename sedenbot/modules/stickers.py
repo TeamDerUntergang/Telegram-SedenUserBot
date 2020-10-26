@@ -103,7 +103,10 @@ def kang(client, message):
         if msg.text == 'Invalid pack selected.':
             pack += 1
             return create_new(conv)
-        send_recv(conv, media, doc=True)
+        msg = send_recv(conv, media, doc=True)
+        if 'Sorry, the file type is invalid.' in msg.text:
+            edit(message, f'`{get_translation("stickerError")}`')
+            return
         send_recv(conv, emoji)
         send_recv(conv, '/publish')
         if anim:

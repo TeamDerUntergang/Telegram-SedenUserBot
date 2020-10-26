@@ -15,28 +15,7 @@
 #
 
 from os import remove
-from .misc import MARKDOWN_FIX_CHAR, download_media_wc
-
-
-def reply(
-        message,
-        text,
-        preview=True,
-        fix_markdown=False,
-        delete_orig=False,
-        parse='md'):
-    try:
-        if fix_markdown:
-            text += MARKDOWN_FIX_CHAR
-        ret = message.reply_text(
-            text.strip(),
-            disable_web_page_preview=not preview,
-            parse_mode=parse)
-        if delete_orig:
-            message.delete()
-        return ret
-    except BaseException:
-        pass
+from .misc import MARKDOWN_FIX_CHAR, download_media_wc, reply
 
 
 def reply_img(

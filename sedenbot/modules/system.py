@@ -31,7 +31,7 @@ from sedenbot import KOMUT, ALIVE_MSG, BOT_VERSION, CHANNEL, HEROKU_KEY, HEROKU_
 from sedenecem.core import (edit, reply, reply_doc, send_log,
                             extract_args, sedenify, get_translation)
 # ================= CONSTANT =================
-KULLANICIMESAJI = ALIVE_MSG or get_translation('sedenAlive')
+KULLANICIMESAJI = ALIVE_MSG or f"`{get_translation('sedenAlive')}`"
 # ============================================
 
 

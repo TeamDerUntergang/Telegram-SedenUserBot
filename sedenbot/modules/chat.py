@@ -16,7 +16,7 @@
 
 from time import sleep
 from sedenbot import KOMUT, LOGS
-from sedenecem.core import edit, sedenify, send_log, get_translation
+from sedenecem.core import edit, sedenify, extract_args, send_log, get_translation
 
 
 def chat_init():
