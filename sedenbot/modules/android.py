@@ -31,13 +31,11 @@ GITHUB = 'https://github.com'
 @sedenify(pattern='^.magisk$')
 def magisk(message):
     magisk_dict = {
-        "Stable":
-        "https://raw.githubusercontent.com/topjohnwu/magisk_files/master/stable.json",
-        "Beta":
-        "https://raw.githubusercontent.com/topjohnwu/magisk_files/master/beta.json",
-        "Canary (Debug)":
-        "https://raw.githubusercontent.com/topjohnwu/magisk_files/canary/debug.json"}
-    releases = f'`{get_translation("magiskReleases")}`\n'
+        'Stable':
+        'https://raw.githubusercontent.com/topjohnwu/magisk_files/master/stable.json',
+        'Beta':
+        'https://raw.githubusercontent.com/topjohnwu/magisk_files/master/beta.json'}
+    releases = f'**{get_translation("magiskReleases")}**\n'
     for name, release_url in magisk_dict.items():
         data = get(release_url).json()
         releases += f'`{name}:` [ZIP v{data["magisk"]["version"]}]({data["magisk"]["link"]}) | ' \
