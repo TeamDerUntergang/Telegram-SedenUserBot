@@ -46,6 +46,7 @@ VALID_PROXY_URL = []
 CONVERSATION = {}
 PM_COUNT = {}
 PM_LAST_MSG = {}
+TEMP_SETTINGS = {}
 
 # Console verbose logging
 LOG_VERBOSE = sb(environ.get("LOG_VERBOSE", "False"))
@@ -131,6 +132,10 @@ GENIUS_TOKEN = environ.get("GENIUS_TOKEN", None) or environ.get("GENIUS", None)
 # Change Alive Message
 ALIVE_MSG = environ.get("ALIVE_MSG", None)
 
+# For neofetch
+HOSTNAME = environ.get("HOSTNAME", "DerUntergang")
+USER = environ.get("USER", "sedenecem")
+
 # Chrome Driver and Headless Google Chrome Binaries
 CHROME_DRIVER = environ.get("CHROME_DRIVER", "chromedriver")
 
@@ -151,7 +156,7 @@ SESSION = environ.get("SESSION", 'sedenuserbot')
 
 # SedenBot repo url for updater
 REPO_URL = environ.get(
-    "REPO_URL", "https://github.com/TeamDerUntergang/SedenUserBot")
+    "REPO_URL", "https://github.com/TeamDerUntergang/Telegram-SedenUserBot")
 
 # Heroku Credentials for updater
 HEROKU_KEY = environ.get("HEROKU_KEY", None)
@@ -164,8 +169,8 @@ LOG_ID = int(LOG_ID) if LOG_ID and resr(r'^-?\d+$', LOG_ID) else None
 # Connect to the test server
 #
 # You'll have a separate account,
-# but you won't be able to access
-# or access messages on the regular server
+# but you won't be able to access contacts
+# or messages on the regular server
 #
 # Also known as Deep Telegram
 #

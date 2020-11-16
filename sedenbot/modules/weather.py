@@ -53,10 +53,10 @@ def havadurumu(message):
         if '===' in data:
             raise Exception
         data = data.replace('`', '‛')
-        edit(message, f'`{data}`', fix_markdown=True)
+        edit(message, f'`{data}`')
     except Exception as e:
         edit(message, f'`{get_translation("weatherErrorServer")}`')
         raise e
 
 
-KOMUT.update({"havadurumu": get_translation('infoWeather')})
+KOMUT.update({"weather": get_translation('infoWeather')})

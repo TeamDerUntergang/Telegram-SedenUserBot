@@ -34,7 +34,7 @@ def rbg(client, message):
 
     if reply and (
             reply.photo or (
-            reply.document and 'image' in reply.document.mime_typereply.document)):
+            reply.document and 'image' in reply.document.mime_type)):
         edit(message, f'`{get_translation("processing")}`')
     else:
         edit(message, f'`{get_translation("rbgUsage")}`')

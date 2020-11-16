@@ -114,7 +114,7 @@ def img(message):
         if lim > 10:
             lim = 10
     except IndexError:
-        lim = 5
+        lim = 3
 
     if len(query) < 1:
         edit(message, f'`{get_translation("imgUsage")}`')

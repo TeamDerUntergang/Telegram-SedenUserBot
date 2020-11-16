@@ -37,10 +37,13 @@ def magisk(message):
         'https://raw.githubusercontent.com/topjohnwu/magisk_files/master/beta.json'}
     releases = f'**{get_translation("magiskReleases")}**\n'
     for name, release_url in magisk_dict.items():
-        data = get(release_url).json()
-        releases += f'`{name}:` [ZIP v{data["magisk"]["version"]}]({data["magisk"]["link"]}) | ' \
-                    f'[APK v{data["app"]["version"]}]({data["app"]["link"]}) | ' \
-                    f'[Uninstaller]({data["uninstaller"]["link"]})\n'
+        try:
+            data = get(release_url).json()
+            releases += f'`{name}:` [ZIP v{data["magisk"]["version"]}]({data["magisk"]["link"]}) | ' \
+                        f'[APK v{data["app"]["version"]}]({data["app"]["link"]}) | ' \
+                        f'[Uninstaller]({data["uninstaller"]["link"]})\n'
+        except BaseException:
+            pass
     edit(message, releases, preview=False)
 
 

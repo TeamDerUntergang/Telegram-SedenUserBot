@@ -30,20 +30,7 @@ from sedenecem.core import (
     extract_args,
     sticker_resize as resizer)
 # ================= CONSTANT =================
-DIZCILIK = [
-    f'{get_translation("kangstr1")}',
-    f'{get_translation("kangstr2")}',
-    f'{get_translation("kangstr3")}',
-    f'{get_translation("kangstr4")}',
-    f'{get_translation("kangstr5")}',
-    f'{get_translation("kangstr6")}',
-    f'{get_translation("kangstr7")}',
-    f'{get_translation("kangstr8")}',
-    f'{get_translation("kangstr9")}',
-    f'{get_translation("kangstr10")}',
-    f'{get_translation("kangstr11")}',
-    f'{get_translation("kangstr12")}',
-]
+DIZCILIK = [get_translation(f'kangstr{i+1}') for i in range(0, 12)]
 # ================= CONSTANT =================
 
 
@@ -65,8 +52,8 @@ def kang(client, message):
 
     if(reply.photo or reply.document or reply.sticker):
         edit(message, f'`{choice(DIZCILIK)}`')
-        media = download_media(client, reply)
         anim = reply.sticker and reply.sticker.is_animated
+        media = download_media(client, reply, sticker_orig=anim)
     else:
         edit(message, f'`{get_translation("stickerError")}`')
         return

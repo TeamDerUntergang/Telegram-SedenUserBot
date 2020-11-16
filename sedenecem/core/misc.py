@@ -20,7 +20,7 @@ from sedenbot import app, me, BRAIN_CHECKER, BOT_PREFIX
 
 MARKDOWN_FIX_CHAR = '\u2064'
 SPAM_COUNT = [0]
-_parsed_prefix = escape(BOT_PREFIX or '.')
+_parsed_prefix = escape(BOT_PREFIX) if BOT_PREFIX else r'\.'
 
 
 def reply(
@@ -155,12 +155,13 @@ def spam_allowed():
 
 
 def get_cmd(message):
-    if message.text:
-        text = message.text.strip()
+    text = message.text or message.caption
+    if text:
+        text = text.strip()
         return parse_cmd(text)
     return ''
 
 
 def parse_cmd(text):
-    return (text[len(_parsed_prefix) - 1:text.find(' ')]
-            if ' ' in text else text[len(_parsed_prefix) - 1:]).strip()
+    return (text[len(_parsed_prefix):text.find(' ')]
+            if ' ' in text else text[len(_parsed_prefix):]).strip()

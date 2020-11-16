@@ -27,7 +27,8 @@ from pyrogram.api.functions.help import GetNearestDc
 from sedenbot.modules.lovers import saniye
 from sedenbot.modules.ecem import ecem
 from sedenbot.modules.horeke import restart, shutdown
-from sedenbot import KOMUT, ALIVE_MSG, BOT_VERSION, CHANNEL, HEROKU_KEY, HEROKU_APPNAME
+from sedenbot import (KOMUT, ALIVE_MSG, BOT_VERSION, CHANNEL,
+                      HEROKU_KEY, HEROKU_APPNAME, HOSTNAME, USER)
 from sedenecem.core import (edit, reply, reply_doc, send_log,
                             extract_args, sedenify, get_translation)
 # ================= CONSTANT =================
@@ -39,7 +40,9 @@ KULLANICIMESAJI = ALIVE_MSG or f"`{get_translation('sedenAlive')}`"
 def neofetch(message):
     try:
         from subprocess import PIPE, Popen
-        islem = Popen(['neofetch', '--stdout'], stdout=PIPE, stderr=PIPE)
+        islem = Popen(
+            ['neofetch', f'HOSTNAME={HOSTNAME}', f'USER={USER}', '--stdout'],
+            stdout=PIPE, stderr=PIPE)
         sonuc, _ = islem.communicate()
         edit(message, sonuc.decode(), parse=None)
     except BaseException:
@@ -62,8 +65,7 @@ def botver(message):
                               CHANNEL,
                               BOT_VERSION,
                               sonuc]),
-             preview=False,
-             fix_markdown=True)
+             preview=False)
     else:
         edit(message, f'`{get_translation("sedenGitNotFound")}`')
 
@@ -172,8 +174,7 @@ def terminal(message):
 
     edit(
         message,
-        f'`{curruser}:~{"#" if uid == 0 else "$"} {command}\n{sonuc}`',
-        fix_markdown=True)
+        f'`{curruser}:~{"#" if uid == 0 else "$"} {command}\n{sonuc}`')
 
     send_log(get_translation('termLog', [command]))
 

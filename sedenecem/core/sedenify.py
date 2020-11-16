@@ -19,11 +19,11 @@ from sys import executable, exc_info
 from time import gmtime, strftime
 from traceback import format_exc
 
-from pyrogram import Filters, MessageHandler, ContinuePropagation
+from pyrogram import Filters, MessageHandler, ContinuePropagation, StopPropagation
 from sedenbot import (SUPPORT_GROUP, BLACKLIST,
                       BRAIN_CHECKER, me, app, get_translation)
 from .sedenlog import send_log_doc
-from .misc import edit, _parsed_prefix
+from .misc import edit, _parsed_prefix, get_cmd
 
 
 def sedenify(**args):
@@ -66,12 +66,12 @@ def sedenify(**args):
                 if not private and message.chat.type in ['private', 'bot']:
                     if not disable_notify:
                         edit(message, f'`{get_translation("groupUsage")}`')
-                    return
+                    message.continue_propagation()
 
                 if not group and message.chat.type in ['group', 'supergroup']:
                     if not disable_notify:
                         edit(message, f'`{get_translation("privateUsage")}`')
-                    return
+                    message.continue_propagation()
 
                 if not compat:
                     func(client, message)
@@ -82,20 +82,17 @@ def sedenify(**args):
                     app.stop()
                 except BaseException:
                     pass
-            except ContinuePropagation as c:
+            except (ContinuePropagation, StopPropagation) as c:
                 raise c
             except Exception as e:
-                if disable_notify:
-                    return
-
                 try:
                     date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
 
-                    if f'{_parsed_prefix}crash' == f'{message.text}'.split()[
-                            0]:
+                    if get_cmd(message) == 'crash':
                         text = f'{get_translation("logidTest")}'
                     else:
-                        edit(message, f'`{get_translation("errorLogSend")}`')
+                        if not disable_notify:
+                            edit(message, f'`{get_translation("errorLogSend")}`')
                         link = get_translation("supportGroup", [SUPPORT_GROUP])
                         text = get_translation("sedenErrorText", ['**', link])
 
@@ -132,12 +129,12 @@ def sedenify(**args):
             if outgoing and not incoming:
                 filter &= Filters.me
             elif incoming and not outgoing:
-                filter &= (Filters.incoming & ~Filters.bot)
+                filter &= (Filters.incoming & ~Filters.bot & ~Filters.me)
         else:
             if outgoing and not incoming:
                 filter = Filters.me
             elif incoming and not outgoing:
-                filter = (Filters.incoming & ~Filters.bot)
+                filter = (Filters.incoming & ~Filters.bot & ~Filters.me)
             else:
                 filter = (Filters.me | Filters.incoming) & ~Filters.bot
 
