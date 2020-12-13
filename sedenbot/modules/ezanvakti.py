@@ -1,17 +1,10 @@
-# Copyright (C) 2020 TeamDerUntergang.
+# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
-# SedenUserBot is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of TeamDerUntergang project,
+# and licensed under GNU Affero General Public License v3.
+# See the GNU Affero General Public License for more details.
 #
-# SedenUserBot is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# All rights reserved. See COPYING, AUTHORS.
 #
 
 from re import sub, DOTALL
@@ -86,88 +79,29 @@ def find_loc(konum):
 
 
 sehirler = [
-    '01 Adana 9146',
-    '02 Adiyaman 9158',
-    '03 Afyonkarahisar 9167',
-    '04 Agri 9185',
-    '05 Amasya 9198',
-    '06 Ankara 9206',
-    '07 Antalya 9225',
-    '08 Artvin 9246',
-    '09 Aydin 9252',
-    '10 Balikesir 9270',
-    '11 Bilecik 9297',
-    '12 Bingol 9303',
-    '13 Bitlis 9311',
-    '14 Bolu 9315',
-    '15 Burdur 9327',
-    '16 Bursa 9335',
-    '17 Canakkale 9352',
-    '18 Cankiri 9359',
-    '19 Corum 9370',
-    '20 Denizli 9392',
-    '21 Diyarbakir 9402',
-    '22 Edirne 9419',
-    '23 Elazig 9432',
-    '24 Erzincan 9440',
-    '25 Erzurum 9451',
-    '26 Eskisehir 9470',
-    '27 Gaziantep 9479',
-    '28 Giresun 9494',
-    '29 Gumushane 9501',
-    '30 Hakkari 9507',
-    '31 Hatay 20089',
-    '32 Isparta 9528',
-    '33 Mersin 9737',
-    '34 Istanbul 9541',
-    '35 Izmir 9560',
-    '36 Kars 9594',
-    '37 Kastamonu 9609',
-    '38 Kayseri 9620',
-    '39 Kirklareli 9638',
-    '40 Kirsehir 9646',
-    '41 Kocaeli 9654',
-    '42 Konya 9676',
-    '43 Kutahya 9689',
-    '44 Malatya 9703',
-    '45 Manisa 9716',
-    '46 Kahramanmaras 9577',
-    '47 Mardin 9726',
-    '48 Mugla 9747',
-    '49 Mus 9755',
-    '50 Nevsehir 9760',
-    '51 Nigde 9766',
-    '52 Ordu 9782',
-    '53 Rize 9799',
-    '54 Sakarya 9807',
-    '55 Samsun 9819',
-    '56 Siirt 9839',
-    '57 Sinop 9847',
-    '58 Sivas 9868',
-    '59 Tekirdag 9879',
-    '60 Tokat 9887',
-    '61 Trabzon 9905',
-    '62 Tunceli 9914',
-    '63 Sanliurfa 9831',
-    '64 Usak 9919',
-    '65 Van 9930',
-    '66 Yozgat 9949',
-    '67 Zonguldak 9955',
-    '68 Aksaray 9193',
-    '69 Bayburt 9295',
-    '70 Karaman 9587',
-    '71 Kirikkale 9635',
-    '72 Batman 9288',
-    '73 Sirnak 9854',
-    '74 Bartin 9285',
-    '75 Ardahan 9238',
-    '76 Igdir 9522',
-    '77 Yalova 9935',
-    '78 Karabuk 9581',
-    '79 Kilis 9629',
-    '80 Osmaniye 9788',
-    '81 Duzce 9414'
-]
+    '01 Adana 9146', '02 Adiyaman 9158', '03 Afyonkarahisar 9167',
+    '04 Agri 9185', '05 Amasya 9198', '06 Ankara 9206', '07 Antalya 9225',
+    '08 Artvin 9246', '09 Aydin 9252', '10 Balikesir 9270', '11 Bilecik 9297',
+    '12 Bingol 9303', '13 Bitlis 9311', '14 Bolu 9315', '15 Burdur 9327',
+    '16 Bursa 9335', '17 Canakkale 9352', '18 Cankiri 9359', '19 Corum 9370',
+    '20 Denizli 9392', '21 Diyarbakir 9402', '22 Edirne 9419',
+    '23 Elazig 9432', '24 Erzincan 9440', '25 Erzurum 9451',
+    '26 Eskisehir 9470', '27 Gaziantep 9479', '28 Giresun 9494',
+    '29 Gumushane 9501', '30 Hakkari 9507', '31 Hatay 20089',
+    '32 Isparta 9528', '33 Mersin 9737', '34 Istanbul 9541', '35 Izmir 9560',
+    '36 Kars 9594', '37 Kastamonu 9609', '38 Kayseri 9620',
+    '39 Kirklareli 9638', '40 Kirsehir 9646', '41 Kocaeli 9654',
+    '42 Konya 9676', '43 Kutahya 9689', '44 Malatya 9703', '45 Manisa 9716',
+    '46 Kahramanmaras 9577', '47 Mardin 9726', '48 Mugla 9747', '49 Mus 9755',
+    '50 Nevsehir 9760', '51 Nigde 9766', '52 Ordu 9782', '53 Rize 9799',
+    '54 Sakarya 9807', '55 Samsun 9819', '56 Siirt 9839', '57 Sinop 9847',
+    '58 Sivas 9868', '59 Tekirdag 9879', '60 Tokat 9887', '61 Trabzon 9905',
+    '62 Tunceli 9914', '63 Sanliurfa 9831', '64 Usak 9919', '65 Van 9930',
+    '66 Yozgat 9949', '67 Zonguldak 9955', '68 Aksaray 9193',
+    '69 Bayburt 9295', '70 Karaman 9587', '71 Kirikkale 9635',
+    '72 Batman 9288', '73 Sirnak 9854', '74 Bartin 9285', '75 Ardahan 9238',
+    '76 Igdir 9522', '77 Yalova 9935', '78 Karabuk 9581', '79 Kilis 9629',
+    '80 Osmaniye 9788', '81 Duzce 9414']
 
 KOMUT.update({
     "ezanvakti":

@@ -1,24 +1,15 @@
-# Copyright (C) 2020 TeamDerUntergang.
+# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
-# SedenUserBot is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of TeamDerUntergang project,
+# and licensed under GNU Affero General Public License v3.
+# See the GNU Affero General Public License for more details.
 #
-# SedenUserBot is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# All rights reserved. See COPYING, AUTHORS.
 #
 
-from os import execl, remove
 from datetime import datetime
 from shutil import which
 from getpass import getuser
-from sys import executable, argv
 from operator import add, sub, mul, truediv, pow, xor, neg
 from ast import (Add, Sub, Mult, Div, Pow, BitXor, USub,
                  parse, Num, BinOp, UnaryOp)
@@ -26,9 +17,8 @@ from ast import (Add, Sub, Mult, Div, Pow, BitXor, USub,
 from pyrogram.api.functions.help import GetNearestDc
 from sedenbot.modules.lovers import saniye
 from sedenbot.modules.ecem import ecem
-from sedenbot.modules.horeke import restart, shutdown
-from sedenbot import (KOMUT, ALIVE_MSG, BOT_VERSION, CHANNEL,
-                      HEROKU_KEY, HEROKU_APPNAME, HOSTNAME, USER)
+from sedenbot import (KOMUT, ALIVE_MSG, CHANNEL,
+                      BOT_VERSION, HOSTNAME, USER)
 from sedenecem.core import (edit, reply, reply_doc, send_log,
                             extract_args, sedenify, get_translation)
 # ================= CONSTANT =================
@@ -87,8 +77,7 @@ def pip3(message):
                 file = open('pip3.txt', 'w+')
                 file.write(sonuc)
                 file.close()
-                reply_doc(message, 'pip3.txt')
-                remove('pip3.txt')
+                reply_doc(message, 'pip3.txt', delete_after_send=True)
                 return
             edit(message, get_translation(
                 'sedenQuery', ['**', '`', pipsorgu, sonuc]))
@@ -168,8 +157,8 @@ def terminal(message):
         output.write(sonuc)
         output.close()
         reply_doc(message, 'output.txt',
-                  caption=f'`{get_translation("outputTooLarge")}`')
-        remove('output.txt')
+                  caption=f'`{get_translation("outputTooLarge")}`',
+                  delete_after_send=True)
         return
 
     edit(
@@ -196,8 +185,8 @@ def eval(message):
                     file.close()
                     reply_doc(message,
                               'output.txt',
-                              caption=f'`{get_translation("outputTooLarge")}`')
-                    remove('output.txt')
+                              caption=f'`{get_translation("outputTooLarge")}`',
+                              delete_after_send=True)
                     return
                 edit(message, get_translation(
                     'sedenQuery', ['**', '`', args, evaluation]))
@@ -217,7 +206,7 @@ operators = {Add: add, Sub: sub, Mult: mul,
 
 
 def safe_eval(expr):
-    expr = expr.lower().replace("x", "*").replace(" ", "")
+    expr = expr.lower().replace('x', '*').replace(' ', '')
     return str(_eval(parse(expr, mode='eval').body))
 
 
@@ -232,12 +221,12 @@ def _eval(node):
         raise TypeError(f'`{get_translation("safeEval")}`')
 
 
-KOMUT.update({"neofetch": get_translation("neofetchInfo")})
-KOMUT.update({"botver": get_translation("botverInfo")})
-KOMUT.update({"pip": get_translation("pipInfo")})
-KOMUT.update({"dc": get_translation("dcInfo")})
-KOMUT.update({"ping": get_translation("pingInfo")})
-KOMUT.update({"echo": get_translation("echoInfo")})
-KOMUT.update({"eval": get_translation("evalInfo")})
-KOMUT.update({"term": get_translation("termInfo")})
-KOMUT.update({"alive": get_translation("aliveInfo")})
+KOMUT.update({'neofetch': get_translation('neofetchInfo')})
+KOMUT.update({'botver': get_translation('botverInfo')})
+KOMUT.update({'pip': get_translation('pipInfo')})
+KOMUT.update({'dc': get_translation('dcInfo')})
+KOMUT.update({'ping': get_translation('pingInfo')})
+KOMUT.update({'echo': get_translation('echoInfo')})
+KOMUT.update({'eval': get_translation('evalInfo')})
+KOMUT.update({'term': get_translation('termInfo')})
+KOMUT.update({'alive': get_translation('aliveInfo')})

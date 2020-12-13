@@ -1,18 +1,10 @@
-# Copyright (C) 2020 TeamDerUntergang.
+# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
-# SedenUserBot is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of TeamDerUntergang project,
+# and licensed under GNU Affero General Public License v3.
+# See the GNU Affero General Public License for more details.
 #
-# SedenUserBot is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#
+# All rights reserved. See COPYING, AUTHORS.
 #
 
 from requests import post
@@ -22,7 +14,7 @@ from sedenecem.core import edit, sedenify, get_translation
 
 @sedenify(pattern='^.b[ıi]rakmamseni$')
 def birakmamseni(message):
-    """Copyright (c) @Adem68 | 2020"""
+    '''Copyright (c) @Adem68 | 2020'''
     url = 'https://birakmamseni.org/'
     path = 'api/counter'
 
@@ -43,9 +35,9 @@ def birakmamseni(message):
         edit(message, f'`{get_translation("covidError")}`')
         return
 
-    sonuc = (get_translation("birakmamseniResult", ['**', '`', count]))
+    sonuc = get_translation('birakmamseniResult', ['**', '`', count])
 
     edit(message, sonuc, preview=False)
 
 
-KOMUT.update({"birakmamseni": get_translation("birakmamseniInfo")})
+KOMUT.update({'birakmamseni': get_translation('birakmamseniInfo')})

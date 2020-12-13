@@ -1,17 +1,10 @@
-# Copyright (C) 2020 TeamDerUntergang.
+# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
-# SedenUserBot is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of TeamDerUntergang project,
+# and licensed under GNU Affero General Public License v3.
+# See the GNU Affero General Public License for more details.
 #
-# SedenUserBot is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# All rights reserved. See COPYING, AUTHORS.
 #
 
 from io import BytesIO
@@ -29,7 +22,7 @@ def blacklist_init():
         sql = import_module('sedenecem.sql.blacklist_sql')
     except Exception as e:
         sql = None
-        LOGS.warn(f'{get_translation("blacklistSqlLog")}')
+        LOGS.warn(get_translation('blacklistSqlLog'))
         raise e
 
 
@@ -63,7 +56,7 @@ def blacklist(message):
             try:
                 message.delete()
                 msg_removed = True
-            except Exception as e:
+            except Exception:
                 reply(
                     message, f'`{get_translation("blacklistPermission")}`')
                 sql.rm_from_blacklist(message.chat.id, snip.lower())
@@ -131,4 +124,4 @@ def rmblacklist(message):
     edit(message, get_translation('blacklistRemoveSuccess', ['**', '`', text]))
 
 
-KOMUT.update({"blacklist": get_translation("blacklistInfo")})
+KOMUT.update({'blacklist': get_translation('blacklistInfo')})

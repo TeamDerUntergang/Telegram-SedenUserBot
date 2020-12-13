@@ -1,22 +1,12 @@
-# Copyright (C) 2020 TeamDerUntergang.
+# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
-# SedenUserBot is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of TeamDerUntergang project,
+# and licensed under GNU Affero General Public License v3.
+# See the GNU Affero General Public License for more details.
 #
-# SedenUserBot is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#
-# @NaytSeyd tarafından portlanmıştır
+# All rights reserved. See COPYING, AUTHORS.
 #
 
-from os import remove
 from PIL import Image, ImageColor
 
 from sedenbot import KOMUT
@@ -27,9 +17,10 @@ from sedenecem.core import (edit, reply_img, extract_args,
 @sedenify(pattern='^.color')
 def color(message):
     input_str = extract_args(message)
+    reply = message.reply_to_message
     message_id = message.chat.id
-    if message.reply_to_message:
-        message_id = message.reply_to_message
+    if reply:
+        message_id
     if input_str.startswith('#'):
         try:
             usercolor = ImageColor.getrgb(input_str)
@@ -37,14 +28,14 @@ def color(message):
             edit(message, str(e))
             return False
         else:
-            im = Image.new(mode='RGB', size=(1280, 720), color=usercolor)
+            im = Image.new(mode='RGB', size=(1920, 1080), color=usercolor)
             im.save('sedencik.png', 'PNG')
             input_str = input_str.replace('#', '#RENK_')
-            reply_img(message, 'sedencik.png', caption=input_str)
-            remove('sedencik.png')
+            reply_img(message, 'sedencik.png',
+                      caption=input_str, delete_file=True)
             message.delete()
     else:
         edit(message, f'`{get_translation("colorsUsage")}`')
 
 
-KOMUT.update({'color': get_translation("colorsInfo")})
+KOMUT.update({'color': get_translation('colorsInfo')})

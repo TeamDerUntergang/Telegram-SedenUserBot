@@ -1,17 +1,10 @@
-# Copyright (C) 2020 TeamDerUntergang.
+# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
-# SedenUserBot is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of TeamDerUntergang project,
+# and licensed under GNU Affero General Public License v3.
+# See the GNU Affero General Public License for more details.
 #
-# SedenUserBot is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# All rights reserved. See COPYING, AUTHORS.
 #
 
 from sqlite3 import connect
@@ -30,37 +23,12 @@ from traceback import format_exc
 
 
 def reload_env():
-    return load_dotenv("config.env", override=True)
+    return load_dotenv('config.env', override=True)
 
 
 reload_env()
 
-if version_info[0] < 3 or version_info[1] < 8:
-    LOGS.warn(get_translation("pythonVersionError"))
-    quit(1)
-
-KOMUT = {}
-BRAIN_CHECKER = []
-BLACKLIST = []
-VALID_PROXY_URL = []
-CONVERSATION = {}
-PM_COUNT = {}
-PM_LAST_MSG = {}
-TEMP_SETTINGS = {}
-
-# Console verbose logging
-LOG_VERBOSE = sb(environ.get("LOG_VERBOSE", "False"))
-
-basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=DEBUG if LOG_VERBOSE else INFO,
-)
-
-#
-# Bot lang
-#
-# If missted, the default lang is English.
-SEDEN_LANG = environ.get('SEDEN_LANG', 'en')
+LOGS = getLogger(__name__)
 
 
 def get_translation(transKey, params: list = None):
@@ -73,6 +41,34 @@ def get_translation(transKey, params: list = None):
     ret = ret.replace('½', '%')
 
     return ret
+
+
+if version_info[0] < 3 or version_info[1] < 8:
+    LOGS.warn(get_translation('pythonVersionError'))
+    quit(1)
+
+KOMUT = {}
+BRAIN = []
+BLACKLIST = []
+VALID_PROXY_URL = []
+CONVERSATION = {}
+PM_COUNT = {}
+PM_LAST_MSG = {}
+TEMP_SETTINGS = {}
+
+# Console verbose logging
+LOG_VERBOSE = sb(environ.get('LOG_VERBOSE', 'False'))
+
+basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=DEBUG if LOG_VERBOSE else INFO,
+)
+
+#
+# Bot lang
+#
+# If missted, the default lang is English.
+SEDEN_LANG = environ.get('SEDEN_LANG', 'en')
 
 
 def set_local_env(key: str, value: str):
@@ -94,76 +90,79 @@ def set_logger():
     pyrogram_session = getLogger('pyrogram.session.session')
     pyrogram_session.setLevel(CRITICAL)
 
+    pyrogram_auth = getLogger('pyrogram.session.auth')
+    pyrogram_auth.setLevel(CRITICAL)
 
 set_logger()
-
-LOGS = getLogger(__name__)
 
 # Check that the config is edited using the previously used variable.
 # Basically, check for config file.
 CONFIG_CHECK = environ.get(
-    "___________DELETE_______THIS_____LINE__________", None)
+    '___________DELETE_______THIS_____LINE__________', None)
 
 if CONFIG_CHECK:
-    LOGS.warn(f'{get_translation("removeFirstLine")}')
+    LOGS.warn(get_translation('removeFirstLine'))
     quit(1)
 
 # Telegram APP ID and HASH
-API_ID = environ.get("API_ID", None)
+API_ID = environ.get('API_ID', None)
 if not API_ID:
-    LOGS.warn(f'{get_translation("apiIdError")}')
+    LOGS.warn(get_translation('apiIdError'))
     quit(1)
 
-API_HASH = environ.get("API_HASH", None)
+API_HASH = environ.get('API_HASH', None)
 if not API_HASH:
-    LOGS.warn(f'{get_translation("apiHashError")}')
+    LOGS.warn(get_translation('apiHashError'))
     quit(1)
 
-BOT_VERSION = "1.3rc4 Alpha"
-SUPPORT_GROUP = "SedenUserBotSupport"
-CHANNEL = "SedenUserBot"
+BOT_VERSION = '1.3rc5 Alpha'
+SUPPORT_GROUP = 'SedenUserBotSupport'
+CHANNEL = 'SedenUserBot'
 
 # Weather default city
-WEATHER = environ.get("WEATHER", None)
+WEATHER = environ.get('WEATHER', None)
 
 # Genius module
-GENIUS_TOKEN = environ.get("GENIUS_TOKEN", None) or environ.get("GENIUS", None)
+GENIUS_TOKEN = environ.get('GENIUS_TOKEN', None) or environ.get('GENIUS', None)
+
+# Lydia API
+LYDIA_APIKEY = environ.get('LYDIA_APIKEY', None)
 
 # Change Alive Message
-ALIVE_MSG = environ.get("ALIVE_MSG", None)
+ALIVE_MSG = environ.get('ALIVE_MSG', None)
 
 # For neofetch
-HOSTNAME = environ.get("HOSTNAME", "DerUntergang")
-USER = environ.get("USER", "sedenecem")
+HOSTNAME = environ.get('HOSTNAME', 'DerUntergang')
+USER = environ.get('USER', 'sedenecem')
 
 # Chrome Driver and Headless Google Chrome Binaries
-CHROME_DRIVER = environ.get("CHROME_DRIVER", "chromedriver")
+CHROME_DRIVER = environ.get('CHROME_DRIVER', 'chromedriver')
 
 # OCR API key
-OCR_APIKEY = environ.get("OCR_APIKEY", None)
+OCR_APIKEY = environ.get('OCR_APIKEY', None)
 
 # RBG API key
-RBG_APIKEY = environ.get("RBG_APIKEY", None)
+RBG_APIKEY = environ.get('RBG_APIKEY', None)
 
 # SQL Database URL
-DATABASE_URL = environ.get("DATABASE_URL", None)
+DATABASE_URL = environ.get('DATABASE_URL', None)
 
 # Download directory
-DOWNLOAD_DIRECTORY = environ.get("DOWNLOAD_DIRECTORY", "./downloads")
+DOWNLOAD_DIRECTORY = environ.get('DOWNLOAD_DIRECTORY', './downloads')
 
 # SedenBot Session
-SESSION = environ.get("SESSION", 'sedenuserbot')
+SESSION = environ.get('SESSION', 'sedenuserbot')
 
 # SedenBot repo url for updater
 REPO_URL = environ.get(
-    "REPO_URL", "https://github.com/TeamDerUntergang/Telegram-SedenUserBot")
+    'REPO_URL', 'https://github.com/TeamDerUntergang/SedenUserBot')
 
 # Heroku Credentials for updater
-HEROKU_KEY = environ.get("HEROKU_KEY", None)
-HEROKU_APPNAME = environ.get("HEROKU_APPNAME", None)
+HEROKU_KEY = environ.get('HEROKU_KEY', None)
+HEROKU_APPNAME = environ.get('HEROKU_APPNAME', None)
 
 # Chat ID for Bot Logs
-LOG_ID = environ.get("LOG_ID", None)
+LOG_ID = environ.get('LOG_ID', None)
 LOG_ID = int(LOG_ID) if LOG_ID and resr(r'^-?\d+$', LOG_ID) else None
 
 # Connect to the test server
@@ -175,10 +174,10 @@ LOG_ID = int(LOG_ID) if LOG_ID and resr(r'^-?\d+$', LOG_ID) else None
 # Also known as Deep Telegram
 #
 # For more information: https://docs.pyrogram.org/topics/test-servers
-DEEPGRAM = sb(environ.get('DEEPGRAM', "False"))
+DEEPGRAM = sb(environ.get('DEEPGRAM', 'False'))
 
 # PmPermit PM Auto Ban Stuffs
-PM_AUTO_BAN = sb(environ.get('PM_AUTO_BAN', "False"))
+PM_AUTO_BAN = environ.get('PM_AUTO_BAN', 'False')
 PM_MSG_COUNT = environ.get('PM_MSG_COUNT', 'default')
 PM_MSG_COUNT = int(PM_MSG_COUNT) if PM_MSG_COUNT.isdigit() else 5
 PM_UNAPPROVED = environ.get('PM_UNAPPROVED', None)
@@ -196,29 +195,31 @@ ENV_RESTRICTED_KEYS = [
 
 
 def load_brain():
-    if path.exists("learning-data-root.check"):
-        remove("learning-data-root.check")
-    URL = 'https://raw.githubusercontent.com/NaytSeyd/databasescape/master/learning-data-root.check'
+    if path.exists('learning-data-root.check'):
+        remove('learning-data-root.check')
+    URL = 'https://raw.githubusercontent.com/NaytSeyd/'\
+          'databasescape/master/learning-data-root.check'
     with open('learning-data-root.check', 'wb') as load:
         load.write(get(URL).content)
-    DB = connect("learning-data-root.check")
+    DB = connect('learning-data-root.check')
     CURSOR = DB.cursor()
-    CURSOR.execute("""SELECT * FROM BRAIN1""")
+    CURSOR.execute('SELECT * FROM BRAIN1')
     ALL_ROWS = CURSOR.fetchall()
     for i in ALL_ROWS:
-        BRAIN_CHECKER.append(i[0])
+        BRAIN.append(i[0])
     DB.close()
 
 
 def load_bl():
-    if path.exists("blacklist.check"):
-        remove("blacklist.check")
-    URL = 'https://raw.githubusercontent.com/NaytSeyd/databaseblacklist/master/blacklist.check'
+    if path.exists('blacklist.check'):
+        remove('blacklist.check')
+    URL = 'https://raw.githubusercontent.com/NaytSeyd/'\
+          'databaseblacklist/master/blacklist.check'
     with open('blacklist.check', 'wb') as load:
         load.write(get(URL).content)
-    DB = connect("blacklist.check")
+    DB = connect('blacklist.check')
     CURSOR = DB.cursor()
-    CURSOR.execute("SELECT * FROM RETARDS")
+    CURSOR.execute('SELECT * FROM RETARDS')
     ALL_ROWS = CURSOR.fetchall()
     for i in ALL_ROWS:
         BLACKLIST.append(i[0])
@@ -255,10 +256,10 @@ app = PyroClient(
     SESSION,
     api_id=API_ID,
     api_hash=API_HASH,
-    app_version=f"Seden v{BOT_VERSION}",
-    device_model="Der Untergang",
-    system_version=f"v{BOT_VERSION}",
-    lang_code="tr",
+    app_version=f'Seden UserBot',
+    device_model='DerUntergang',
+    system_version=f'v{BOT_VERSION}',
+    lang_code='tr',
     test_mode=DEEPGRAM,
 )
 
@@ -267,25 +268,25 @@ def __get_modules():
     folder = 'sedenbot/modules'
     modules = [
         f[:-3] for f in listdir(folder)
-        if isfile(f"{folder}/{f}") and f[-3:] == '.py' and f != '__init__.py'
+        if isfile(f'{folder}/{f}') and f[-3:] == '.py' and f != '__init__.py'
     ]
     return modules
 
 
 def __import_modules():
     modules = sorted(__get_modules())
-    LOGS.info(get_translation("loadedModules", [modules]))
+    LOGS.info(get_translation('loadedModules', [modules]))
     for module in modules:
         try:
-            LOGS.info(get_translation("loadedModules2", [module]))
+            LOGS.info(get_translation('loadedModules2', [module]))
             import_module(f'sedenbot.modules.{module}')
-        except Exception as e:
+        except Exception:
             if LOG_VERBOSE:
                 LOGS.warn(format_exc())
-            LOGS.warn(get_translation("loadedModulesError", [module]))
+            LOGS.warn(get_translation('loadedModulesError', [module]))
 
 
 __import_modules()
 
-LOGS.info(get_translation("runningBot", [SUPPORT_GROUP]))
-LOGS.info(get_translation("sedenVersion", [BOT_VERSION]))
+LOGS.info(get_translation('runningBot', [SUPPORT_GROUP]))
+LOGS.info(get_translation('sedenVersion', [BOT_VERSION]))

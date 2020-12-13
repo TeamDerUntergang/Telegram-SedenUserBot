@@ -1,17 +1,10 @@
-# Copyright (C) 2020 TeamDerUntergang.
+# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of TeamDerUntergang project,
+# and licensed under GNU Affero General Public License v3.
+# See the GNU Affero General Public License for more details.
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# All rights reserved. See COPYING, AUTHORS.
 #
 
 from sqlalchemy.exc import IntegrityError
@@ -33,7 +26,7 @@ def pmpermit_init():
         sql = import_module('sedenecem.sql.pm_permit_sql')
     except Exception as e:
         sql = None
-        LOGS.warn(f'{get_translation("pmpermitSqlLog")}')
+        LOGS.warn(get_translation('pmpermitSqlLog'))
         raise e
 
 
@@ -97,7 +90,7 @@ def permitpm(client, message):
 
                     send_log(
                         get_translation(
-                            "pmpermitLog", [
+                            'pmpermitLog', [
                                 message.chat.first_name, message.chat.id]))
 
     message.continue_propagation()
@@ -129,7 +122,7 @@ def auto_accept(client, message):
                         message.delete()
                     send_log(
                         get_translation(
-                            "pmAutoAccept", [
+                            'pmAutoAccept', [
                                 chat.first_name, chat.id]))
                     return True
                 except BaseException:
@@ -138,7 +131,7 @@ def auto_accept(client, message):
     return False
 
 
-@sedenify(outgoing=True, pattern="^.notifoff$")
+@sedenify(outgoing=True, pattern='^.notifoff$')
 def notifoff(message):
     try:
         from sedenecem.sql.keep_read_sql import kread
@@ -150,7 +143,7 @@ def notifoff(message):
     edit(message, f'`{get_translation("pmNotifOff")}`')
 
 
-@sedenify(outgoing=True, pattern="^.notifon$")
+@sedenify(outgoing=True, pattern='^.notifon$')
 def notifon(message):
     try:
         from sedenecem.sql.keep_read_sql import unkread
@@ -162,7 +155,7 @@ def notifon(message):
     edit(message, f'`{get_translation("pmNotifOn")}`')
 
 
-@sedenify(outgoing=True, pattern="^.approve$", compat=False)
+@sedenify(outgoing=True, pattern='^.approve$', compat=False)
 def approvepm(client, message):
     try:
         from sedenecem.sql.pm_permit_sql import approve
@@ -195,9 +188,9 @@ def approvepm(client, message):
         edit(message, f'`{get_translation("pmApproveError2")}`')
         return
 
-    edit(message, get_translation("pmApproveSuccess", [name0, uid, '`']))
+    edit(message, get_translation('pmApproveSuccess', [name0, uid, '`']))
 
-    send_log(get_translation("pmApproveLog", [name0, uid]))
+    send_log(get_translation('pmApproveLog', [name0, uid]))
 
 
 @sedenify(outgoing=True, pattern="^.disapprove$")
@@ -227,9 +220,9 @@ def disapprovepm(message):
 
     dissprove(uid)
 
-    edit(message, get_translation("pmDisapprove", [name0, uid, '`']))
+    edit(message, get_translation('pmDisapprove', [name0, uid, '`']))
 
-    send_log(get_translation("pmDisapprove", [name0, uid, '`']))
+    send_log(get_translation('pmDisapprove', [name0, uid, '`']))
 
 
 def _find_unapproved_msg(client, chat_id):
@@ -243,4 +236,4 @@ def _find_unapproved_msg(client, chat_id):
         return []
 
 
-KOMUT.update({"pmpermit": get_translation("pmpermitInfo")})
+KOMUT.update({'pmpermit': get_translation('pmpermitInfo')})

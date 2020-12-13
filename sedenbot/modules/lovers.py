@@ -1,130 +1,53 @@
-# Copyright (C) 2020 TeamDerUntergang.
+# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
-# SedenUserBot is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of TeamDerUntergang project,
+# and licensed under GNU Affero General Public License v3.
+# See the GNU Affero General Public License for more details.
 #
-# SedenUserBot is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# All rights reserved. See COPYING, AUTHORS.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# For NaytSeyd ️️❤️ Saniye
 #
-# NaytSeyd ve Saniş için ❤️
-#
+
 
 from time import sleep
 from random import choice
 from sedenecem.core import edit, sedenify
 # ================= CONSTANT =================
 SANIYE_STRINGS = [
-    "blyrm🥺",
-    "hallo",
-    "nbr ex svglm",
-    "evt🥺",
-    "tamam askm",
-    "hosgeldin askm",
-    "handicap",
-    "jeg elsker dig",
-    "ja",
-    "ben uyuyorum, ig bebeler",
-    "tmm cool",
-    "cool bruh",
-    "bn varim🥺",
-    "kstm",
-    "@NightShade slk amd",
-    "sefsz amd",
-    "amd skm",
-    "ezk amd",
-    "eeee😒",
-    "bu ne lan Vsjjsbsjs",
-    "uuuuu",
-    "gelin kuzucuklrm",
-    "amedi skm",
-    "ex svglilrm",
-    "svglm olmak istyenlr dm gelsn",
-    "ikinizden ayriliyrm",
-    "ayb krcm🥺",
-    "ve ii gclr bkr ❤️",
-    "sn kmsn",
-    "ekle bnie",
-    "pika pikaaaaaaa",
-    "gule gule kullan",
-    "cnku tg skm",
-    "banane smk",
-    "bkr skm",
-    "slk bkre dedim",
-    "slm gzlm",
-    "iimsn",
-    "kayiplarda",
-    "snie gørdm dha ii oldm",
-    "hello askm",
-    "slk baris",
-    "karima sg deme",
-    "sen haketmistin..",
-    "kiyamam ki",
-    "bana sg demen... 🥺",
-    "hyr yalan",
-    "sen uzuyon",
-    "beni cok uzuyorsun",
-    "ecm skm",
-    "tmm küs, gece dc glmcm ozmn",
-    "iyi gecelr 🌸",
-    "yengenim",
-    "eed askm",
-    "yemek yiyip gelcm bebislerm",
-    "sapikmisin",
-    "bana tapacaksin burda",
-    "nzbdbshajahahhq yazik",
-    "komik olan ne",
-    "belki gørdum nrdn biliyn",
-    "pjmani skm",
-    "gle beraber uyuyalm",
-    "ama uykm var🥺",
-    "tm cok coolsn",
-    "bi susarmisiniz",
-    "oglum sikrirtme kendini",
-    "ingilizceni skm",
-    "buna gulecekmiydim",
-    "søv ona",
-    "@NightShade bana yavsiyo bu🥺",
-    "saniyeman ol",
-    "eed puskuvut",
-    "kutlay benim askim, ona yuruyemezsin😠",
-    "@NightShade amd😠",
-    "bnie hep uzuyo🥺",
-    "shhshshsha",
-    "bn derim senin yerine",
-    "kanka deme lazim olr",
-    "seni gece ariyacam, kacta musaitsin",
-    "ppn cko hos. svglm olrmsn",
-    "amd aglsn",
-    "hiiiiio, happy bday ona ozaman",
-    "bildigim kadariyla u were tek kid",
-    "jesus christ",
-    "o neydi lan zbnsshjaka",
-    "tamam ozaman afettim🥺",
-    "alisdim artik beni uzmene...",
-    "resimlerini siliyom...",
-    "seni cko øzledim❤️",
-    "@NightShade 💞",
-    "bana dc girin diyorsunuz, beni takmiyorsunuz srfszlr",
-    "kalbime gir",
-    "hadi see u",
-    "bu gece de ben konusamam 🥺",
+    "blyrm🥺", "hallo", "nbr ex svglm", "evt🥺", "tamam askm", "hosgeldin askm",
+    "handicap", "jeg elsker dig", "ja", "ben uyuyorum, ig bebeler", "tmm cool",
+    "cool bruh", "bn varim🥺", "kstm", "@NightShade slk amd", "sefsz amd",
+    "amd skm", "ezk amd", "eeee😒", "bu ne lan Vsjjsbsjs", "uuuuu",
+    "gelin kuzucuklrm", "amedi skm", "ex svglilrm",
+    "svglm olmak istyenlr dm gelsn", "ikinizden ayriliyrm", "ayb krcm🥺",
+    "ve ii gclr bkr ❤️", "sn kmsn", "ekle bnie", "pika pikaaaaaaa",
+    "gule gule kullan", "cnku tg skm", "banane smk", "bkr skm",
+    "slk bkre dedim", "slm gzlm", "iimsn", "kayiplarda",
+    "snie gørdm dha ii oldm", "hello askm", "slk baris", "karima sg deme",
+    "sen haketmistin..", "kiyamam ki", "bana sg demen... 🥺", "hyr yalan",
+    "sen uzuyon", "beni cok uzuyorsun", "ecm skm",
+    "tmm küs, gece dc glmcm ozmn", "iyi gecelr 🌸", "yengenim", "eed askm",
+    "yemek yiyip gelcm bebislerm", "sapikmisin", "bana tapacaksin burda",
+    "nzbdbshajahahhq yazik", "komik olan ne", "belki gørdum nrdn biliyn",
+    "pjmani skm", "gle beraber uyuyalm", "ama uykm var🥺", "tm cok coolsn",
+    "bi susarmisiniz", "oglum sikrirtme kendini", "ingilizceni skm",
+    "buna gulecekmiydim", "søv ona", "@NightShade bana yavsiyo bu🥺",
+    "saniyeman ol", "eed puskuvut", "kutlay benim askim, ona yuruyemezsin😠",
+    "@NightShade amd😠", "bnie hep uzuyo🥺", "shhshshsha",
+    "bn derim senin yerine", "kanka deme lazim olr",
+    "seni gece ariyacam, kacta musaitsin", "ppn cko hos. svglm olrmsn",
+    "amd aglsn", "hiiiiio, happy bday ona ozaman",
+    "bildigim kadariyla u were tek kid", "jesus christ",
+    "o neydi lan zbnsshjaka", "tamam ozaman afettim🥺",
+    "alisdim artik beni uzmene...", "resimlerini siliyom...",
+    "seni cko øzledim❤️", "@NightShade 💞",
+    "bana dc girin diyorsunuz, beni takmiyorsunuz srfszlr", "kalbime gir",
+    "hadi see u", "bu gece de ben konusamam 🥺",
     "bn cikiom tgden birazdan, instageamdan yazarsn",
-    "sn iyi degilken bende iyi olamam 🥺",
-    "nazar degdi :(",
-    "snie øzldm",
-    "bende sana atmistim, sende stickers yaptin :(",
-    "yeterince cool degilsn",
-    "wowoowowowow",
-    "uwuwuwuwuwu",
-    "elni at",
-]
+    "sn iyi degilken bende iyi olamam 🥺", "nazar degdi :(", "snie øzldm",
+    "bende sana atmistim, sende stickers yaptin :(", "yeterince cool degilsn",
+    "wowoowowowow", "uwuwuwuwuwu", "elni at"]
 # ================= CONSTANT =================
 
 

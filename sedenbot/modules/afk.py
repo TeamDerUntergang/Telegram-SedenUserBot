@@ -1,17 +1,10 @@
-# Copyright (C) 2020 TeamDerUntergang.
+# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
-# SedenUserBot is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of TeamDerUntergang project,
+# and licensed under GNU Affero General Public License v3.
+# See the GNU Affero General Public License for more details.
 #
-# SedenUserBot is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# All rights reserved. See COPYING, AUTHORS.
 #
 
 
@@ -45,7 +38,8 @@ def mention_afk(mention):
                     reply(
                         mention, get_translation(
                             "afkMessage2", [
-                                '**', me.first_name, me.id, '`', TEMP_SETTINGS['AFK_REASON']]))
+                                '**', me.first_name, me.id,
+                                '`', TEMP_SETTINGS['AFK_REASON']]))
                 else:
                     reply(mention, f"```{choice(AFKSTR)}```")
                 TEMP_SETTINGS['AFK_USERS'].update({mention.from_user.id: 1})
@@ -58,7 +52,8 @@ def mention_afk(mention):
                         reply(
                             mention, get_translation(
                                 "afkMessage2", [
-                                    '**', me.first_name, me.id, '`', TEMP_SETTINGS['AFK_REASON']]))
+                                    '**', me.first_name, me.id,
+                                    '`', TEMP_SETTINGS['AFK_REASON']]))
                     else:
                         reply(mention, f"```{choice(AFKSTR)}```")
                     TEMP_SETTINGS['AFK_USERS'][
@@ -91,7 +86,8 @@ def afk_on_pm(message):
                 reply(
                     message, get_translation(
                         "afkMessage2", [
-                            '**', me.first_name, me.id, '`', TEMP_SETTINGS['AFK_REASON']]))
+                            '**', me.first_name, me.id,
+                            '`', TEMP_SETTINGS['AFK_REASON']]))
             else:
                 reply(message, f"```{choice(AFKSTR)}```")
             TEMP_SETTINGS['AFK_USERS'].update({message.from_user.id: 1})
@@ -104,7 +100,8 @@ def afk_on_pm(message):
                     reply(
                         message, get_translation(
                             "afkMessage2", [
-                                '**', me.first_name, me.id, '`', TEMP_SETTINGS['AFK_REASON']]))
+                                '**', me.first_name, me.id,
+                                '`', TEMP_SETTINGS['AFK_REASON']]))
                 else:
                     reply(message, f"```{choice(AFKSTR)}```")
                 TEMP_SETTINGS['AFK_USERS'][
@@ -119,18 +116,18 @@ def afk_on_pm(message):
     raise ContinuePropagation
 
 
-@sedenify(pattern=r"^.afk")
+@sedenify(pattern=r'^.afk')
 def set_afk(message):
     args = extract_args(message)
     if len(args) > 0:
         TEMP_SETTINGS['AFK_REASON'] = args
         edit(
             message, get_translation(
-                "afkStartReason", [
+                'afkStartReason', [
                     '**', '`', TEMP_SETTINGS['AFK_REASON']]))
     else:
         edit(message, f'**{get_translation("afkStart")}**')
-    send_log(get_translation("afkLog"))
+    send_log(get_translation('afkLog'))
     TEMP_SETTINGS['IS_AFK'] = True
     raise StopPropagation
 
@@ -143,7 +140,7 @@ def type_afk_is_not_true(message):
         sleep(2)
         send_log(
             get_translation(
-                "afkMessages",
+                'afkMessages',
                 ['`', '**', str(len(TEMP_SETTINGS['AFK_USERS'])),
                  str(TEMP_SETTINGS['COUNT_MSG'])]))
         for i in TEMP_SETTINGS['AFK_USERS']:
@@ -151,7 +148,7 @@ def type_afk_is_not_true(message):
             name0 = str(name.first_name)
             send_log(
                 get_translation(
-                    "afkMentionUsers",
+                    'afkMentionUsers',
                     ['**', name0, str(i),
                      '`', str(TEMP_SETTINGS['AFK_USERS'][i])]))
         TEMP_SETTINGS['COUNT_MSG'] = 0
@@ -161,4 +158,4 @@ def type_afk_is_not_true(message):
     raise ContinuePropagation
 
 
-KOMUT.update({"afk": get_translation("afkInfo")})
+KOMUT.update({'afk': get_translation('afkInfo')})

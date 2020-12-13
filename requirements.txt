@@ -1,6 +1,7 @@
 Pillow
 bs4
 cowpy
+coffeehouse
 emoji
 gitpython
 googletrans
@@ -11,7 +12,9 @@ lyricsgenius
 psycopg2-binary
 pybase64
 git+https://github.com/NaytSeyd/pyrogram
+python-barcode
 python-dotenv
+pylast
 requests
 removebg
 selenium
@@ -20,3 +23,4 @@ sqlalchemy
 tgcrypto
 urbandict
 wikipedia
+qrcode

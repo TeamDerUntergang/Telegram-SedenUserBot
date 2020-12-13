@@ -1,11 +1,12 @@
-![GitHub repo size](https://img.shields.io/github/repo-size/TeamDerUntergang/Telegram-SedenUserBot?color=Blue)
-![GitHub](https://img.shields.io/github/license/TeamDerUntergang/Telegram-SedenUserBot?color=Orange)
+Seden UserBot
+==
 
-# Seden UserBot
+![GitHub repo size](https://img.shields.io/github/repo-size/TeamDerUntergang/Telegram-SedenUserBot?color=red&style=plastic)
+![GitHub](https://img.shields.io/github/license/TeamDerUntergang/Telegram-SedenUserBot?color=red&style=plastic)
 
 Telegram Python Bot running on Python3 with a Postgresql Sqlalchemy database. It is an modular and simple to use bot.
 
-````markdown
+````c
 #include <std/disclaimer.h>
 /**
     Your Telegram account may be banned.
@@ -16,20 +17,20 @@ Telegram Python Bot running on Python3 with a Postgresql Sqlalchemy database. It
     I'll just laugh at you.
 /**
 ````
-
-### Heroku Deploy
+## Heroku Deploy
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/TeamDerUntergang/Telegram-SedenUserBot/tree/seden)
 
-If you have any requests & complaints & suggestions, you can join our [support group](https://t.me/SedenUserBotSupport).
+If you have any requests & complaints & suggestions, you can join our [support group](https://t.me/SedenUserBotSupport) or please contact us through a [GitHub issue](https://github.com/TeamDerUntergang/Telegram-SedenUserBot/issues).
 
 Please go to our [GitHub.io](https://teamderuntergang.github.io/pyrogram.html) page for installation instructions! Questions asked without reading the instruction will not be answered.
 
-### Credits
-*   [@NaytSeyd](https://github.com/NaytSeyd) - Founder, Base Developer, Fixer
-*   [@frknkrc44](https://github.com/frknkrc44) - Operator, Base Developer, Fixer
-*   [@Sedenogen](https://github.com/ciyanogen) - Co-Founder, Base Helper, Tester
-*   [@Skittles9823](https://github.com/skittles9823/SkittBot) - Memes
+## Credits
+*   [@NaytSeyd](https://github.com/NaytSeyd) - Founder
+*   [@frknkrc44](https://github.com/frknkrc44) - Operator
+*   [@Sedenogen](https://github.com/ciyanogen) - Co-Founder
+*   [@Skittles9823](https://github.com/skittles9823) - Memes
 *   [@RaphielGang](https://github.com/raphielgang) - Other Modules
 
-### License
-This project is licensed under the [GPL-3.0-or-later](https://www.gnu.org/licenses/gpl-3.0.html)
+## License
+
+This project is licensed under the [AGPL-3](https://www.gnu.org/licenses/agpl-3.0.html).

@@ -1,17 +1,10 @@
-# Copyright (C) 2020 TeamDerUntergang.
+# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
-# SedenUserBot is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of TeamDerUntergang project,
+# and licensed under GNU Affero General Public License v3.
+# See the GNU Affero General Public License for more details.
 #
-# SedenUserBot is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# All rights reserved. See COPYING, AUTHORS.
 #
 
 from random import choice
@@ -226,9 +219,9 @@ ECEM_STRINGS = [
     "Bütün okul anladı @CiyanogenOneTeams ona yâr olmayacağımı anlamadı Jsjsjdkskskskskskl",
     "KSKDKDKDKDKSKKSKDKDKKD",
     "LAN HATIRLATMA sjjdjdjdkdkdkdkdk bir fotoğraf çekilelim mi NE SJSKSKSKSK",
-    "Yemin ederim daha fazla sevenini görmedim jdjdkdkdkd", ]
+    "Yemin ederim daha fazla sevenini görmedim jdjdkdkdkd"]
 # ================= CONSTANT =================
-"""Copyright (c) @Sedenogen | 2020"""
+'''Copyright (c) @Sedenogen | 2020'''
 
 
 @sedenify(pattern='^.ecem$')
@@ -241,4 +234,4 @@ def ecem(message):
     edit(message, choice(ECEM_STRINGS))
 
 
-KOMUT.update({"ecem": get_translation("ecemInfo")})
+KOMUT.update({'ecem': get_translation('ecemInfo')})

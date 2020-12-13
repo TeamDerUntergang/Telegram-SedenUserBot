@@ -1,24 +1,16 @@
-# Copyright (C) 2020 TeamDerUntergang.
+# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
-# SedenUserBot is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of TeamDerUntergang project,
+# and licensed under GNU Affero General Public License v3.
+# See the GNU Affero General Public License for more details.
 #
-# SedenUserBot is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# All rights reserved. See COPYING, AUTHORS.
 #
 
 from pyrogram.errors import YouBlockedUser
 
 from sedenbot import KOMUT
-from sedenecem.conv import PyroConversation
-from sedenecem.core import sedenify, edit, get_translation
+from sedenecem.core import sedenify, edit, get_translation, PyroConversation
 
 
 @sedenify(pattern='^.sangmata$', compat=False)
@@ -35,7 +27,7 @@ def sangmata(client, message):
     with PyroConversation(client, chat) as conv:
         response = None
         try:
-            msg = conv.forward_msg(reply)
+            conv.forward_msg(reply)
             response = conv.recv_msg()
         except YouBlockedUser:
             edit(message, get_translation('unblockChat', ['**', '`', chat]))
@@ -51,4 +43,4 @@ def sangmata(client, message):
             edit(message, response.text)
 
 
-KOMUT.update({"sangmata": get_translation("sangmataInfo")})
+KOMUT.update({'sangmata': get_translation('sangmataInfo')})

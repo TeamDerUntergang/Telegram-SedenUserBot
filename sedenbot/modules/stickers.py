@@ -1,25 +1,16 @@
-# Copyright (C) 2020 TeamDerUntergang.
+# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
-# SedenUserBot is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of TeamDerUntergang project,
+# and licensed under GNU Affero General Public License v3.
+# See the GNU Affero General Public License for more details.
 #
-# SedenUserBot is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# All rights reserved. See COPYING, AUTHORS.
 #
 
-from os import remove
 from random import choice
 from requests import get
 
 from sedenbot import KOMUT, me
-from sedenecem.conv import PyroConversation
 from sedenecem.core import (
     edit,
     sedenify,
@@ -28,6 +19,7 @@ from sedenecem.core import (
     reply_doc,
     get_translation,
     extract_args,
+    PyroConversation,
     sticker_resize as resizer)
 # ================= CONSTANT =================
 DIZCILIK = [get_translation(f'kangstr{i+1}') for i in range(0, 12)]
@@ -40,7 +32,7 @@ def kang(client, message):
     kanger = myacc.username or myacc.first_name
     if myacc.username:
         kanger = f'@{kanger}'
-    pack = extract_args(message)
+    args = extract_args(message)
 
     reply = message.reply_to_message
     if not reply:
@@ -58,15 +50,15 @@ def kang(client, message):
         edit(message, f'`{get_translation("stickerError")}`')
         return
 
-    if len(pack) < 1:
-        pack = 1
+    if len(args) < 1:
+        args = 1
 
     emoji = '🤤'
 
-    if ' ' in str(pack):
-        emoji, pack = pack.split(' ', 1)
+    if ' ' in str(args):
+        emoji, args = args.split(' ', 1)
 
-    pack = 1 if not str(pack).isdigit() else int(pack)
+    pack = 1 if not str(args).isdigit() else int(args)
 
     pname = f'a{myacc.id}_by_{myacc.username}_{pack}'
     pnick = f"{kanger}'s UserBot pack {pack}"
@@ -79,7 +71,7 @@ def kang(client, message):
                     '<strong>Sticker&nbsp;Set</strong>') not in created.text)
         return created
 
-    def create_new(conv):
+    def create_new(conv, pack):
         cmd = f'/new{"animated" if anim else "pack"}'
 
         try:
@@ -101,7 +93,7 @@ def kang(client, message):
         send_recv(conv, '/skip')
         send_recv(conv, pname)
 
-    def add_exist(conv):
+    def add_exist(conv, pack, pname, pnick):
         try:
             send_recv(conv, '/addsticker')
         except Exception as e:
@@ -110,8 +102,11 @@ def kang(client, message):
         status = send_recv(conv, pname)
 
         if limit in status.text:
-            edit(message, f'`{get_translation("stickerPackFull", [pack])}`')
-            return False
+            pack += 1
+            pname = f'a{myacc.id}_by_{myacc.username}_{pack}'
+            pnick = f"{kanger}'s UserBot pack {pack}"
+            edit(message, get_translation('packFull', ['`', '**', str(pack)]))
+            return add_exist(conv, pack, pname, pnick)
 
         send_recv(conv, media, doc=True)
         send_recv(conv, emoji)
@@ -127,7 +122,7 @@ def kang(client, message):
 
     with PyroConversation(client, 'Stickers') as conv:
         if pack_created():
-            ret = add_exist(conv)
+            ret = add_exist(conv, pack, pname, pnick)
             if not ret:
                 return
         else:
@@ -156,9 +151,10 @@ def getsticker(message):
     reply_doc(
         reply,
         photo,
-        caption=f'**Sticker ID:** `{reply.sticker.file_id}`\n**Emoji**: `{reply.sticker.emoji}`')
+        caption=f'**Sticker ID:** `{reply.sticker.file_id}'
+                f'`\n**Emoji**: `{reply.sticker.emoji}`',
+        delete_after_send=True)
     message.delete()
-    remove(photo)
 
 
-KOMUT.update({"stickers": get_translation("stickerInfo")})
+KOMUT.update({'stickers': get_translation('stickerInfo')})

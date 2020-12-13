@@ -1,19 +1,10 @@
-# Copyright (C) 2020 TeamDerUntergang.
+# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
-# SedenUserBot is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of TeamDerUntergang project,
+# and licensed under GNU Affero General Public License v3.
+# See the GNU Affero General Public License for more details.
 #
-# SedenUserBot is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#
-# Deepfry modülü kaynak kodu: https://github.com/Ovyerus/deeppyer
+# All rights reserved. See COPYING, AUTHORS.
 #
 
 from os import remove
@@ -68,7 +59,7 @@ def deepfry(client, message):
     edit(message, get_translation(
         'deepfryApply', ['`', f'{"" if fry else "deep"}']))
     for _ in range(frycount):
-        image = deepfry(image, fry)
+        image = deepfry_media(image, fry)
 
     fried_io = open('image.jpeg', 'w+')
     image.save(fried_io, "JPEG")
@@ -77,7 +68,7 @@ def deepfry(client, message):
     reply_img(message, 'image.jpeg', delete_file=True)
 
 
-def deepfry(img: Image, fry: bool) -> Image:
+def deepfry_media(img: Image, fry: bool) -> Image:
     colors = None
     if fry:
         colors = (
@@ -86,7 +77,7 @@ def deepfry(img: Image, fry: bool) -> Image:
         )
 
     # Resim formatı ayarla
-    img = img.copy().convert("RGB")
+    img = img.copy().convert('RGB')
     width, height = img.width, img.height
 
     temp_num = uniform(.8, .9) if fry else .75
@@ -150,4 +141,4 @@ def check_media(reply_message):
     return data
 
 
-KOMUT.update({"deepfry": get_translation("deepfryInfo")})
+KOMUT.update({'deepfry': get_translation('deepfryInfo')})

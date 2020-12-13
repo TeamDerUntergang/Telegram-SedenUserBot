@@ -1,25 +1,16 @@
-# Copyright (C) 2020 TeamDerUntergang.
+# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
-# SedenUserBot is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of TeamDerUntergang project,
+# and licensed under GNU Affero General Public License v3.
+# See the GNU Affero General Public License for more details.
 #
-# SedenUserBot is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# All rights reserved. See COPYING, AUTHORS.
 #
 
-from re import findall, search, sub
-from json import loads, JSONDecodeError, decoder
+from re import findall, sub
+from json import JSONDecodeError
 from urllib.parse import unquote, urlparse
-from os import popen, path, mkdir, chmod
 from bs4 import BeautifulSoup
-from humanize import naturalsize
 from requests import get, Session
 
 from sedenbot import KOMUT
@@ -85,9 +76,6 @@ def direct(message):
 
 def zippy_share(link: str) -> str:
     reply = ''
-    dl_url = ''
-    session = Session()
-    base_url = search('http.+.com', link).group()
     driver = get_webdriver()
     driver.get(link)
     left = driver.find_element_by_xpath('//div[contains(@class, "left")]')
@@ -160,7 +148,7 @@ def osdn(link: str) -> str:
 def github(link: str) -> str:
     reply = ''
     dl_url = ''
-    download = get(url, stream=True, allow_redirects=False)
+    download = get(link, stream=True, allow_redirects=False)
     try:
         dl_url = download.headers["location"]
     except KeyError:
@@ -202,7 +190,7 @@ def androidfilehost(link: str) -> str:
             data=data,
             cookies=res.cookies)
         mirrors = req.json()['MIRRORS']
-    except (decoder.JSONDecodeError, TypeError):
+    except (JSONDecodeError, TypeError):
         reply += error
     if not mirrors or len(mirrors) < 1:
         reply += error
@@ -226,4 +214,4 @@ def useragent():
     return 'Googlebot/2.1 (+http://www.google.com/bot.html)'
 
 
-KOMUT.update({"direct": get_translation("directInfo")})
+KOMUT.update({'direct': get_translation('directInfo')})

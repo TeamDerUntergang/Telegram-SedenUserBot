@@ -1,17 +1,10 @@
-# Copyright (C) 2020 TeamDerUntergang.
+# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
-# SedenUserBot is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of TeamDerUntergang project,
+# and licensed under GNU Affero General Public License v3.
+# See the GNU Affero General Public License for more details.
 #
-# SedenUserBot is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# All rights reserved. See COPYING, AUTHORS.
 #
 
 from random import choice
@@ -29,14 +22,14 @@ def random(message):
         return
 
     edit(message, get_translation(
-        "randomResult", ['**', '`', items, choice(args)]))
+        'randomResult', ['**', '`', items, choice(args)]))
 
 
 @sedenify(pattern='^.chatid$', private=False)
 def chatid(message):
     edit(
         message,
-        f"{get_translation('chatidResult', ['`', str(message.chat.id)])}")
+        get_translation('chatidResult', ['`', str(message.chat.id)]))
 
 
 @sedenify(pattern='^.id$')
@@ -52,12 +45,12 @@ def userid(message):
         else:
             user_id = reply.forward_from.id
             if reply.forward_from.username:
-                name = "@" + reply.forward_from.username
+                name = '@' + reply.forward_from.username
             else:
-                name = "*" + reply.forward_from.first_name + "*"
+                name = '*' + reply.forward_from.first_name + '*'
         edit(
             message, get_translation(
-                "useridResult", [
+                'useridResult', [
                     '**', name, '`', user_id]))
     else:
         edit(message, f'`{get_translation("wrongCommand")}`')
@@ -71,20 +64,21 @@ def kickme(client, message):
 
 @sedenify(pattern='^.support$')
 def support(message):
-    edit(message, get_translation("supportResult", [SUPPORT_GROUP]),
+    edit(message, get_translation('supportResult', [SUPPORT_GROUP]),
          preview=False)
 
 
 @sedenify(pattern='^.founder')
 def founder(message):
-    edit(message, get_translation("founderResult", ['`']), preview=False)
+    edit(message, get_translation('founderResult', ['`']), preview=False)
 
 
 @sedenify(pattern='^.readme$')
 def readme(message):
     edit(
         message,
-        "[Seden README.md](https://github.com/TeamDerUntergang/Telegram-SedenUserBot/blob/seden/README.md)",
+        '[Seden README.md](https://github.com/TeamDerUntergang/'
+        'Telegram-SedenUserBot/blob/seden/README.md)',
         preview=False)
 
 
@@ -92,13 +86,14 @@ def readme(message):
 def repo(message):
     edit(
         message,
-        "[Seden Repo](https://github.com/TeamDerUntergang/Telegram-SedenUserBot)",
+        '[Seden Repo](https://github.com/TeamDerUntergang/'
+        'Telegram-SedenUserBot)',
         preview=False)
 
 
 @sedenify(pattern='^.repeat')
 def repeat(message):
-    """Copyright (c) Gegham Zakaryan | 2019"""
+    '''Copyright (c) Gegham Zakaryan | 2019'''
     args = extract_args(message).split(' ', 1)
     if len(args) < 2:
         edit(message, f'`{get_translation("wrongCommand")}`')
@@ -110,10 +105,10 @@ def repeat(message):
     replyCount = int(cnt)
     toBeRepeated = txt
 
-    replyText = toBeRepeated + "\n"
+    replyText = toBeRepeated + '\n'
 
     for i in range(0, replyCount - 1):
-        replyText += toBeRepeated + "\n"
+        replyText += toBeRepeated + '\n'
 
     edit(message, replyText)
 
@@ -121,15 +116,15 @@ def repeat(message):
 @sedenify(pattern='^.crash$')
 def crash(message):
     edit(message, f'`{get_translation("testLogId")}`')
-    raise Exception(f'`{get_translation("testException")}`')
+    raise Exception(get_translation('testException'))
 
 
-KOMUT.update({'random': get_translation("randomInfo")})
-KOMUT.update({'support': get_translation("supportInfo")})
-KOMUT.update({'repo': get_translation("repoInfo")})
-KOMUT.update({"readme": get_translation("readmeInfo")})
-KOMUT.update({"founder": get_translation("founderInfo")})
-KOMUT.update({"repeat": get_translation("repeatInfo")})
-KOMUT.update({"kickme": get_translation("kickmeInfo")})
-KOMUT.update({"id": get_translation("useridInfo")})
-KOMUT.update({"chatid": get_translation("chatidInfo")})
+KOMUT.update({'random': get_translation('randomInfo')})
+KOMUT.update({'support': get_translation('supportInfo')})
+KOMUT.update({'repo': get_translation('repoInfo')})
+KOMUT.update({'readme': get_translation('readmeInfo')})
+KOMUT.update({'founder': get_translation('founderInfo')})
+KOMUT.update({'repeat': get_translation('repeatInfo')})
+KOMUT.update({'kickme': get_translation('kickmeInfo')})
+KOMUT.update({'id': get_translation('useridInfo')})
+KOMUT.update({'chatid': get_translation('chatidInfo')})

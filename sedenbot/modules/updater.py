@@ -1,20 +1,13 @@
-# Copyright (C) 2020 TeamDerUntergang.
+# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
-# SedenUserBot is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of TeamDerUntergang project,
+# and licensed under GNU Affero General Public License v3.
+# See the GNU Affero General Public License for more details.
 #
-# SedenUserBot is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# All rights reserved. See COPYING, AUTHORS.
 #
 
-from os import remove, execl, path
+from os import execl, path
 from sys import executable, argv
 from heroku3 import from_key
 from git import Repo
@@ -22,8 +15,8 @@ from git.exc import (GitCommandError, InvalidGitRepositoryError,
                      NoSuchPathError)
 
 from sedenbot import KOMUT, HEROKU_KEY, HEROKU_APPNAME, REPO_URL
-from sedenecem.core import (extract_args, sedenify, edit, reply,
-                            reply_doc, get_translation, app)
+from sedenecem.core import (extract_args, sedenify, edit, me,
+                            reply, reply_doc, get_translation)
 
 requirements_path = path.join(
     path.dirname(path.dirname(path.dirname(__file__))), 'requirements.txt')
@@ -31,7 +24,7 @@ requirements_path = path.join(
 
 def gen_chlog(repo, diff):
     ch_log = ''
-    d_form = "%d/%m/%y"
+    d_form = '%d/%m/%y'
     for c in repo.iter_commits(diff):
         ch_log += f'•[{c.committed_datetime.strftime(d_form)}]: {c.summary} <{c.author}>\n'
     return ch_log
@@ -58,16 +51,16 @@ def upstream(ups):
         txt += f'**{get_translation("updateLog")}**\n'
         repo = Repo()
     except NoSuchPathError as error:
-        edit(ups, get_translation("updateFolderError", [txt, '`', error]))
+        edit(ups, get_translation('updateFolderError', [txt, '`', error]))
         repo.__del__()
         return
     except GitCommandError as error:
-        edit(ups, get_translation("updateFolderError", [txt, '`', error]))
+        edit(ups, get_translation('updateFolderError', [txt, '`', error]))
         repo.__del__()
         return
     except InvalidGitRepositoryError as error:
         if conf != 'now':
-            edit(ups, f'`{get_translation("updateGitNotFound", [error])}`')
+            edit(ups, get_translation('updateGitNotFound', [error]))
             return
         repo = Repo.init()
         origin = repo.create_remote('upstream', off_repo)
@@ -79,7 +72,7 @@ def upstream(ups):
 
     ac_br = repo.active_branch.name
     if ac_br != 'seden':
-        edit(ups, get_translation("updateFolderError", ['**', ac_br]))
+        edit(ups, get_translation('updateFolderError', ['**', ac_br]))
         repo.__del__()
         return
 
@@ -104,8 +97,8 @@ def upstream(ups):
             file = open('changelog.txt', 'w+')
             file.write(changelog)
             file.close()
-            reply_doc(message, ups.chat.id, 'changelog.txt')
-            remove('changelog.txt')
+            reply_doc(ups, ups.chat.id, 'changelog.txt',
+                      delete_after_send=True)
         else:
             edit(ups, get_translation(
                 'updaterHasUpdate', ['**', '`', ac_br, changelog]))
@@ -184,4 +177,4 @@ def execute_command(command):
     return sonuc, islem.returncode
 
 
-KOMUT.update({'update': get_translation("updateInfo")})
+KOMUT.update({'update': get_translation('updateInfo')})

@@ -4,12 +4,20 @@
             "plan": "heroku-postgresql"
         }
     ],
+    "buildpacks": [
+        {
+            "url": "https://github.com/heroku/heroku-buildpack-google-chrome"
+        },
+        {
+            "url": "https://github.com/heroku/heroku-buildpack-chromedriver"
+        }
+    ],
     "description": "A modular Telegram userbot running on Python 3.8 with an sqlalchemy database,",
     "env": {
         "ALIVE_MSG": {
             "description": "Custom message for .alive command. We have our own alive message by default.",
             "required": false,
-            "value": "Hello Seden! I am alive \u2764\ufe0f"
+            "value": "`Hello Seden! I am alive \u2764\ufe0f`"
         },
         "API_HASH": {
             "description": "Get this value from my.telegram.org.",
@@ -45,6 +53,22 @@
             "description": "Your Heroku API key, get it from 'https://dashboard.heroku.com/account. Required for updates.",
             "required": true
         },
+        "LASTFM_API": {
+            "description": "Get this value from https://www.last.fm/api/account/create.",
+            "required": false
+        },
+        "LASTFM_PASSWORD": {
+            "description": "Last.FM Password.",
+            "required": false
+        },
+        "LASTFM_SECRET": {
+            "description": "Secret Key. Get this value from https://www.last.fm/api/account/create.",
+            "required": false
+        },
+        "LASTFM_USERNAME": {
+            "description": "Last.FM Username.",
+            "required": false
+        },
         "LOG_ID": {
             "description": "Chat ID of the Log group. If value is 0, log feature not work. If value is left blank, logs send in Saved Messages",
             "required": false
@@ -53,6 +77,10 @@
             "description": "If you need verbosity on the console logging.",
             "required": false,
             "value": "False"
+        },
+        "LYDIA_APIKEY": {
+            "description": "Get this value from https://coffeehouse.intellivoid.info/dashboard.",
+            "required": false
         },
         "OCR_APIKEY": {
             "description": "OCR API Key for .ocr command. Get from https://ocr.space/ocrapi",
@@ -114,6 +142,6 @@
     "name": "Telegram SedenBot",
     "repository": "https://github.com/TeamDerUntergang/Telegram-SedenUserBot",
     "stack": "container",
-    "success_url": "https://telegram.dog/SedenUserBotSupport",
+    "success_url": "https://telegram.dog/SedenUserBot",
     "website": "https://teamderuntergang.github.io/"
 }

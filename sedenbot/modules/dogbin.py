@@ -1,17 +1,10 @@
-# Copyright (C) 2020 TeamDerUntergang.
+# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
-# SedenUserBot is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of TeamDerUntergang project,
+# and licensed under GNU Affero General Public License v3.
+# See the GNU Affero General Public License for more details.
 #
-# SedenUserBot is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# All rights reserved. See COPYING, AUTHORS.
 #
 
 from os import remove
@@ -66,7 +59,7 @@ def paste(client, message):
                     '`', dogbin_final_url, f'{DOGBIN_URL}v/{key}'])
         else:
             reply_text = get_translation(
-                "dogbinPasteResult", ['`', dogbin_final_url])
+                'dogbinPasteResult', ['`', dogbin_final_url])
     else:
         reply_text = f'`{get_translation("dogbinReach")}`'
 
@@ -100,19 +93,19 @@ def getpaste(message):
     try:
         resp.raise_for_status()
     except exceptions.HTTPError as HTTPErr:
-        edit(message, get_translation("dogbinError", [str(HTTPErr)]))
+        edit(message, get_translation('dogbinError', [str(HTTPErr)]))
         return
     except exceptions.Timeout as TimeoutErr:
-        edit(message, get_translation("dogbinTimeOut", [str(TimeoutErr)]))
+        edit(message, get_translation('dogbinTimeOut', [str(TimeoutErr)]))
         return
     except exceptions.TooManyRedirects as RedirectsErr:
         edit(message, get_translation(
-            "dogbinTooManyRedirects", [str(RedirectsErr)]))
+            'dogbinTooManyRedirects', [str(RedirectsErr)]))
         return
 
-    reply_text = get_translation("dogbinResult", ['`', resp.text])
+    reply_text = get_translation('dogbinResult', ['`', resp.text])
 
     edit(message, reply_text)
 
 
-KOMUT.update({"dogbin": get_translation("dogbinInfo")})
+KOMUT.update({'dogbin': get_translation('dogbinInfo')})

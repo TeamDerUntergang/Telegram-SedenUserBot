@@ -1,17 +1,10 @@
-# Copyright (C) 2020 TeamDerUntergang.
+# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
-# SedenUserBot is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of TeamDerUntergang project,
+# and licensed under GNU Affero General Public License v3.
+# See the GNU Affero General Public License for more details.
 #
-# SedenUserBot is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# All rights reserved. See COPYING, AUTHORS.
 #
 
 from time import sleep
@@ -36,10 +29,18 @@ def ss(message):
     driver = get_webdriver()
     driver.get(link)
     height = driver.execute_script(
-        "return Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);"
+        'return Math.max(document.body.scrollHeight,'
+        'document.body.offsetHeight,'
+        'document.documentElement.clientHeight,'
+        'document.documentElement.scrollHeight,'
+        'document.documentElement.offsetHeight);'
     )
     width = driver.execute_script(
-        "return Math.max(document.body.scrollWidth, document.body.offsetWidth, document.documentElement.clientWidth, document.documentElement.scrollWidth, document.documentElement.offsetWidth);"
+        'return Math.max(document.body.scrollWidth,'
+        'document.body.offsetWidth,'
+        'document.documentElement.clientWidth,'
+        'document.documentElement.scrollWidth,'
+        'document.documentElement.offsetWidth);'
     )
     driver.set_window_size(width + 125, height + 125)
     wait_for = int(height / 1000)
@@ -48,9 +49,6 @@ def ss(message):
     sleep(wait_for)
     im_png = driver.get_screenshot_as_base64()
     driver.close()
-    message_id = message.message_id
-    if message.reply_to_message:
-        message_id = message.reply_to_message
     name = 'screenshot.png'
     with open(name, 'wb') as out:
         out.write(b64decode(im_png))
@@ -58,4 +56,4 @@ def ss(message):
     reply_doc(message, name, caption=input_str, delete_after_send=True)
 
 
-KOMUT.update({"ss": get_translation("ssInfo")})
+KOMUT.update({'ss': get_translation('ssInfo')})
