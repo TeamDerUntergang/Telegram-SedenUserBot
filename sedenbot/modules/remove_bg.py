@@ -15,7 +15,7 @@ from sedenecem.core import (sedenify, edit, reply_doc,
                             get_translation, download_media_wc)
 
 
-@sedenify(pattern='^.rbg$', compat=False)
+@sedenify(pattern='^.rbg$')
 def rbg(message):
     if not RBG_APIKEY:
         return edit(

@@ -18,7 +18,6 @@ def who_is(client, message):
     reply = message.reply_to_message
     edit(message, f'`{get_translation("whoisProcess")}`')
 
-    media_perm = True
     if 'group' in message.chat.type:
         perm = message.chat.permissions
         media_perm = perm.can_send_media_messages
@@ -63,17 +62,17 @@ def who_is(client, message):
             ['**', '`', first_name, last_name, username, user_id, photos,
              dc_id, bot, scam, verified, chats, bio, last_seen])
 
-        if not media_perm:
-            edit(message, caption)
-
-        if photo:
+        if photo and media_perm:
             reply_img(
                 message,
                 photo,
                 caption=caption,
                 delete_file=True)
         else:
-            edit(message, caption)
+            return edit(message, caption)
+
+    message.delete()
+        
 
 
 def LastSeen(bot, status):

@@ -135,7 +135,7 @@
     "envCopySuccess": "%2Variable%2 %1%3%1 %2successfully copied to%2 %1%4%1",
     "envGetValue": "%2Variable:%2 %1%3%1\n%2Value:%2 %1%4%1",
     "envInfo": ".env (set, get, rem, copy, move) <Key> <Value>\nUsage: It allows you to easily change variables of bot.",
-    "envListKeys": "%2Available Enviroments:%2\n%1%3%1",
+    "envListKeys": "%1Available Variables:%1\n%3",
     "envMoveSuccess": "%2Variable%2 %1%3%1 %2successfully moved to%2 %1%4%1",
     "envNotFound": "%2Variable%2 %1%3%1 %2not found%2",
     "envRemSuccess": "%2Variable%2 %1%3%1 %2successfully deleted%2",
