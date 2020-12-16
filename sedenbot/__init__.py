@@ -42,7 +42,6 @@ def get_translation(transKey, params: list = None):
 
     return ret
 
-
 if version_info[0] < 3 or version_info[1] < 8:
     LOGS.warn(get_translation('pythonVersionError'))
     quit(1)
@@ -69,7 +68,6 @@ basicConfig(
 #
 # If missted, the default lang is English.
 SEDEN_LANG = environ.get('SEDEN_LANG', 'en')
-
 
 def set_local_env(key: str, value: str):
     return set_key('config.env', key, value)
@@ -115,7 +113,7 @@ if not API_HASH:
     LOGS.warn(get_translation('apiHashError'))
     quit(1)
 
-BOT_VERSION = '1.3rc5 Alpha'
+BOT_VERSION = '1.3rc6 Alpha'
 SUPPORT_GROUP = 'SedenUserBotSupport'
 CHANNEL = 'SedenUserBot'
 

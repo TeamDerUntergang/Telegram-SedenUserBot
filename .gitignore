@@ -10,6 +10,8 @@ sedenbot/__pycache__/*
 sedenbot/.DS_Store/*
 sedenbot/modules/.DS_Store/*
 sedenbot/modules/__pycache__/*
+sedenbot/modules/admin/.DS_Store/*
+sedenbot/modules/admin/__pycache__/*
 sedenecem/core/__pycache__/*
 sedenecem/core/.DS_Store/*
 sedenecem/sql/.DS_Store/*

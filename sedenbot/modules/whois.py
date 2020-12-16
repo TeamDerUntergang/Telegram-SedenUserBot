@@ -21,7 +21,7 @@ def who_is(client, message):
     if 'group' in message.chat.type:
         perm = message.chat.permissions
         media_perm = perm.can_send_media_messages
-    
+
     if user_info:
         try:
             reply_user = client.get_users(user_info)
@@ -45,7 +45,8 @@ def who_is(client, message):
 
         first_name = reply_user.first_name or get_translation('notSet')
         last_name = reply_user.last_name or get_translation('notSet')
-        username = f'@{reply_user.username}' if reply_user.username else get_translation('notSet')
+        username = f'@{reply_user.username}' if reply_user.username else get_translation(
+            'notSet')
         user_id = reply_user.id
         photos = client.get_profile_photos_count(user_id)
         dc_id = reply_user.dc_id
@@ -72,7 +73,6 @@ def who_is(client, message):
             return edit(message, caption)
 
     message.delete()
-        
 
 
 def LastSeen(bot, status):

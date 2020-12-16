@@ -10,6 +10,9 @@
 from random import choice
 from requests import get
 
+from pyrogram.api.functions.messages import GetStickerSet
+from pyrogram.api.types import InputStickerSetShortName
+
 from sedenbot import KOMUT, me
 from sedenecem.core import (
     edit,
@@ -155,6 +158,42 @@ def getsticker(message):
                 f'`\n**Emoji**: `{reply.sticker.emoji}`',
         delete_after_send=True)
     message.delete()
+
+
+@sedenify(pattern='.packinfo$', compat=False)
+def packinfo(client, message):
+    reply = message.reply_to_message
+    if not reply:
+        edit(message, '`Hiçlikten bir bilgi çekemem, sence yapabilir miyim?!`')
+        return
+
+    if not reply.sticker:
+        edit(message, '`Paket detaylarını görmek için bir çıkartmayı yanıtlayın`')
+        return
+
+    edit(message, '`Bu paketten detaylar alınıyor, lütfen bekleyin..`')
+
+    get_stickerset = client.send(
+        GetStickerSet(
+            stickerset=InputStickerSetShortName(
+                short_name=reply.sticker.set_name)))
+    pack_emojis = []
+    for document_sticker in get_stickerset.packs:
+        if document_sticker.emoticon not in pack_emojis:
+            pack_emojis.append(document_sticker.emoticon)
+
+    out = get_translation('packinfoResult',
+                          ['**',
+                           '`',
+                           get_stickerset.set.title,
+                           get_stickerset.set.short_name,
+                           get_stickerset.set.official,
+                           get_stickerset.set.archived,
+                           get_stickerset.set.animated,
+                           get_stickerset.set.count,
+                           ' '.join(pack_emojis)])
+
+    edit(message, out)
 
 
 KOMUT.update({'stickers': get_translation('stickerInfo')})

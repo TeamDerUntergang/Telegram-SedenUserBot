@@ -9,6 +9,7 @@
 
 from time import sleep
 from heroku3 import from_key
+from dotenv import dotenv_values
 
 from sedenbot.modules.horeke import restart
 from sedenbot import (
@@ -27,7 +28,9 @@ from sedenecem.core import edit, sedenify, extract_args, get_translation
 def manage_env(client, message):
     action = extract_args(message).split(' ', 1)
 
-    if len(action) < 2 or action[0] not in [
+    if action[0] == 'list':
+        pass
+    elif len(action) < 2 or action[0] not in [
             'get', 'set', 'rem', 'copy', 'move']:
         edit(message, f"`{get_translation('wrongCommand')}`")
         return
@@ -169,6 +172,21 @@ def manage_env(client, message):
                     '`', '**', items[0], items[1]]))
         sleep(2)
         restart(client, message)
+    elif action[0] == 'list':
+        out = ''
+        if heroku_mode:
+            horeke = heroku_env.to_dict()
+            for i in horeke.keys():
+                if i not in ENV_RESTRICTED_KEYS:
+                    out += f'%1•%1  %2{i.replace("%", "½")}%2\n'
+        else:
+            keys = dotenv_values('config.env').keys()
+            keys = sorted([x for x in keys if x.upper()
+                           not in ENV_RESTRICTED_KEYS])
+            for i in keys:
+                out += f'%1•%1  %2{i.replace("%", "½")}%2\n'
+
+        edit(message, get_translation('envListKeys', ['**', '`', out]))
 
 
 KOMUT.update({'env': get_translation('envInfo')})
