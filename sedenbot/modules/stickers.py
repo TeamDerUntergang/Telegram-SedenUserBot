@@ -164,14 +164,14 @@ def getsticker(message):
 def packinfo(client, message):
     reply = message.reply_to_message
     if not reply:
-        edit(message, '`Hiçlikten bir bilgi çekemem, sence yapabilir miyim?!`')
+        edit(message, f'`{get_translation("packinfoError")}`')
         return
 
     if not reply.sticker:
-        edit(message, '`Paket detaylarını görmek için bir çıkartmayı yanıtlayın`')
+        edit(message, f'`{get_translation("packinfoError2")}`')
         return
 
-    edit(message, '`Bu paketten detaylar alınıyor, lütfen bekleyin..`')
+    edit(message, f'`{get_translation("packinfoResult")}`')
 
     get_stickerset = client.send(
         GetStickerSet(
