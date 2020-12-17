@@ -89,7 +89,7 @@ def afk_on_pm(message):
         if message.from_user.id not in TEMP_SETTINGS['AFK_USERS']:
             if 'AFK_REASON' in TEMP_SETTINGS:
                 reply(
-                    mention, get_translation(
+                    message, get_translation(
                         "afkMessage2", [
                             '**', me.first_name, me.id, '`', TEMP_SETTINGS['AFK_REASON']]))
             else:
@@ -102,7 +102,7 @@ def afk_on_pm(message):
                     2, 4) == 0:
                 if 'AFK_REASON' in TEMP_SETTINGS:
                     reply(
-                        mention, get_translation(
+                        message, get_translation(
                             "afkMessage2", [
                                 '**', me.first_name, me.id, '`', TEMP_SETTINGS['AFK_REASON']]))
                 else:
