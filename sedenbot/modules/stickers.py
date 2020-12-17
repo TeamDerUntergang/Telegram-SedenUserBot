@@ -129,9 +129,9 @@ def kang(client, message):
             if not ret:
                 return
         else:
-            create_new(conv)
+            create_new(conv, pack)
 
-    edit(message, get_translation("stickerAdded", ['`', pname]))
+    edit(message, get_translation('stickerAdded', ['`', pname]))
 
 
 def send_recv(conv, msg, doc=False):
