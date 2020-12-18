@@ -6,7 +6,7 @@ Seden UserBot
 
 Telegram Python Bot running on Python3 with a Postgresql Sqlalchemy database. It is an modular and simple to use bot.
 
-````c
+```c
 #include <std/disclaimer.h>
 /**
     Your Telegram account may be banned.
@@ -16,7 +16,27 @@ Telegram Python Bot running on Python3 with a Postgresql Sqlalchemy database. It
     In case of any spam ban, if you come and write that my account has been banned,
     I'll just laugh at you.
 /**
-````
+```
+
+## Run Bot
+```bash
+# Clone repo
+git clone https://github.com/TeamDerUntergang/Telegram-SedenUserBot.git
+cd Telegram-SedenUserbot
+
+# Install pip dependincies
+pip3 install -r requirements.txt
+
+# Create config.env and fill variables
+mv sample_config.env config.env
+
+# Generate session from session.py (skip if there is already)
+python3 session.py
+
+# Run bot
+python3 seden.py
+```
+
 ## Heroku Deploy
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/TeamDerUntergang/Telegram-SedenUserBot/tree/seden)
 
