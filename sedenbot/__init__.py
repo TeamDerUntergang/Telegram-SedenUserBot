@@ -139,6 +139,9 @@ CHROME_DRIVER = environ.get('CHROME_DRIVER', 'chromedriver')
 # OCR API key
 OCR_APIKEY = environ.get('OCR_APIKEY', None)
 
+# Auto pp link
+AUTO_PP = environ.get('AUTO_PP', None)
+
 # RBG API key
 RBG_APIKEY = environ.get('RBG_APIKEY', None)
 

@@ -17,7 +17,7 @@ def who_is(client, message):
     user_info = extract_args(message)
     reply = message.reply_to_message
     edit(message, f'`{get_translation("whoisProcess")}`')
-
+    media_perm = True
     if 'group' in message.chat.type:
         perm = message.chat.permissions
         media_perm = perm.can_send_media_messages
@@ -54,7 +54,7 @@ def who_is(client, message):
         scam = reply_user.is_scam
         verified = reply_user.is_verified
         chats = len(client.get_common_chats(user_id))
-        bio = reply_chat.description or get_translation('notSet')
+        bio = reply_chat.bio or get_translation('notSet')
         status = reply_user.status
         last_seen = LastSeen(bot, status)
 

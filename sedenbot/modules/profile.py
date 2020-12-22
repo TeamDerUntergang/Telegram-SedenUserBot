@@ -83,7 +83,7 @@ def remove_profilepic(client, message):
     for photo in client.iter_profile_photos('me', limit=lim):
         client.delete_profile_photos(photo.file_id)
         count += 1
-        edit(message, f'`{count} adet profil fotoğrafı silindi.`')
+    edit(message, f'`{count} adet profil fotoğrafı silindi.`')
 
 
 @sedenify(pattern='^.setbio', compat=False)

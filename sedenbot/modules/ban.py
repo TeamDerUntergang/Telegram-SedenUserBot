@@ -7,10 +7,12 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
+from time import sleep
 from pyrogram import ChatPermissions
 
 from sedenbot import KOMUT, BRAIN
-from sedenecem.core import edit, sedenify, extract_args, get_translation
+from sedenecem.core import (edit, sedenify, send_log,
+                            extract_args, get_translation)
 
 
 @sedenify(pattern='^.ban', compat=False, private=False, admin=True)
@@ -32,6 +34,13 @@ def ban_user(client, message):
         edit(message, f'`{get_translation("banFailUser")}`')
         return
 
+    try:
+        replied_user = reply.from_user
+        if replied_user.is_self:
+            return edit(message, f'`{get_translation("cannotBanMyself")}`')
+    except BaseException:
+        pass
+
     if user.id in BRAIN:
         return edit(
             message, get_translation(
@@ -46,6 +55,12 @@ def ban_user(client, message):
                 message, get_translation(
                     'banResult', [
                         '**', user.first_name, user.id, '`']))
+            sleep(1)
+            send_log(
+                get_translation(
+                    'banLog',
+                    ['**', user.first_name, user.id, message.chat.title,
+                     '`', message.chat.id]))
         except Exception as e:
             edit(message, get_translation('banError', ['`', '**', e]))
             return
@@ -69,6 +84,14 @@ def unban_user(client, message):
     else:
         edit(message, f'`{get_translation("banFailUser")}`')
         return
+
+    try:
+        replied_user = reply.from_user
+        if replied_user.is_self:
+            return edit(message, f'`{get_translation("cannotUnbanMyself")}`')
+    except BaseException:
+        pass
+
     if user is not None:
         try:
             chat_id = message.chat.id
@@ -101,6 +124,13 @@ def kick_user(client, message):
         edit(message, f'`{get_translation("banFailUser")}`')
         return
 
+    try:
+        replied_user = reply.from_user
+        if replied_user.is_self:
+            return edit(message, f'`{get_translation("cannotKickMyself")}`')
+    except BaseException:
+        pass
+
     if user.id in BRAIN:
         return edit(
             message, get_translation(
@@ -116,6 +146,11 @@ def kick_user(client, message):
                 message, get_translation(
                     'kickResult', [
                         '**', user.first_name, user.id, '`']))
+            sleep(1)
+            send_log(
+                get_translation(
+                    'kickLog', [
+                        '**', user.first_name, user.id, message.chat.title, '`', message.chat.id]))
         except Exception as e:
             edit(message, get_translation('banError', ['`', '**', e]))
             return
@@ -140,6 +175,13 @@ def mute_user(client, message):
         edit(message, f'`{get_translation("banFailUser")}`')
         return
 
+    try:
+        replied_user = reply.from_user
+        if replied_user.is_self:
+            return edit(message, f'`{get_translation("cannotMuteMyself")}`')
+    except BaseException:
+        pass
+
     if user.id in BRAIN:
         return edit(
             message, get_translation(
@@ -154,6 +196,11 @@ def mute_user(client, message):
                 message, get_translation(
                     'muteResult', [
                         '**', user.first_name, user.id, '`']))
+            sleep(1)
+            send_log(
+                get_translation(
+                    'muteLog', [
+                        '**', user.first_name, user.id, message.chat.title, '`', message.chat.id]))
         except Exception as e:
             edit(message, get_translation('banError', ['`', '**', e]))
             return
@@ -177,6 +224,14 @@ def unmute_user(client, message):
     else:
         edit(message, f'`{get_translation("banFailUser")}`')
         return
+
+    try:
+        replied_user = reply.from_user
+        if replied_user.is_self:
+            return edit(message, f'`{get_translation("cannotUnbanMyself")}`')
+    except BaseException:
+        pass
+
     if user is not None:
         try:
             chat_id = message.chat.id
@@ -222,6 +277,11 @@ def promote_user(client, message):
                 message, get_translation(
                     'promoteResult', [
                         '**', user.first_name, user.id, '`']))
+            sleep(1)
+            send_log(
+                get_translation(
+                    'promoteLog', [
+                        '**', user.first_name, user.id, message.chat.title, '`', message.chat.id]))
         except Exception as e:
             edit(message, get_translation('banError', ['`', '**', e]))
             return
@@ -245,6 +305,14 @@ def demote_user(client, message):
     else:
         edit(message, f'`{get_translation("banFailUser")}`')
         return
+
+    try:
+        replied_user = reply.from_user
+        if replied_user.is_self:
+            return edit(message, f'`{get_translation("cannotDemoteMyself")}`')
+    except BaseException:
+        pass
+
     if user is not None:
         try:
             chat_id = message.chat.id
@@ -276,6 +344,11 @@ def pin_message(client, message):
         message_id = message.reply_to_message.message_id
         client.pin_chat_message(chat_id, message_id)
         edit(message, f'`{get_translation("pinResult")}`')
+        sleep(1)
+        send_log(
+            get_translation(
+                'pinLog', [
+                    '**', message.chat.title, '`', message.chat.id]))
     except Exception as e:
         edit(message, get_translation('banError', ['`', '**', e]))
         return
