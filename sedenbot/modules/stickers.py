@@ -29,7 +29,7 @@ DIZCILIK = [get_translation(f'kangstr{i+1}') for i in range(0, 12)]
 # ================= CONSTANT =================
 
 
-@sedenify(pattern='^.(d[ıi]zla|kang)', compat=False)
+@sedenify(pattern='^.(d[ıi]zla|kang|world)', compat=False)
 def kang(client, message):
     myacc = me[0]
     kanger = myacc.username or myacc.first_name
@@ -63,8 +63,8 @@ def kang(client, message):
 
     pack = 1 if not str(args).isdigit() else int(args)
 
-    pname = f'a{myacc.id}_by_{myacc.username}_{pack}'
-    pnick = f"{kanger}'s UserBot pack {pack}"
+    pname = f'trzworld{pack}'
+    pnick = f"trz's world {pack}"
 
     limit = '50' if anim else '120'
 
@@ -106,8 +106,8 @@ def kang(client, message):
 
         if limit in status.text:
             pack += 1
-            pname = f'a{myacc.id}_by_{myacc.username}_{pack}'
-            pnick = f"{kanger}'s UserBot pack {pack}"
+            pname = f'trzworld{pack}'
+            pnick = f"trz's world {pack}"
             edit(message, get_translation('packFull', ['`', '**', str(pack)]))
             return add_exist(conv, pack, pname, pnick)
 
