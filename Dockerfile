@@ -2,7 +2,7 @@
 FROM naytseyd/sedenbot:j1xlte
 
 # Working Directory
-WORKDIR /DerUntergang/
+WORKDIR /trzpro/
 
 # Clone Repo
-RUN git clone -b seden https://github.com/TeamDerUntergang/Telegram-SedenUserBot.git /DerUntergang/
+RUN git clone -b seden https://github.com/trzpro/Telegram-SedenUserBot.git /trzpro/
