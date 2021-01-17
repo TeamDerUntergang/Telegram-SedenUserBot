@@ -9,7 +9,10 @@
 
 from time import sleep
 
-from pyrogram import ChatPermissions
+try:
+    from pyrogram import ChatPermissions
+except:
+    from pyrogram.types import ChatPermissions
 
 from sedenbot import HELP, BRAIN
 from sedenecem.core import (edit, sedenify, send_log,

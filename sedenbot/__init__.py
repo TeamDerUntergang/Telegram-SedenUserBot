@@ -16,7 +16,18 @@ from distutils.util import strtobool as sb
 from importlib import import_module
 from logging import basicConfig, getLogger, INFO, DEBUG, CRITICAL
 from requests import get
-from pyrogram import Client, Filters, MessageHandler
+from pyrogram import Client
+
+try:
+    from pyrogram import MessageHandler
+except:
+    from pyrogram.handlers import MessageHandler
+
+try:
+    from pyrogram import Filters
+except BaseException:
+    from pyrogram import filters as Filters
+
 from dotenv import load_dotenv, set_key, unset_key
 import sedenecem.translator as _tr
 from traceback import format_exc
@@ -85,6 +96,8 @@ def set_logger():
     # Turns off out printing Session value
     pyrogram_syncer = getLogger('pyrogram.client.ext.syncer')
     pyrogram_syncer.setLevel(CRITICAL)
+    pyrogram_syncer = getLogger('pyrogram.syncer')
+    pyrogram_syncer.setLevel(CRITICAL)
 
     # Closes some junk outputs
     pyrogram_session = getLogger('pyrogram.session.session')
@@ -116,7 +129,7 @@ if not API_HASH:
     LOGS.warn(get_translation('apiHashError'))
     quit(1)
 
-BOT_VERSION = '1.4 Beta'
+BOT_VERSION = '1.4.1 Beta'
 SUPPORT_GROUP = 'SedenUserBotSupport'
 CHANNEL = 'SedenUserBot'
 

@@ -8,7 +8,10 @@
 #
 
 from re import escape, sub
-from pyrogram import Message
+try:
+    from pyrogram import Message
+except:
+    from pyrogram.types import Message
 from sedenbot import app, me, BRAIN, BOT_PREFIX
 
 MARKDOWN_FIX_CHAR = '\u2064'

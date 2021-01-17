@@ -11,9 +11,14 @@ from subprocess import Popen, PIPE
 from sys import exc_info
 from time import gmtime, strftime
 from traceback import format_exc
+from pyrogram import ContinuePropagation, StopPropagation
 
-from pyrogram import (Filters, MessageHandler,
-                      ContinuePropagation, StopPropagation)
+try:
+    from pyrogram import Filters, MessageHandler
+except:
+    from pyrogram.handlers import MessageHandler
+    from pyrogram import filters as Filters
+
 from sedenbot import (SUPPORT_GROUP, BLACKLIST,
                       BRAIN, me, app, get_translation)
 from .sedenlog import send_log_doc
@@ -40,7 +45,7 @@ def sedenify(**args):
 
     def msg_decorator(func):
         def wrap(client, message):
-            if message.empty:
+            if message.empty or not message.from_user:
                 return
 
             try:

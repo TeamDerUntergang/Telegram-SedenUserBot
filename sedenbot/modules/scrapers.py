@@ -22,7 +22,11 @@ from googletrans import LANGUAGES, Translator
 from emoji import get_emoji_regexp
 from requests import get
 from bs4 import BeautifulSoup
-from pyrogram import InputMediaPhoto
+
+try:
+    from pyrogram import InputMediaPhoto
+except:
+    from pyrogram.types import InputMediaPhoto
 
 from traceback import format_exc
 

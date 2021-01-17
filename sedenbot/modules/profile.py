@@ -9,7 +9,11 @@
 
 from os import remove
 from pyrogram.errors import UsernameOccupied
-from pyrogram.api.functions import channels, account
+
+try:
+    from pyrogram.api.functions import channels, account
+except:
+    from pyrogram.raw.functions import channels, account
 
 from sedenbot import HELP
 from sedenecem.core import (edit, extract_args, sedenify, send_log,

@@ -13,8 +13,11 @@ from urllib import request, parse
 from requests import post, get
 from PIL import Image
 from bs4 import BeautifulSoup
-from pyrogram import InputMediaPhoto
 
+try:
+    from pyrogram import InputMediaPhoto
+except:
+    from pyrogram.types import InputMediaPhoto
 from sedenbot import HELP
 from sedenecem.core import (sedenify, edit, reply_doc, extract_args,
                             download_media_wc, get_translation)

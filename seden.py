@@ -9,4 +9,4 @@
 
 if __name__ == '__main__':
     import sedenbot
-    sedenbot.app.start()
+    sedenbot.app.run()

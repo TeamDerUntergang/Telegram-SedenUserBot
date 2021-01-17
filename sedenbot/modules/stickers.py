@@ -10,8 +10,12 @@
 from random import choice
 from requests import get
 
-from pyrogram.api.functions.messages import GetStickerSet
-from pyrogram.api.types import InputStickerSetShortName
+try:
+    from pyrogram.api.functions.messages import GetStickerSet
+    from pyrogram.api.types import InputStickerSetShortName
+except:
+    from pyrogram.raw.functions.messages import GetStickerSet
+    from pyrogram.raw.types import InputStickerSetShortName
 
 from sedenbot import HELP
 from sedenecem.core import (
