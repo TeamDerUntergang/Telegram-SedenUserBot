@@ -9,7 +9,7 @@
 
 from random import choice
 
-from sedenbot import KOMUT, SUPPORT_GROUP
+from sedenbot import HELP, SUPPORT_GROUP
 from sedenecem.core import edit, extract_args, sedenify, get_translation
 
 
@@ -39,15 +39,15 @@ def userid(message):
         if not reply.forward_from:
             user_id = reply.from_user.id
             if reply.from_user.username:
-                name = '@' + reply.from_user.username
+                name = f'**@{reply.from_user.username}**'
             else:
-                name = '**' + reply.from_user.first_name + '**'
+                name = f'**[{reply.from_user.first_name}](tg://user?id={reply.from_user.id})**'
         else:
             user_id = reply.forward_from.id
             if reply.forward_from.username:
-                name = '@' + reply.forward_from.username
+                name = f'**@{reply.forward_from.username}**'
             else:
-                name = '*' + reply.forward_from.first_name + '*'
+                name = f'**[{reply.forward_from.first_name}](tg://user?id={reply.forward_from.id})**'
         edit(
             message, get_translation(
                 'useridResult', [
@@ -70,7 +70,7 @@ def support(message):
 
 @sedenify(pattern='^.founder')
 def founder(message):
-    edit(message, get_translation('founderResult', ['`']), preview=False)
+    edit(message, get_translation('founderResult', ['`', '**']), preview=False)
 
 
 @sedenify(pattern='^.readme$')
@@ -119,12 +119,4 @@ def crash(message):
     raise Exception(get_translation('testException'))
 
 
-KOMUT.update({'random': get_translation('randomInfo')})
-KOMUT.update({'support': get_translation('supportInfo')})
-KOMUT.update({'repo': get_translation('repoInfo')})
-KOMUT.update({'readme': get_translation('readmeInfo')})
-KOMUT.update({'founder': get_translation('founderInfo')})
-KOMUT.update({'repeat': get_translation('repeatInfo')})
-KOMUT.update({'kickme': get_translation('kickmeInfo')})
-KOMUT.update({'id': get_translation('useridInfo')})
-KOMUT.update({'chatid': get_translation('chatidInfo')})
+HELP.update({'misc': get_translation('miscInfo')})

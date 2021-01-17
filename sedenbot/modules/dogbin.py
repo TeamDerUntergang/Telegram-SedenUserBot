@@ -10,7 +10,7 @@
 from os import remove
 from requests import get, post, exceptions
 
-from sedenbot import KOMUT, DOWNLOAD_DIRECTORY
+from sedenbot import HELP, DOWNLOAD_DIRECTORY
 from sedenecem.core import edit, extract_args, sedenify, get_translation
 
 DOGBIN_URL = 'https://del.dog/'
@@ -108,4 +108,4 @@ def getpaste(message):
     edit(message, reply_text)
 
 
-KOMUT.update({'dogbin': get_translation('dogbinInfo')})
+HELP.update({'dogbin': get_translation('dogbinInfo')})

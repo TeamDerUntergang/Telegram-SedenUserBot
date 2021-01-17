@@ -13,7 +13,7 @@ from urllib.parse import unquote, urlparse
 from bs4 import BeautifulSoup
 from requests import get, Session
 
-from sedenbot import KOMUT
+from sedenbot import HELP
 from sedenecem.core import (edit, extract_args, sedenify,
                             get_webdriver, get_translation)
 
@@ -214,4 +214,4 @@ def useragent():
     return 'Googlebot/2.1 (+http://www.google.com/bot.html)'
 
 
-KOMUT.update({'direct': get_translation('directInfo')})
+HELP.update({'direct': get_translation('directInfo')})

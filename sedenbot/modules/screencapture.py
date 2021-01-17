@@ -11,9 +11,9 @@ from time import sleep
 from base64 import b64decode
 from re import match
 
-from sedenbot import KOMUT
-from sedenecem.core import (edit, reply_doc, extract_args,
-                            sedenify, get_webdriver, get_translation)
+from sedenbot import HELP
+from sedenecem.core import (sedenify, edit, reply_doc, extract_args,
+                            get_webdriver, get_translation)
 
 
 @sedenify(pattern=r'^.ss')
@@ -53,7 +53,12 @@ def ss(message):
     with open(name, 'wb') as out:
         out.write(b64decode(im_png))
     edit(message, f'`{get_translation("ssUpload")}`')
-    reply_doc(message, name, caption=input_str, delete_after_send=True)
+    reply_doc(
+        message,
+        name,
+        caption=input_str,
+        delete_after_send=True,
+        delete_orig=True)
 
 
-KOMUT.update({'ss': get_translation('ssInfo')})
+HELP.update({'ss': get_translation('ssInfo')})

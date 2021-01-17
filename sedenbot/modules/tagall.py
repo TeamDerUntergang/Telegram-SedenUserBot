@@ -7,7 +7,7 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from sedenbot import KOMUT
+from sedenbot import HELP
 from sedenecem.core import sedenify, reply, get_translation
 
 
@@ -35,4 +35,4 @@ def admin(client, message):
     message.delete()
 
 
-KOMUT.update({'tagall': get_translation('tagallInfo')})
+HELP.update({'tagall': get_translation('tagallInfo')})

@@ -8,7 +8,7 @@
 #
 
 from requests import post
-from sedenbot import KOMUT
+from sedenbot import HELP
 from sedenecem.core import edit, sedenify, get_translation
 
 
@@ -40,4 +40,4 @@ def birakmamseni(message):
     edit(message, sonuc, preview=False)
 
 
-KOMUT.update({'birakmamseni': get_translation('birakmamseniInfo')})
+HELP.update({'birakmamseni': get_translation('birakmamseniInfo')})

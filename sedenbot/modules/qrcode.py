@@ -14,7 +14,7 @@ from barcode.writer import ImageWriter
 from urllib3 import PoolManager
 from bs4 import BeautifulSoup
 
-from sedenbot import KOMUT
+from sedenbot import HELP
 from sedenecem.core import (extract_args, sedenify, edit, reply_doc,
                             download_media_wc, get_translation)
 
@@ -130,5 +130,5 @@ def makeqr(message):
     message.delete()
 
 
-KOMUT.update({'qrcode': get_translation('makeqrInfo')})
-KOMUT.update({'barcode': get_translation('barcodeInfo')})
+HELP.update({'qrcode': get_translation('makeqrInfo')})
+HELP.update({'barcode': get_translation('barcodeInfo')})

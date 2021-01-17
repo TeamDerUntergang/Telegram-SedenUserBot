@@ -7,7 +7,7 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from sedenbot import KOMUT
+from sedenbot import HELP
 from sedenecem.core import (extract_args, sedenify, edit, reply_img,
                             get_translation, download_media_wc)
 
@@ -38,7 +38,7 @@ def who_is(client, message):
     if reply_user or reply_chat is not None:
         try:
             user_photo = reply_user.photo.big_file_id
-            photo = download_media_wc(user_photo, file_name='photo.png')
+            photo = download_media_wc(user_photo, 'photo.png')
         except BaseException:
             photo = None
             pass
@@ -68,11 +68,10 @@ def who_is(client, message):
                 message,
                 photo,
                 caption=caption,
-                delete_file=True)
+                delete_file=True,
+                delete_orig=True)
         else:
             return edit(message, caption)
-
-    message.delete()
 
 
 def LastSeen(bot, status):
@@ -90,4 +89,4 @@ def LastSeen(bot, status):
         return get_translation('statusLong')
 
 
-KOMUT.update({'whois': get_translation('whoisInfo')})
+HELP.update({'whois': get_translation('whoisInfo')})

@@ -13,8 +13,9 @@ from requests import get
 from math import floor
 from heroku3 import from_key
 
-from sedenbot import KOMUT, HEROKU_KEY, HEROKU_APPNAME
-from sedenecem.core import edit, sedenify, get_translation, send_log, reply_doc
+from sedenbot import HELP, HEROKU_KEY, HEROKU_APPNAME
+from sedenecem.core import (edit, sedenify, get_translation,
+                            send_log, reply_doc)
 
 
 @sedenify(pattern='^.(quo|ko)ta$')
@@ -239,9 +240,7 @@ def dyno_logs(message):
     with open(filename, 'w+') as log:
         log.write(heroku_app.get_log())
 
-    reply_doc(message, filename)
+    reply_doc(message, filename, delete_after_send=True, delete_orig=True)
 
 
-KOMUT.update({'heroku': get_translation('herokuInfo')})
-KOMUT.update({'restart': get_translation('restartInfo')})
-KOMUT.update({'shutdown': get_translation('shutdownInfo')})
+HELP.update({'heroku': get_translation('herokuInfo')})

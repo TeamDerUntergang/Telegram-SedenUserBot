@@ -10,7 +10,7 @@
 from json import loads
 from requests import get
 
-from sedenbot import KOMUT
+from sedenbot import HELP
 from sedenecem.core import sedenify, edit, extract_args, get_translation
 
 
@@ -102,4 +102,4 @@ def github(message):
                   f'\n{get_translation("gitRepoList")}\n{get_repos()}', preview=False)
 
 
-KOMUT.update({'git': get_translation('gitInfo')})
+HELP.update({'git': get_translation('gitInfo')})

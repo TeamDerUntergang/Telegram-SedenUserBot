@@ -13,11 +13,11 @@ from requests import get
 from pyrogram.api.functions.messages import GetStickerSet
 from pyrogram.api.types import InputStickerSetShortName
 
-from sedenbot import KOMUT, me
+from sedenbot import HELP
 from sedenecem.core import (
-    edit,
     sedenify,
-    download_media,
+    edit,
+    me,
     download_media_wc,
     reply_doc,
     get_translation,
@@ -48,7 +48,7 @@ def kang(client, message):
     if(reply.photo or reply.document or reply.sticker):
         edit(message, f'`{choice(DIZCILIK)}`')
         anim = reply.sticker and reply.sticker.is_animated
-        media = download_media(client, reply, sticker_orig=anim)
+        media = download_media_wc(reply, sticker_orig=anim)
     else:
         edit(message, f'`{get_translation("stickerError")}`')
         return
@@ -156,8 +156,8 @@ def getsticker(message):
         photo,
         caption=f'**Sticker ID:** `{reply.sticker.file_id}'
                 f'`\n**Emoji**: `{reply.sticker.emoji}`',
-        delete_after_send=True)
-    message.delete()
+        delete_after_send=True,
+        delete_orig=True)
 
 
 @sedenify(pattern='.packinfo$', compat=False)
@@ -196,4 +196,4 @@ def packinfo(client, message):
     edit(message, out)
 
 
-KOMUT.update({'stickers': get_translation('stickerInfo')})
+HELP.update({'stickers': get_translation('stickerInfo')})

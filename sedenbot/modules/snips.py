@@ -7,7 +7,7 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from sedenbot import KOMUT, LOGS, LOG_ID
+from sedenbot import HELP, LOGS, LOG_ID
 from sedenecem.core import (extract_args, sedenify, edit, get_messages,
                             reply_msg, forward, send_log, get_translation)
 
@@ -132,4 +132,4 @@ def get_snip(message):
         pass
 
 
-KOMUT.update({'snips': get_translation('snipInfo')})
+HELP.update({'snips': get_translation('snipInfo')})

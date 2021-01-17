@@ -10,7 +10,7 @@
 from datetime import datetime
 from speedtest import Speedtest
 
-from sedenbot import KOMUT
+from sedenbot import HELP
 from sedenecem.core import (extract_args, sedenify, edit,
                             reply_doc, get_translation)
 
@@ -51,9 +51,10 @@ def speed_test(message):
                                   i_s_p_rating,
                                   '']))
         else:
-            reply_doc(message, speedtest_image, caption=get_translation(
-                'speedtestResultDoc', ['**', ms]))
-            message.delete()
+            reply_doc(
+                message, speedtest_image, caption=get_translation(
+                    'speedtestResultDoc', [
+                        '**', ms]), delete_after_send=True, delete_orig=True)
     except Exception as exc:
         edit(message,
              get_translation('speedtestResultText',
@@ -83,4 +84,4 @@ def convert_from_bytes(size):
     return f'{round(size, 2)} {units[_]}'
 
 
-KOMUT.update({'speedtest': get_translation('speedtestInfo')})
+HELP.update({'speedtest': get_translation('speedtestInfo')})

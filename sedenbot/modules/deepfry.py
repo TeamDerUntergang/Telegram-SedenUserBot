@@ -11,13 +11,13 @@ from os import remove
 from random import randint, uniform
 from PIL import Image, ImageEnhance, ImageOps
 
-from sedenbot import KOMUT
-from sedenecem.core import (edit, reply_img, sedenify,
-                            download_media, get_translation, parse_cmd)
+from sedenbot import HELP
+from sedenecem.core import (edit, reply_img, sedenify, parse_cmd,
+                            download_media_wc, get_translation)
 
 
-@sedenify(pattern='^.(deepf|f)ry', compat=False)
-def deepfry(client, message):
+@sedenify(pattern='^.(deepf|f)ry')
+def deepfry(message):
 
     text = (message.text or message.caption).split(' ', 1)
     fry = parse_cmd(text[0]) == 'fry'
@@ -49,23 +49,23 @@ def deepfry(client, message):
                                       ['`', f'{"f" if fry else "deepf"}ry']))
         return
 
-    # Fotoğrafı (yüksek çözünürlük) bayt dizisi olarak indir
+    # Download Media
     edit(message, f'`{get_translation("deepfryDownload")}`')
-    image_file = download_media(client, reply, 'image.png')
+    image_file = download_media_wc(reply, 'image.png')
     image = Image.open(image_file)
     remove(image_file)
 
-    # Resime uygula
+    # Apply effect to media
     edit(message, get_translation(
         'deepfryApply', ['`', f'{"" if fry else "deep"}']))
     for _ in range(frycount):
         image = deepfry_media(image, fry)
 
     fried_io = open('image.jpeg', 'w+')
-    image.save(fried_io, "JPEG")
+    image.save(fried_io, 'JPEG')
     fried_io.close()
 
-    reply_img(message, 'image.jpeg', delete_file=True)
+    reply_img(message, 'image.jpeg', delete_file=True, delete_orig=True)
 
 
 def deepfry_media(img: Image, fry: bool) -> Image:
@@ -141,4 +141,4 @@ def check_media(reply_message):
     return data
 
 
-KOMUT.update({'deepfry': get_translation('deepfryInfo')})
+HELP.update({'deepfry': get_translation('deepfryInfo')})

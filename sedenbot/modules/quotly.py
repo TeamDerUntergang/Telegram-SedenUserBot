@@ -10,7 +10,7 @@
 from time import sleep
 from pyrogram.errors import YouBlockedUser
 
-from sedenbot import KOMUT
+from sedenbot import HELP
 from sedenecem.core import sedenify, edit, get_translation, PyroConversation
 
 
@@ -45,4 +45,4 @@ def quotly(client, message):
     message.delete()
 
 
-KOMUT.update({'quotly': get_translation('quotlyInfo')})
+HELP.update({'quotly': get_translation('quotlyInfo')})

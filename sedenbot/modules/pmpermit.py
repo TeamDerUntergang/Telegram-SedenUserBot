@@ -10,8 +10,8 @@
 from sqlalchemy.exc import IntegrityError
 
 from sedenbot.modules.chat import is_muted
-from sedenbot import (PM_COUNT, KOMUT, PM_AUTO_BAN,
-                      PM_LAST_MSG, LOGS, PM_UNAPPROVED, PM_MSG_COUNT)
+from sedenbot import (PM_COUNT, HELP, PM_AUTO_BAN, LOGS,
+                      PM_LAST_MSG, PM_UNAPPROVED, PM_MSG_COUNT)
 from sedenecem.core import (sedenify, send_log, me,
                             edit, reply, get_translation)
 # ========================= CONSTANTS ============================
@@ -236,4 +236,4 @@ def _find_unapproved_msg(client, chat_id):
         return []
 
 
-KOMUT.update({'pmpermit': get_translation('pmpermitInfo')})
+HELP.update({'pmpermit': get_translation('pmpermitInfo')})

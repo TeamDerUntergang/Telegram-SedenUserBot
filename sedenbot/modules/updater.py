@@ -14,7 +14,7 @@ from git import Repo
 from git.exc import (GitCommandError, InvalidGitRepositoryError,
                      NoSuchPathError)
 
-from sedenbot import KOMUT, HEROKU_KEY, HEROKU_APPNAME, REPO_URL
+from sedenbot import HELP, HEROKU_KEY, HEROKU_APPNAME, REPO_URL
 from sedenecem.core import (extract_args, sedenify, edit, me,
                             reply, reply_doc, get_translation)
 
@@ -26,7 +26,7 @@ def gen_chlog(repo, diff):
     ch_log = ''
     d_form = '%d/%m/%y'
     for c in repo.iter_commits(diff):
-        ch_log += f'•[{c.committed_datetime.strftime(d_form)}]: {c.summary} <{c.author}>\n'
+        ch_log += f'%1•%1  %2[{c.committed_datetime.strftime(d_form)}]: {c.summary} <{c.author}>%2\n'
     return ch_log
 
 
@@ -102,7 +102,7 @@ def upstream(ups):
         else:
             edit(ups, get_translation(
                 'updaterHasUpdate', ['**', '`', ac_br, changelog]))
-        reply(ups, f'`{get_translation("updateNow")}`')
+        reply(ups, get_translation('updateNow', ['**', '`']))
         return
 
     if force_update:
@@ -177,4 +177,4 @@ def execute_command(command):
     return sonuc, islem.returncode
 
 
-KOMUT.update({'update': get_translation('updateInfo')})
+HELP.update({'update': get_translation('updateInfo')})

@@ -15,9 +15,9 @@ from PIL import Image
 from bs4 import BeautifulSoup
 from pyrogram import InputMediaPhoto
 
-from sedenbot import KOMUT
-from sedenecem.core import (edit, reply_doc, extract_args,
-                            sedenify, download_media_wc, get_translation)
+from sedenbot import HELP
+from sedenecem.core import (sedenify, edit, reply_doc, extract_args,
+                            download_media_wc, get_translation)
 
 opener = request.build_opener()
 useragent = '''Mozilla/5.0 (Linux; Android 9;
@@ -141,4 +141,4 @@ def scam(results, lim):
     return imglinks
 
 
-KOMUT.update({'reverse': get_translation('reverseInfo')})
+HELP.update({'reverse': get_translation('reverseInfo')})

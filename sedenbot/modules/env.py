@@ -12,15 +12,9 @@ from heroku3 import from_key
 from dotenv import dotenv_values
 
 from sedenbot.modules.horeke import restart
-from sedenbot import (
-    KOMUT,
-    HEROKU_KEY,
-    HEROKU_APPNAME,
-    set_local_env,
-    unset_local_env,
-    environ,
-    reload_env,
-    ENV_RESTRICTED_KEYS)
+from sedenbot import (HELP, HEROKU_KEY, HEROKU_APPNAME, environ,
+                      set_local_env, unset_local_env, reload_env,
+                      ENV_RESTRICTED_KEYS)
 from sedenecem.core import edit, sedenify, extract_args, get_translation
 
 
@@ -189,4 +183,4 @@ def manage_env(client, message):
         edit(message, get_translation('envListKeys', ['**', '`', out]))
 
 
-KOMUT.update({'env': get_translation('envInfo')})
+HELP.update({'env': get_translation('envInfo')})

@@ -10,7 +10,7 @@
 from io import BytesIO
 from re import escape, search, IGNORECASE
 
-from sedenbot import KOMUT, LOGS
+from sedenbot import HELP, LOGS
 from sedenecem.core import (edit, reply, send_log, reply_doc,
                             extract_args, sedenify, get_translation)
 
@@ -124,4 +124,4 @@ def rmblacklist(message):
     edit(message, get_translation('blacklistRemoveSuccess', ['**', '`', text]))
 
 
-KOMUT.update({'blacklist': get_translation('blacklistInfo')})
+HELP.update({'blacklist': get_translation('blacklistInfo')})

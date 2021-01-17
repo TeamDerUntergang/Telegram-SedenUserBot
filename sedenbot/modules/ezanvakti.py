@@ -12,7 +12,7 @@ from functools import reduce
 from requests import get
 from bs4 import BeautifulSoup
 
-from sedenbot import KOMUT
+from sedenbot import HELP
 from sedenecem.core import edit, extract_args, sedenify, get_translation
 
 
@@ -103,7 +103,7 @@ sehirler = [
     '76 Igdir 9522', '77 Yalova 9935', '78 Karabuk 9581', '79 Kilis 9629',
     '80 Osmaniye 9788', '81 Duzce 9414']
 
-KOMUT.update({
+HELP.update({
     "ezanvakti":
     ".ezanvakti <şehir> \
     \nKullanım: Belirtilen şehir için namaz vakitlerini gösterir. \

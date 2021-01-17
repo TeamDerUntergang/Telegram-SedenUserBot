@@ -10,14 +10,15 @@
 from os import remove, path, makedirs
 from requests import post
 
-from sedenbot import KOMUT, DOWNLOAD_DIRECTORY, OCR_APIKEY
-from sedenecem.core import edit, extract_args, sedenify, get_translation
+from sedenbot import HELP, OCR_APIKEY
+from sedenecem.core import (edit, extract_args, sedenify,
+                            get_translation, download_media_wc)
 
 
 def ocr_file(filename,
+             language='eng',
              overlay=False,
-             api_key=OCR_APIKEY,
-             language='tur'):
+             api_key=OCR_APIKEY):
 
     payload = {
         'isOverlayRequired': overlay,
@@ -33,26 +34,28 @@ def ocr_file(filename,
     return r.json()
 
 
-@sedenify(pattern=r'^.ocr', compat=False)
-def ocr(client, message):
+@sedenify(pattern=r'^.ocr')
+def ocr(message):
     if not OCR_APIKEY:
-        edit(
+        return edit(
             message, get_translation(
                 'ocrApiMissing', [
                     '**', 'OCR Space', '`']), preview=False)
-        return
+
     match = extract_args(message)
+    reply = message.reply_to_message
+
     if len(match) < 1:
-        edit(message, f'`{get_translation("wrongCommand")}`')
-        return
+        return edit(message, f'`{get_translation("wrongCommand")}`')
+
+    if not reply.media:
+        return edit(message, f'`{get_translation("wrongCommand")}`')
+
     edit(message, f'`{get_translation("ocrReading")}`')
-    if not path.isdir(DOWNLOAD_DIRECTORY):
-        makedirs(DOWNLOAD_DIRECTORY)
     lang_code = extract_args(message)
-    downloaded_file_name = client.download_media(
-        message.reply_to_message, DOWNLOAD_DIRECTORY)
-    test_file = ocr_file(filename=downloaded_file_name,
-                         language=lang_code)
+    downloaded_file_name = download_media_wc(reply, sticker_orig=True)
+    test_file = ocr_file(downloaded_file_name, lang_code)
+
     try:
         ParsedText = test_file['ParsedResults'][0]['ParsedText']
     except BaseException:
@@ -62,4 +65,4 @@ def ocr(client, message):
     remove(downloaded_file_name)
 
 
-KOMUT.update({'ocr': get_translation('ocrInfo')})
+HELP.update({'ocr': get_translation('ocrInfo')})

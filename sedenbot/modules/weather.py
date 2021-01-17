@@ -9,7 +9,7 @@
 
 from requests import get
 
-from sedenbot import KOMUT, WEATHER, SEDEN_LANG
+from sedenbot import HELP, WEATHER, SEDEN_LANG
 from sedenecem.core import edit, extract_args, sedenify, get_translation
 
 # ===== CONSTANT =====
@@ -51,4 +51,4 @@ def havadurumu(message):
         raise e
 
 
-KOMUT.update({'weather': get_translation('infoWeather')})
+HELP.update({'weather': get_translation('infoWeather')})

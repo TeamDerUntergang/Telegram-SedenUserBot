@@ -8,7 +8,7 @@
 #
 
 from time import sleep
-from sedenbot import KOMUT, LOGS
+from sedenbot import HELP, LOGS
 from sedenecem.core import (edit, sedenify, extract_args,
                             send_log, get_translation)
 
@@ -110,5 +110,5 @@ def is_muted(chat_id):
     return False
 
 
-KOMUT.update({'chat': get_translation('chatInfo')})
-KOMUT.update({'call': get_translation('callInfo')})
+HELP.update({'chat': get_translation('chatInfo')})
+HELP.update({'call': get_translation('callInfo')})

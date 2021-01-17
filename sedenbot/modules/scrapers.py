@@ -26,16 +26,9 @@ from pyrogram import InputMediaPhoto
 
 from traceback import format_exc
 
-from sedenbot import KOMUT, SEDEN_LANG
-from sedenecem.core import (
-    edit,
-    send_log,
-    reply_doc,
-    reply_voice,
-    extract_args,
-    sedenify,
-    get_webdriver,
-    get_translation)
+from sedenbot import HELP, SEDEN_LANG
+from sedenecem.core import (sedenify, edit, send_log, reply_doc, reply_voice,
+                            extract_args, get_webdriver, get_translation)
 
 CARBONLANG = 'auto'
 TTS_LANG = SEDEN_LANG
@@ -56,8 +49,6 @@ def carbon(message):
         edit(message, f'`{get_translation("wrongCommand")}`')
         return
     edit(message, f'`{get_translation("processing")}`')
-    CARBON = 'https://carbon.now.sh/?l={lang}&code={code}'
-    global CARBONLANG
     textx = message.reply_to_message
     pcode = message.text
     if pcode[8:]:
@@ -65,12 +56,13 @@ def carbon(message):
     elif textx:
         pcode = str(textx.message)
     code = quote_plus(pcode)
+    global CARBONLANG
+    CARBON = f'https://carbon.now.sh/?l={CARBONLANG}&code={code}'
     edit(message, f'`{get_translation("processing")}\n%25`')
     if path.isfile('./carbon.png'):
         remove('./carbon.png')
-    url = CARBON.format(code=code, lang=CARBONLANG)
     driver = get_webdriver()
-    driver.get(url)
+    driver.get(CARBON)
     edit(message, f'`{get_translation("processing")}\n%50`')
     driver.command_executor._commands['send_command'] = (
         'POST', '/session/$sessionId/chromium/send_command')
@@ -486,14 +478,12 @@ def currency(message):
             number = float(input_sgra[0])
             currency_from = input_sgra[1].upper()
             currency_to = input_sgra[2].upper()
-            request_url = 'https://api.exchangeratesapi.io/latest?base={}'.format(
-                currency_from)
+            request_url = f'https://api.exchangeratesapi.io/latest?base={currency_from}'
             current_response = get(request_url).json()
             if currency_to in current_response['rates']:
                 current_rate = float(current_response['rates'][currency_to])
                 rebmun = round(number * current_rate, 2)
-                edit(message, '{} {} = {} {}'.format(
-                    number, currency_from, rebmun, currency_to))
+                edit(message, f'**{number} {currency_from} = {rebmun} {currency_to}**')
             else:
                 edit(message, get_translation('currencyError'))
         except Exception as e:
@@ -503,12 +493,12 @@ def currency(message):
         return
 
 
-KOMUT.update({'img': get_translation('imgInfo')})
-KOMUT.update({'currency': get_translation('currencyInfo')})
-KOMUT.update({'carbon': get_translation('carbonInfo')})
-KOMUT.update({'google': get_translation('googleInfo')})
-KOMUT.update({'duckduckgo': get_translation('ddgoInfo')})
-KOMUT.update({'wiki': get_translation('wikiInfo')})
-KOMUT.update({'ud': get_translation('udInfo')})
-KOMUT.update({'tts': get_translation('ttsInfo')})
-KOMUT.update({'trt': get_translation('trtInfo')})
+HELP.update({'img': get_translation('imgInfo')})
+HELP.update({'currency': get_translation('currencyInfo')})
+HELP.update({'carbon': get_translation('carbonInfo')})
+HELP.update({'google': get_translation('googleInfo')})
+HELP.update({'duckduckgo': get_translation('ddgoInfo')})
+HELP.update({'wiki': get_translation('wikiInfo')})
+HELP.update({'ud': get_translation('udInfo')})
+HELP.update({'tts': get_translation('ttsInfo')})
+HELP.update({'trt': get_translation('trtInfo')})

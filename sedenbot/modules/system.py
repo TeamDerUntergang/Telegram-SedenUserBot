@@ -17,7 +17,7 @@ from ast import (Add, Sub, Mult, Div, Pow, BitXor, USub,
 from pyrogram.api.functions.help import GetNearestDc
 from sedenbot.modules.lovers import saniye
 from sedenbot.modules.ecem import ecem
-from sedenbot import (KOMUT, ALIVE_MSG, CHANNEL,
+from sedenbot import (HELP, ALIVE_MSG, CHANNEL,
                       BOT_VERSION, HOSTNAME, USER)
 from sedenecem.core import (edit, reply, reply_doc, send_log,
                             extract_args, sedenify, get_translation)
@@ -221,12 +221,4 @@ def _eval(node):
         raise TypeError(f'`{get_translation("safeEval")}`')
 
 
-KOMUT.update({'neofetch': get_translation('neofetchInfo')})
-KOMUT.update({'botver': get_translation('botverInfo')})
-KOMUT.update({'pip': get_translation('pipInfo')})
-KOMUT.update({'dc': get_translation('dcInfo')})
-KOMUT.update({'ping': get_translation('pingInfo')})
-KOMUT.update({'echo': get_translation('echoInfo')})
-KOMUT.update({'eval': get_translation('evalInfo')})
-KOMUT.update({'term': get_translation('termInfo')})
-KOMUT.update({'alive': get_translation('aliveInfo')})
+HELP.update({'system': get_translation('systemInfo')})

@@ -9,10 +9,9 @@
 
 from re import sub
 from urllib.parse import quote
-from os import environ
 from pylast import User, LastFMNetwork, md5
 
-from sedenbot import KOMUT
+from sedenbot import HELP, environ
 from sedenecem.core import sedenify, edit, get_translation
 
 
@@ -90,4 +89,4 @@ def artist_and_song(track):
     return f'{track.track}'
 
 
-KOMUT.update({'lastfm': get_translation('lastfmInfo')})
+HELP.update({'lastfm': get_translation('lastfmInfo')})

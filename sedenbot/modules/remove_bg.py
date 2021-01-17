@@ -10,7 +10,7 @@
 from os import path, remove
 from removebg import RemoveBg
 
-from sedenbot import KOMUT, RBG_APIKEY, DOWNLOAD_DIRECTORY
+from sedenbot import HELP, RBG_APIKEY, DOWNLOAD_DIRECTORY
 from sedenecem.core import (sedenify, edit, reply_doc,
                             get_translation, download_media_wc)
 
@@ -36,7 +36,7 @@ def rbg(message):
 
     if path.exists(IMG_PATH):
         remove(IMG_PATH)
-    download_media_wc(reply, file_name=IMG_PATH)
+    download_media_wc(reply, IMG_PATH)
     edit(message, f'`{get_translation("rbgProcessing")}`')
     try:
         remove_bg = RemoveBg(RBG_APIKEY, f'{get_translation("rbgLog")}')
@@ -46,7 +46,7 @@ def rbg(message):
                   caption=get_translation('rbgResult'))
         message.delete()
     except Exception as e:
-        raise e
+        return edit(message, get_translation('banError', ['`', '**', e]))
 
 
-KOMUT.update({'rbg': get_translation('rbgInfo')})
+HELP.update({'rbg': get_translation('rbgInfo')})

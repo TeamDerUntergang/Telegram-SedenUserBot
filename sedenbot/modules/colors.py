@@ -9,7 +9,7 @@
 
 from PIL import Image, ImageColor
 
-from sedenbot import KOMUT
+from sedenbot import HELP
 from sedenecem.core import (edit, reply_img, extract_args,
                             sedenify, get_translation)
 
@@ -17,10 +17,7 @@ from sedenecem.core import (edit, reply_img, extract_args,
 @sedenify(pattern='^.color')
 def color(message):
     input_str = extract_args(message)
-    reply = message.reply_to_message
-    message_id = message.chat.id
-    if reply:
-        message_id
+
     if input_str.startswith('#'):
         try:
             usercolor = ImageColor.getrgb(input_str)
@@ -30,12 +27,14 @@ def color(message):
         else:
             im = Image.new(mode='RGB', size=(1920, 1080), color=usercolor)
             im.save('sedencik.png', 'PNG')
-            input_str = input_str.replace('#', '#RENK_')
-            reply_img(message, 'sedencik.png',
-                      caption=input_str, delete_file=True)
-            message.delete()
+            reply_img(
+                message,
+                'sedencik.png',
+                caption=input_str,
+                delete_file=True,
+                delete_orig=True)
     else:
         edit(message, f'`{get_translation("colorsUsage")}`')
 
 
-KOMUT.update({'color': get_translation('colorsInfo')})
+HELP.update({'color': get_translation('colorsInfo')})

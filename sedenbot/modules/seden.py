@@ -7,7 +7,7 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from sedenbot import KOMUT
+from sedenbot import HELP
 from sedenecem.core import (edit, reply, extract_args,
                             sedenify, get_translation)
 from collections import OrderedDict
@@ -16,7 +16,7 @@ from collections import OrderedDict
 @sedenify(pattern='^.seden')
 def seden(message):
     seden = extract_args(message).lower()
-    cmds = OrderedDict(sorted(KOMUT.items()))
+    cmds = OrderedDict(sorted(HELP.items()))
     if len(seden) > 0:
         if seden in cmds:
             edit(message, str(cmds[seden]))
@@ -24,8 +24,7 @@ def seden(message):
             edit(message, f'**{get_translation("sedenUsage")}**')
     else:
         edit(message, get_translation('sedenUsage2', ['**', '`']))
-        metin = '{}\n'.format(get_translation('sedenShowLoadedModules', [
-            '**', '`', len(cmds)]))
+        metin = f'{get_translation("sedenShowLoadedModules", ["**", "`", len(cmds)])}\n'
         for item in cmds:
             metin += f'• `{item}`\n'
-        reply(message, metin, preview=False)
+        reply(message, metin)

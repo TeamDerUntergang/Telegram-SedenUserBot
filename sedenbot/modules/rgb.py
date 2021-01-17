@@ -14,7 +14,7 @@ from textwrap import wrap
 
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 
-from sedenbot import KOMUT
+from sedenbot import HELP
 from sedenecem.core import (extract_args, sedenify, edit,
                             send_sticker, get_translation)
 
@@ -77,4 +77,4 @@ def sticklet(client, message):
         pass
 
 
-KOMUT.update({'rgb': get_translation('rgbInfo')})
+HELP.update({'rgb': get_translation('rgbInfo')})

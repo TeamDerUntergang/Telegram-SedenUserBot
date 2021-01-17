@@ -13,7 +13,7 @@ from urllib.parse import urlencode
 from bs4 import BeautifulSoup
 from requests import get
 
-from sedenbot import KOMUT, VALID_PROXY_URL
+from sedenbot import HELP, VALID_PROXY_URL
 from sedenecem.core import edit, extract_args, sedenify, get_translation
 
 GITHUB = 'https://github.com'
@@ -103,7 +103,7 @@ def codename(message):
     arr = extract_args(message)
     brand = arr
     device = arr
-    if " " in arr:
+    if ' ' in arr:
         args = arr.split(' ', 1)
         brand = args[0].lower()
         device = args[1].lower()
@@ -123,10 +123,7 @@ def codename(message):
         results = [i for i in devices if device.lower(
         ) in i['name'].lower() or device.lower() in i['model'].lower()]
         if results:
-            reply = "{}\n".format(
-                get_translation(
-                    'codenameSearch', [
-                        '**', brand, device]))
+            reply = f'{get_translation("codenameSearch", ["**", brand, device])}\n'
             if len(results) > 8:
                 results = results[:8]
             for item in results:
@@ -441,4 +438,4 @@ def ofrp_get_packages(device):
     return out
 
 
-KOMUT.update({'android': get_translation('androidInfo')})
+HELP.update({'android': get_translation('androidInfo')})

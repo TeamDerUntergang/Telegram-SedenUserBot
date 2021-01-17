@@ -11,7 +11,7 @@ from subprocess import PIPE
 from subprocess import run as runapp
 from pybase64 import b64encode, b64decode
 
-from sedenbot import KOMUT
+from sedenbot import HELP
 from sedenecem.core import (edit, reply_doc, extract_args,
                             sedenify, get_translation)
 
@@ -72,5 +72,5 @@ def base64(message):
         edit(message, f'Input: `{args[1]}`\nDecoded: `{lething[:-1]}`')
 
 
-KOMUT.update({'base64': get_translation('base64Info')})
-KOMUT.update({'hash': get_translation('hashInfo')})
+HELP.update({'base64': get_translation('base64Info')})
+HELP.update({'hash': get_translation('hashInfo')})

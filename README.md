@@ -17,21 +17,20 @@ Telegram Python Bot running on Python3 with a Postgresql Sqlalchemy database. It
     I'll just laugh at you.
 /**
 ```
-
 ## Run Bot
 ```bash
 # Clone repo
 git clone https://github.com/TeamDerUntergang/Telegram-SedenUserBot.git
-cd Telegram-SedenUserbot
+cd Telegram-SedenUserBot
 
 # Install pip dependincies
 pip3 install -r requirements.txt
 
-# Create config.env and fill variables
-mv sample_config.env config.env
-
 # Generate session from session.py (skip if there is already)
 python3 session.py
+
+# Create config.env and fill variables
+mv sample_config.env config.env
 
 # Run bot
 python3 seden.py
@@ -48,6 +47,7 @@ Please go to our [GitHub.io](https://teamderuntergang.github.io/pyrogram.html) p
 *   [@NaytSeyd](https://github.com/NaytSeyd) - Founder
 *   [@frknkrc44](https://github.com/frknkrc44) - Operator
 *   [@Sedenogen](https://github.com/ciyanogen) - Co-Founder
+*   [@Delivrance](https://github.com/pyrogram/pyrogram) - Pyrogram Library
 *   [@Skittles9823](https://github.com/skittles9823) - Memes
 *   [@RaphielGang](https://github.com/raphielgang) - Other Modules
 

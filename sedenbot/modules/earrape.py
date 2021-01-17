@@ -10,7 +10,7 @@
 from os import path, remove
 from subprocess import Popen
 
-from sedenbot import KOMUT
+from sedenbot import HELP
 from sedenecem.core import (edit, sedenify, download_media_wc, reply_voice,
                             extract_args, reply_doc, get_translation)
 
@@ -30,7 +30,7 @@ def earrape(message):
             edit(message, f'`{get_translation("wrongMedia")}`')
         else:
             edit(message, f'`{get_translation("applyEarrape")}`')
-            media = download_media_wc(reply, file_name=earrape)
+            media = download_media_wc(reply, earrape)
             process = Popen(['ffmpeg',
                              '-i',
                              f'{media}',
@@ -42,9 +42,9 @@ def earrape(message):
             reply_doc(
                 message,
                 f'{media}.mp4',
-                delete_after_send=True)
+                delete_after_send=True,
+                delete_orig=True)
             remove(media)
-            message.delete()
     elif util == 'mp3':
         if not(reply.video or reply.video_note or (
             reply.audio or reply.voice or (
@@ -52,7 +52,7 @@ def earrape(message):
             edit(message, f'`{get_translation("wrongMedia")}`')
         else:
             edit(message, f'`{get_translation("applyEarrape")}`')
-            media = download_media_wc(reply, file_name=earrape)
+            media = download_media_wc(reply, earrape)
             process = Popen(['ffmpeg',
                              '-i',
                              f'{media}',
@@ -61,13 +61,12 @@ def earrape(message):
                              f'{media}.mp3'])
             final, _ = process.communicate()
             edit(message, f'`{get_translation("uploadMedia")}`')
-            reply_voice(message, f'{media}.mp3')
+            reply_voice(message, f'{media}.mp3', delete_orig=True)
             remove(media)
             remove(f'{media}.mp3')
-            message.delete()
     else:
         edit(message, f'`{get_translation("wrongCommand")}`')
         return
 
 
-KOMUT.update({'earrape': get_translation('earrapeInfo')})
+HELP.update({'earrape': get_translation('earrapeInfo')})

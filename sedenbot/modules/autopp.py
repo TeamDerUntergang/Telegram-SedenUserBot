@@ -13,8 +13,9 @@ from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 from requests import get
 
-from sedenbot import KOMUT, AUTO_PP, TEMP_SETTINGS, LOGS
-from sedenecem.core import extract_args, sedenify, edit, get_translation
+from sedenbot import HELP, AUTO_PP, TEMP_SETTINGS, LOGS
+from sedenecem.core import (extract_args, sedenify, edit,
+                            get_translation, download_media_wc)
 
 # =================== CONSTANT ===================
 KEY_AUTOPP = 'autopic'
@@ -55,9 +56,8 @@ def autopic(client, message):
         else:
             try:
                 profile_photo = client.get_profile_photos('me', limit=1)
-                downloaded_file_name = client.download_media(
-                    message=profile_photo[0],
-                    file_name=downloaded_file_name)
+                downloaded_file_name = download_media_wc(
+                    profile_photo[0], downloaded_file_name)
             except BaseException:
                 edit(message, f'`{get_translation("autoppConfig")}`')
                 return
@@ -82,4 +82,4 @@ def autopic(client, message):
             return
 
 
-KOMUT.update({'autopp': get_translation('autoppInfo')})
+HELP.update({'autopp': get_translation('autoppInfo')})
