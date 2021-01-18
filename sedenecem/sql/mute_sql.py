@@ -19,9 +19,11 @@ class Mute(BASE):
 Mute.__table__.create(checkfirst=True)
 
 
-def is_muted(chat_id):
+def is_muted(chat_id, sender):
     try:
-        return SESSION.query(Mute).filter(Mute.chat_id == str(chat_id)).all()
+        ret = SESSION.query(Mute).filter(Mute.chat_id == str(
+            chat_id), Mute.sender == str(sender)).all()
+        return len(ret) > 0
     except BaseException:
         return None
     finally:
@@ -35,7 +37,9 @@ def mute(chat_id, sender):
 
 
 def unmute(chat_id, sender):
-    rem = SESSION.query(Mute).get(((str(chat_id)), (str(sender))))
-    if rem:
-        SESSION.delete(rem)
-        SESSION.commit()
+    rem = SESSION.query(Mute).filter(Mute.chat_id == str(
+        chat_id), Mute.sender == str(sender)).all()
+    if len(rem):
+        for item in rem:
+            SESSION.delete(item)
+            SESSION.commit()

@@ -163,7 +163,7 @@ def mute_user(client, message):
     args = extract_args(message)
     reply = message.reply_to_message
     edit(message, f'`{get_translation("muteProcess")}`')
-    if args:
+    if len(args):
         try:
             user = client.get_users(args)
         except Exception:
@@ -192,6 +192,8 @@ def mute_user(client, message):
 
     try:
         chat_id = message.chat.id
+        if sql.is_muted(chat_id, user.id):
+            return
         sql.mute(chat_id, user.id)
         edit(
             message, get_translation(
@@ -246,8 +248,7 @@ def unmute_user(client, message):
         return
 
 
-@sedenify(pattern='^.promote', incoming=True, admin=True,
-          private=False, compat=False)
+@sedenify(pattern='^.promote', admin=True, private=False, compat=False)
 def promote_user(client, message):
     args = extract_args(message)
     reply = message.reply_to_message
@@ -382,13 +383,11 @@ def unpin_message(client, message):
 
 @sedenify(incoming=True, outgoing=False, compat=False)
 def mute_check(client, message):
-    muted = sql.is_muted(message.chat.id)
+    muted = sql.is_muted(message.chat.id, message.from_user.id)
 
     if muted:
-        for user in muted:
-            if str(user.sender) == str(message.from_user.id):
-                sleep(0.1)
-                message.delete()
+        sleep(0.1)
+        message.delete()
 
         try:
             user_id = message.from_user.id

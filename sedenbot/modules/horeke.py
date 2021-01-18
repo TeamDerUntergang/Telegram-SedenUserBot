@@ -7,7 +7,7 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from os import execl
+from os import execl, getpid
 from sys import executable, argv
 from requests import get
 from math import floor
@@ -126,7 +126,7 @@ def restart(client, message, dyno=False):
 
     def std_off():
         try:
-            client.stop()
+            app.stop()
         except Exception:
             pass
 
@@ -174,7 +174,8 @@ def shutdown(client, message):
 
     def std_off():
         try:
-            client.stop()
+            from subprocess import getoutput
+            getoutput(f'kill -7 {getpid()}')
         except Exception:
             pass
 
