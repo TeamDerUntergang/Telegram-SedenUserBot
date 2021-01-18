@@ -121,5 +121,6 @@ def user(message):
     except BaseException:
         pass
 
+    message.continue_propagation()
 
 HELP.update({'lydia': get_translation('lydiaInfo')})
