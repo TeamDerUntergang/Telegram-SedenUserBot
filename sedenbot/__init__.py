@@ -194,7 +194,7 @@ LOG_ID = int(LOG_ID) if LOG_ID and resr(r'^-?\d+$', LOG_ID) else None
 DEEPGRAM = sb(environ.get('DEEPGRAM', 'False'))
 
 # PmPermit PM Auto Ban Stuffs
-PM_AUTO_BAN = environ.get('PM_AUTO_BAN', 'False')
+PM_AUTO_BAN = sb(environ.get('PM_AUTO_BAN', 'False'))
 PM_MSG_COUNT = environ.get('PM_MSG_COUNT', 'default')
 PM_MSG_COUNT = int(PM_MSG_COUNT) if PM_MSG_COUNT.isdigit() else 5
 PM_UNAPPROVED = environ.get('PM_UNAPPROVED', None)
