@@ -7,10 +7,11 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
+from collections import OrderedDict
+
 from sedenbot import HELP
 from sedenecem.core import (edit, reply, extract_args,
                             sedenify, get_translation)
-from collections import OrderedDict
 
 
 @sedenify(pattern='^.seden')

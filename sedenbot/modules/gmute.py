@@ -9,10 +9,7 @@
 
 from time import sleep
 
-try:
-    from pyrogram import ChatPermissions
-except:
-    from pyrogram.types import ChatPermissions
+from pyrogram.types import ChatPermissions
 
 from sedenbot import BRAIN
 from sedenecem.sql import gmute_sql as sql

@@ -10,14 +10,10 @@
 from random import choice
 from requests import get
 
-try:
-    from pyrogram.api.functions.messages import GetStickerSet
-    from pyrogram.api.types import InputStickerSetShortName
-except:
-    from pyrogram.raw.functions.messages import GetStickerSet
-    from pyrogram.raw.types import InputStickerSetShortName
+from pyrogram.raw.functions.messages import GetStickerSet
+from pyrogram.raw.types import InputStickerSetShortName
 
-from sedenbot import HELP
+from sedenbot import HELP, PACKNAME, PACKNICK
 from sedenecem.core import (
     sedenify,
     edit,
@@ -67,8 +63,9 @@ def kang(client, message):
 
     pack = 1 if not str(args).isdigit() else int(args)
 
-    pname = f'a{myacc.id}_by_{myacc.username}_{pack}'
-    pnick = f"{kanger}'s UserBot pack {pack}"
+    pname = PACKNAME.replace(
+        ' ', '') if PACKNAME else f'a{myacc.id}_by_{myacc.username}_{pack}'
+    pnick = PACKNICK or f"{kanger}'s UserBot pack {pack}"
 
     limit = '50' if anim else '120'
 
@@ -175,7 +172,7 @@ def packinfo(client, message):
         edit(message, f'`{get_translation("packinfoError2")}`')
         return
 
-    edit(message, f'`{get_translation("packinfoResult")}`')
+    edit(message, f'`{get_translation("processing")}`')
 
     get_stickerset = client.send(
         GetStickerSet(

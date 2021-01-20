@@ -7,10 +7,7 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-try:
-    from pyrogram import ChatPermissions
-except:
-    from pyrogram.types import ChatPermissions
+from pyrogram.types import ChatPermissions
 
 from sedenbot import HELP
 from sedenecem.core import edit, sedenify, get_translation, parse_cmd

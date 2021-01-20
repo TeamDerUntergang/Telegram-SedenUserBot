@@ -40,7 +40,7 @@ def quotly(client, message):
                 edit(message, f'`{get_translation("answerFromBot")}`')
                 return
 
-        response.forward(message.chat.id, as_copy=True)
+        response.forward(message.chat.id)
 
     message.delete()
 

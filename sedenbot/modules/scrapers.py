@@ -23,10 +23,7 @@ from emoji import get_emoji_regexp
 from requests import get
 from bs4 import BeautifulSoup
 
-try:
-    from pyrogram import InputMediaPhoto
-except:
-    from pyrogram.types import InputMediaPhoto
+from pyrogram.types import InputMediaPhoto
 
 from traceback import format_exc
 
@@ -487,7 +484,9 @@ def currency(message):
             if currency_to in current_response['rates']:
                 current_rate = float(current_response['rates'][currency_to])
                 rebmun = round(number * current_rate, 2)
-                edit(message, f'**{number} {currency_from} = {rebmun} {currency_to}**')
+                edit(
+                    message,
+                    f'**{number} {currency_from} = {rebmun} {currency_to}**')
             else:
                 edit(message, get_translation('currencyError'))
         except Exception as e:

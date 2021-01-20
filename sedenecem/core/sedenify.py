@@ -13,11 +13,8 @@ from time import gmtime, strftime
 from traceback import format_exc
 from pyrogram import ContinuePropagation, StopPropagation
 
-try:
-    from pyrogram import Filters, MessageHandler
-except:
-    from pyrogram.handlers import MessageHandler
-    from pyrogram import filters as Filters
+from pyrogram.handlers import MessageHandler
+from pyrogram import filters
 
 from sedenbot import (SUPPORT_GROUP, BLACKLIST,
                       BRAIN, me, app, get_translation)
@@ -131,23 +128,23 @@ def sedenify(**args):
 
         filter = None
         if pattern:
-            filter = Filters.regex(pattern)
+            filter = filters.regex(pattern)
             if brain:
-                filter &= Filters.user(BRAIN)
+                filter &= filters.user(BRAIN)
             if outgoing and not incoming:
-                filter &= Filters.me
+                filter &= filters.me
             elif incoming and not outgoing:
-                filter &= (Filters.incoming & ~Filters.bot & ~Filters.me)
+                filter &= (filters.incoming & ~filters.bot & ~filters.me)
         else:
             if outgoing and not incoming:
-                filter = Filters.me
+                filter = filters.me
             elif incoming and not outgoing:
-                filter = (Filters.incoming & ~Filters.bot & ~Filters.me)
+                filter = (filters.incoming & ~filters.bot & ~filters.me)
             else:
-                filter = (Filters.me | Filters.incoming) & ~Filters.bot
+                filter = (filters.me | filters.incoming) & ~filters.bot
 
         if disable_edited:
-            filter &= ~Filters.edited
+            filter &= ~filters.edited
 
         app.add_handler(MessageHandler(wrap, filter))
 

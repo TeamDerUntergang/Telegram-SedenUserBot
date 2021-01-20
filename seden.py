@@ -8,5 +8,5 @@
 #
 
 if __name__ == '__main__':
-    import sedenbot
-    sedenbot.app.run()
+    from sedenbot import app
+    app.run()

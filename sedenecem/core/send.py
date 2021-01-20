@@ -7,10 +7,7 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-try:
-    from pyrogram import Chat
-except:
-    from pyrogram.types import Chat
+from pyrogram.types import Chat
 from .misc import MARKDOWN_FIX_CHAR
 
 

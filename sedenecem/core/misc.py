@@ -8,15 +8,13 @@
 #
 
 from re import escape, sub
-try:
-    from pyrogram import Message
-except:
-    from pyrogram.types import Message
+
+from pyrogram.types import Message
 from sedenbot import app, me, BRAIN, BOT_PREFIX
 
 MARKDOWN_FIX_CHAR = '\u2064'
 SPAM_COUNT = [0]
-_parsed_prefix = escape(BOT_PREFIX) if BOT_PREFIX else '\.'
+_parsed_prefix = escape(BOT_PREFIX) if BOT_PREFIX else r'\.'
 
 
 def reply(

@@ -10,7 +10,8 @@
 from random import choice
 
 from sedenbot import HELP, SUPPORT_GROUP
-from sedenecem.core import edit, extract_args, sedenify, get_translation
+from sedenecem.core import (edit, reply, extract_args,
+                            sedenify, get_translation)
 
 
 @sedenify(pattern='^.random')
@@ -105,10 +106,10 @@ def repeat(message):
     replyCount = int(cnt)
     toBeRepeated = txt
 
-    replyText = toBeRepeated + '\n'
+    replyText = f'{toBeRepeated}\n'
 
     for i in range(0, replyCount - 1):
-        replyText += toBeRepeated + '\n'
+        replyText += f'{toBeRepeated}\n'
 
     edit(message, replyText)
 
@@ -117,6 +118,29 @@ def repeat(message):
 def crash(message):
     edit(message, f'`{get_translation("testLogId")}`')
     raise Exception(get_translation('testException'))
+
+
+@sedenify(pattern='^.tagall$', compat=False, private=False)
+def tagall(client, message):
+    msg = '@tag'
+    chat = message.chat.id
+    length = 0
+    for member in client.iter_chat_members(chat):
+        if length < 4092:
+            msg += f'[\u2063](tg://user?id={member.user.id})'
+            length += 1
+    reply(message, msg, delete_orig=True)
+
+
+@sedenify(pattern='^.report$', compat=False, private=False)
+def report_admin(client, message):
+    msg = '@admin'
+    chat = message.chat.id
+    for member in client.iter_chat_members(chat, filter='administrators'):
+        msg += f'[\u2063](tg://user?id={member.user.id})'
+    re_msg = message.reply_to_message
+    reply(re_msg if re_msg else message, msg)
+    message.delete()
 
 
 HELP.update({'misc': get_translation('miscInfo')})

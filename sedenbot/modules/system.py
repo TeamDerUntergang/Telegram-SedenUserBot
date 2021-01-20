@@ -14,10 +14,7 @@ from operator import add, sub, mul, truediv, pow, xor, neg
 from ast import (Add, Sub, Mult, Div, Pow, BitXor, USub,
                  parse, Num, BinOp, UnaryOp)
 
-try:
-    from pyrogram.api.functions.help import GetNearestDc
-except:
-    from pyrogram.raw.functions.help import GetNearestDc
+from pyrogram.raw.functions.help import GetNearestDc
 
 from sedenbot.modules.lovers import saniye
 from sedenbot.modules.ecem import ecem

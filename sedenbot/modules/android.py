@@ -396,7 +396,8 @@ class OFRPRelease:
             int(json['date'])).strftime('%d-%m-%Y %H:%M:%S')
 
         self.date = date
-        self.file_size = '{:,.2f} MB'.format(int(json['size'])/float(1 << 20))
+        self.file_size = '{:,.2f} MB'.format(
+            int(json['size']) / float(1 << 20))
         self.md5 = json['md5']
         self.version = json['version']
 
@@ -442,7 +443,7 @@ def ofrp_get_packages(device):
 
     json = loads(res)
 
-    if not '_id' in json:
+    if '_id' not in json:
         return OFRPDeviceInfo(None, None)
 
     url = f'https://api.orangefox.download/v3/releases/?device_id={json["_id"]}'

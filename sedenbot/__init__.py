@@ -18,15 +18,9 @@ from logging import basicConfig, getLogger, INFO, DEBUG, CRITICAL
 from requests import get
 from pyrogram import Client
 
-try:
-    from pyrogram import MessageHandler
-except:
-    from pyrogram.handlers import MessageHandler
+from pyrogram.handlers import MessageHandler
 
-try:
-    from pyrogram import Filters
-except BaseException:
-    from pyrogram import filters as Filters
+from pyrogram import filters
 
 from dotenv import load_dotenv, set_key, unset_key
 import sedenecem.translator as _tr
@@ -94,8 +88,6 @@ def unset_local_env(key: str):
 
 def set_logger():
     # Turns off out printing Session value
-    pyrogram_syncer = getLogger('pyrogram.client.ext.syncer')
-    pyrogram_syncer.setLevel(CRITICAL)
     pyrogram_syncer = getLogger('pyrogram.syncer')
     pyrogram_syncer.setLevel(CRITICAL)
 
@@ -129,7 +121,7 @@ if not API_HASH:
     LOGS.warn(get_translation('apiHashError'))
     quit(1)
 
-BOT_VERSION = '1.4.1 Beta'
+BOT_VERSION = '1.4.2 Beta'
 SUPPORT_GROUP = 'SedenUserBotSupport'
 CHANNEL = 'SedenUserBot'
 
@@ -160,6 +152,10 @@ AUTO_PP = environ.get('AUTO_PP', None)
 
 # RBG API key
 RBG_APIKEY = environ.get('RBG_APIKEY', None)
+
+# Custom sticker pack
+PACKNAME = environ.get('PACKNAME', None)
+PACKNICK = environ.get('PACKNICK', None)
 
 # SQL Database URL
 DATABASE_URL = environ.get('DATABASE_URL', None)
@@ -266,7 +262,7 @@ class PyroClient(Client):
     def __init__(self, session, **args):
         super().__init__(session, **args)
         self.add_handler(MessageHandler(
-            PyroClient.store_msg, Filters.incoming))
+            PyroClient.store_msg, filters.incoming))
 
 
 app = PyroClient(

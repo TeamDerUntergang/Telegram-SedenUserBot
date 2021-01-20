@@ -1,18 +1,18 @@
-Pillow
 bs4
 coffeehouse
 cowpy
 emoji
-git+https://github.com/NaytSeyd/pyrogram
 gitpython
-googletrans
+googletrans==3.1.0a0
 gtts
 heroku3
 humanize
 lyricsgenius
+pillow
 psycopg2-binary
 pybase64
 pylast
+pyrogram==1.1.13
 python-barcode
 python-dotenv
 qrcode
@@ -23,4 +23,4 @@ speedtest-cli
 sqlalchemy
 tgcrypto
 urbandict
-wikipedia 
+wikipedia

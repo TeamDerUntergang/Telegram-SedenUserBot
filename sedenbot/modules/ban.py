@@ -9,13 +9,11 @@
 
 from time import sleep
 
-try:
-    from pyrogram import ChatPermissions
-except:
-    from pyrogram.types import ChatPermissions
+from pyrogram.types import ChatPermissions
+from pyrogram.errors import MessageTooLong
 
 from sedenbot import HELP, BRAIN
-from sedenecem.core import (edit, sedenify, send_log,
+from sedenecem.core import (edit, sedenify, send_log, reply_doc,
                             extract_args, get_translation)
 from sedenecem.sql import mute_sql as sql
 
@@ -357,7 +355,7 @@ def pin_message(client, message):
 
     try:
         chat_id = message.chat.id
-        message_id = message.reply_to_message.message_id
+        message_id = reply.message_id
         client.pin_chat_message(chat_id, message_id)
         edit(message, f'`{get_translation("pinResult")}`')
         sleep(1)
@@ -372,13 +370,71 @@ def pin_message(client, message):
 
 @sedenify(pattern='^.unpin$', compat=False, private=False, admin=True)
 def unpin_message(client, message):
+    reply = message.reply_to_message
+    chat_id = message.chat.id
+    if reply:
+        try:
+            client.unpin_chat_message(chat_id, reply.message_id)
+        except Exception as e:
+            edit(message, get_translation('banError', ['`', '**', e]))
+            return
+    else:
+        try:
+            client.unpin_all_chat_messages(chat_id)
+        except Exception as e:
+            edit(message, get_translation('banError', ['`', '**', e]))
+            return
+
+    message.delete()
+
+
+@sedenify(pattern='^.(admins|bots|user(s|sdel))$', compat=False, private=False)
+def get_users(client, message):
+    args = message.text.split(' ', 1)
+    users = args[0][1:5] == 'user'
+    showdel = users and args[0][-3:] == 'del'
+    bots = not users and args[0][1:5] == 'bots'
+    admins = not bots and args[0][1:7] == 'admins'
+
+    out = ''
+    if users:
+        out = get_translation(
+            'userlist',
+            ['**', f'{get_translation("deleted") if showdel else ""}', '`',
+             message.chat.title])
+        filtr = 'all'
+    elif admins:
+        out = get_translation('adminlist', ['**', '`', message.chat.title])
+        filtr = 'administrators'
+    elif bots:
+        out = get_translation('botlist', ['**', '`', message.chat.title])
+        filtr = 'bots'
+
     try:
         chat_id = message.chat.id
-        client.unpin_chat_message(chat_id)
-        message.delete()
+        find = client.iter_chat_members(chat_id, filter=filtr)
+        for i in find:
+            if not i.user.is_deleted and showdel:
+                continue
+            name = f'[{get_translation("deletedAcc") if i.user.is_deleted else i.user.first_name}](tg://user?id={i.user.id}) | `{i.user.id}`'
+            out += f'\n`•`  **{name}**'
     except Exception as e:
-        edit(message, get_translation('banError', ['`', '**', e]))
-        return
+        out += f'\n{get_translation("banError", ["`", "**", e])}'
+
+    try:
+        edit(message, out)
+    except MessageTooLong:
+        edit(message, f'`{get_translation("outputTooLarge")}`')
+        file = open('userslist.txt', 'w+')
+        file.write(out)
+        file.close()
+        reply_doc(
+            message, 'userslist.txt',
+            caption=get_translation(
+                'userlist',
+                ['**', f'{get_translation("deleted") if showdel else ""}', '`',
+                 message.chat.title]),
+            delete_after_send=True, delete_orig=True)
 
 
 @sedenify(incoming=True, outgoing=False, compat=False)

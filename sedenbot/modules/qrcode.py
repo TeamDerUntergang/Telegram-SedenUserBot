@@ -22,10 +22,14 @@ from sedenecem.core import (extract_args, sedenify, edit, reply_doc,
 @sedenify(pattern=r'^.decode$')
 def parseqr(message):
     reply = message.reply_to_message
+    if not reply:
+        return edit(message, f'`{get_translation("wrongCommand")}`')
+
     if not(reply.photo or reply.sticker or (
             reply.document and 'image' in reply.document.mime_type)):
         edit(message, f'`{get_translation("wrongCommand")}`')
         return
+
     downloaded_file_name = download_media_wc(reply)
 
     dw = open(downloaded_file_name, 'rb')

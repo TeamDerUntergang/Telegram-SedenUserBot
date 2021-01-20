@@ -9,7 +9,7 @@
 
 from pyrogram import Client
 
-lang = input('Select lang (tr, en): ')
+lang = input('Select lang (tr, en): ').lower()
 
 if lang == 'en':
     print('''\nPlease go to my.telegram.org
