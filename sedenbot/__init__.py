@@ -157,6 +157,9 @@ RBG_APIKEY = environ.get('RBG_APIKEY', None)
 PACKNAME = environ.get('PACKNAME', None)
 PACKNICK = environ.get('PACKNICK', None)
 
+# Deezer ARL Token
+DEEZER_TOKEN = environ.get('DEEZER_TOKEN', None)
+
 # SQL Database URL
 DATABASE_URL = environ.get('DATABASE_URL', None)
 

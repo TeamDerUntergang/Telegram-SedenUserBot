@@ -16,7 +16,7 @@ from pyrogram import ContinuePropagation, StopPropagation
 from pyrogram.handlers import MessageHandler
 from pyrogram import filters
 
-from sedenbot import (SUPPORT_GROUP, BLACKLIST,
+from sedenbot import (SUPPORT_GROUP, BLACKLIST, BOT_VERSION,
                       BRAIN, me, app, get_translation)
 from .sedenlog import send_log_doc
 from .misc import edit, _parsed_prefix, get_cmd
@@ -104,8 +104,8 @@ def sedenify(**args):
                     ftext = get_translation(
                         'sedenErrorText2',
                         [date, message.chat.id, message.from_user.id
-                         if message.from_user else 'Unknown', message.text,
-                         format_exc(),
+                         if message.from_user else 'Unknown', BOT_VERSION,
+                         message.text, format_exc(),
                          exc_info()[1]])
 
                     process = Popen(

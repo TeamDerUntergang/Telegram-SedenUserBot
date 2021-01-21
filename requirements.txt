@@ -1,6 +1,7 @@
 bs4
 coffeehouse
 cowpy
+deethon
 emoji
 gitpython
 googletrans==3.1.0a0
