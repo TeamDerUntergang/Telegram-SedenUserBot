@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -10,14 +10,14 @@
 from random import choice
 from requests import get
 
-from pyrogram.api.functions.messages import GetStickerSet
-from pyrogram.api.types import InputStickerSetShortName
+from pyrogram.raw.functions.messages import GetStickerSet
+from pyrogram.raw.types import InputStickerSetShortName
 
-from sedenbot import KOMUT, me
+from sedenbot import HELP, PACKNAME, PACKNICK
 from sedenecem.core import (
-    edit,
     sedenify,
-    download_media,
+    edit,
+    me,
     download_media_wc,
     reply_doc,
     get_translation,
@@ -29,7 +29,7 @@ DIZCILIK = [get_translation(f'kangstr{i+1}') for i in range(0, 12)]
 # ================= CONSTANT =================
 
 
-@sedenify(pattern='^.(d[ıi]zla|kang|world)', compat=False)
+@sedenify(pattern='^.(d[ıi]zla|kang)', compat=False)
 def kang(client, message):
     myacc = me[0]
     kanger = myacc.username or myacc.first_name
@@ -48,7 +48,7 @@ def kang(client, message):
     if(reply.photo or reply.document or reply.sticker):
         edit(message, f'`{choice(DIZCILIK)}`')
         anim = reply.sticker and reply.sticker.is_animated
-        media = download_media(client, reply, sticker_orig=anim)
+        media = download_media_wc(reply, sticker_orig=anim)
     else:
         edit(message, f'`{get_translation("stickerError")}`')
         return
@@ -63,8 +63,9 @@ def kang(client, message):
 
     pack = 1 if not str(args).isdigit() else int(args)
 
-    pname = f'trzworld{pack}'
-    pnick = f"trz's world {pack}"
+    pname = PACKNAME.replace(
+        ' ', '') if PACKNAME else f'a{myacc.id}_by_{myacc.username}_{pack}'
+    pnick = PACKNICK or f"{kanger}'s UserBot pack {pack}"
 
     limit = '50' if anim else '120'
 
@@ -106,8 +107,8 @@ def kang(client, message):
 
         if limit in status.text:
             pack += 1
-            pname = f'trzworld{pack}'
-            pnick = f"trz's world {pack}"
+            pname = f'a{myacc.id}_by_{myacc.username}_{pack}'
+            pnick = f"{kanger}'s UserBot pack {pack}"
             edit(message, get_translation('packFull', ['`', '**', str(pack)]))
             return add_exist(conv, pack, pname, pnick)
 
@@ -156,8 +157,8 @@ def getsticker(message):
         photo,
         caption=f'**Sticker ID:** `{reply.sticker.file_id}'
                 f'`\n**Emoji**: `{reply.sticker.emoji}`',
-        delete_after_send=True)
-    message.delete()
+        delete_after_send=True,
+        delete_orig=True)
 
 
 @sedenify(pattern='.packinfo$', compat=False)
@@ -171,7 +172,7 @@ def packinfo(client, message):
         edit(message, f'`{get_translation("packinfoError2")}`')
         return
 
-    edit(message, f'`{get_translation("packinfoResult")}`')
+    edit(message, f'`{get_translation("processing")}`')
 
     get_stickerset = client.send(
         GetStickerSet(
@@ -196,4 +197,4 @@ def packinfo(client, message):
     edit(message, out)
 
 
-KOMUT.update({'stickers': get_translation('stickerInfo')})
+HELP.update({'stickers': get_translation('stickerInfo')})
