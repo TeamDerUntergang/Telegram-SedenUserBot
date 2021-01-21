@@ -67,7 +67,8 @@ def permitpm(client, message):
                             PM_LAST_MSG[message.chat.id] = ret.text
                 else:
                     ret = reply(message, UNAPPROVED_MSG)
-                    PM_LAST_MSG[message.chat.id] = ret.text
+                    if ret.text:
+                        PM_LAST_MSG[message.chat.id] = ret.text
 
                 if notifsoff:
                     client.read_history(message.chat.id)
