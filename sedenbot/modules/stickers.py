@@ -29,7 +29,7 @@ DIZCILIK = [get_translation(f'kangstr{i+1}') for i in range(0, 12)]
 # ================= CONSTANT =================
 
 
-@sedenify(pattern='^.(d[ıi]zla|kang)', compat=False)
+@sedenify(pattern='^.(d[ıi]zla|kang|world)', compat=False)
 def kang(client, message):
     myacc = me[0]
     kanger = myacc.username or myacc.first_name
@@ -64,8 +64,8 @@ def kang(client, message):
     pack = 1 if not str(args).isdigit() else int(args)
 
     pname = PACKNAME.replace(
-        ' ', '') if PACKNAME else f'a{myacc.id}_by_{myacc.username}_{pack}'
-    pnick = PACKNICK or f"{kanger}'s UserBot pack {pack}"
+        ' ', '') if PACKNAME else f'trzworld{pack}'
+    pnick = PACKNICK or f"trz's world {pack}"
 
     limit = '50' if anim else '120'
 
