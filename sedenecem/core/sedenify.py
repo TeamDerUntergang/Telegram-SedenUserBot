@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -11,10 +11,12 @@ from subprocess import Popen, PIPE
 from sys import exc_info
 from time import gmtime, strftime
 from traceback import format_exc
+from pyrogram import ContinuePropagation, StopPropagation
 
-from pyrogram import (Filters, MessageHandler,
-                      ContinuePropagation, StopPropagation)
-from sedenbot import (SUPPORT_GROUP, BLACKLIST,
+from pyrogram.handlers import MessageHandler
+from pyrogram import filters
+
+from sedenbot import (SUPPORT_GROUP, BLACKLIST, BOT_VERSION,
                       BRAIN, me, app, get_translation)
 from .sedenlog import send_log_doc
 from .misc import edit, _parsed_prefix, get_cmd
@@ -40,7 +42,7 @@ def sedenify(**args):
 
     def msg_decorator(func):
         def wrap(client, message):
-            if message.empty:
+            if message.empty or not message.from_user:
                 return
 
             try:
@@ -102,8 +104,8 @@ def sedenify(**args):
                     ftext = get_translation(
                         'sedenErrorText2',
                         [date, message.chat.id, message.from_user.id
-                         if message.from_user else 'Unknown', message.text,
-                         format_exc(),
+                         if message.from_user else 'Unknown', BOT_VERSION,
+                         message.text, format_exc(),
                          exc_info()[1]])
 
                     process = Popen(
@@ -126,23 +128,23 @@ def sedenify(**args):
 
         filter = None
         if pattern:
-            filter = Filters.regex(pattern)
+            filter = filters.regex(pattern)
             if brain:
-                filter &= Filters.user(BRAIN)
+                filter &= filters.user(BRAIN)
             if outgoing and not incoming:
-                filter &= Filters.me
+                filter &= filters.me
             elif incoming and not outgoing:
-                filter &= (Filters.incoming & ~Filters.bot & ~Filters.me)
+                filter &= (filters.incoming & ~filters.bot & ~filters.me)
         else:
             if outgoing and not incoming:
-                filter = Filters.me
+                filter = filters.me
             elif incoming and not outgoing:
-                filter = (Filters.incoming & ~Filters.bot & ~Filters.me)
+                filter = (filters.incoming & ~filters.bot & ~filters.me)
             else:
-                filter = (Filters.me | Filters.incoming) & ~Filters.bot
+                filter = (filters.me | filters.incoming) & ~filters.bot
 
         if disable_edited:
-            filter &= ~Filters.edited
+            filter &= ~filters.edited
 
         app.add_handler(MessageHandler(wrap, filter))
 

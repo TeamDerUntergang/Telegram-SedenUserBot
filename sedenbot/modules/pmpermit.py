@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -10,8 +10,8 @@
 from sqlalchemy.exc import IntegrityError
 
 from sedenbot.modules.chat import is_muted
-from sedenbot import (PM_COUNT, KOMUT, PM_AUTO_BAN,
-                      PM_LAST_MSG, LOGS, PM_UNAPPROVED, PM_MSG_COUNT)
+from sedenbot import (PM_COUNT, HELP, PM_AUTO_BAN, LOGS,
+                      PM_LAST_MSG, PM_UNAPPROVED, PM_MSG_COUNT)
 from sedenecem.core import (sedenify, send_log, me,
                             edit, reply, get_translation)
 # ========================= CONSTANTS ============================
@@ -67,7 +67,8 @@ def permitpm(client, message):
                             PM_LAST_MSG[message.chat.id] = ret.text
                 else:
                     ret = reply(message, UNAPPROVED_MSG)
-                    PM_LAST_MSG[message.chat.id] = ret.text
+                    if ret.text:
+                        PM_LAST_MSG[message.chat.id] = ret.text
 
                 if notifsoff:
                     client.read_history(message.chat.id)
@@ -236,4 +237,4 @@ def _find_unapproved_msg(client, chat_id):
         return []
 
 
-KOMUT.update({'pmpermit': get_translation('pmpermitInfo')})
+HELP.update({'pmpermit': get_translation('pmpermitInfo')})

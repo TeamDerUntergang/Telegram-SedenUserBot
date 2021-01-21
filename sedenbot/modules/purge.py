@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -10,7 +10,7 @@
 from time import sleep
 from pyrogram.errors import FloodWait
 
-from sedenbot import KOMUT
+from sedenbot import HELP
 from sedenecem.core import (extract_args, sedenify, edit,
                             send_log, reply, get_translation)
 
@@ -87,6 +87,6 @@ def delete(client, message):
         edit(message, f'`{get_translation("wrongCommand")}`')
 
 
-KOMUT.update({'purge': get_translation('purgeInfo')})
-KOMUT.update({'purgeme': get_translation('purgemeInfo')})
-KOMUT.update({'del': get_translation('delInfo')})
+HELP.update({'purge': get_translation('purgeInfo')})
+HELP.update({'purgeme': get_translation('purgemeInfo')})
+HELP.update({'del': get_translation('delInfo')})

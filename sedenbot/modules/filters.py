@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -9,17 +9,10 @@
 
 from re import fullmatch, IGNORECASE
 
-from sedenbot import KOMUT, LOGS, LOG_ID
-from sedenecem.core import (
-    extract_args,
-    sedenify,
-    edit,
-    get_messages,
-    reply_msg,
-    reply,
-    forward,
-    send_log,
-    get_translation)
+from sedenbot import HELP, LOGS, LOG_ID
+from sedenecem.core import (extract_args, sedenify, edit, get_messages,
+                            reply_msg, reply, forward, send_log,
+                            get_translation)
 
 
 def filters_init():
@@ -148,4 +141,4 @@ def filters(message):
     edit(message, transact)
 
 
-KOMUT.update({'filter': get_translation('filterInfo')})
+HELP.update({'filter': get_translation('filterInfo')})

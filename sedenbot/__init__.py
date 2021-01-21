@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -16,7 +16,12 @@ from distutils.util import strtobool as sb
 from importlib import import_module
 from logging import basicConfig, getLogger, INFO, DEBUG, CRITICAL
 from requests import get
-from pyrogram import Client, Filters, MessageHandler
+from pyrogram import Client
+
+from pyrogram.handlers import MessageHandler
+
+from pyrogram import filters
+
 from dotenv import load_dotenv, set_key, unset_key
 import sedenecem.translator as _tr
 from traceback import format_exc
@@ -42,11 +47,12 @@ def get_translation(transKey, params: list = None):
 
     return ret
 
+
 if version_info[0] < 3 or version_info[1] < 8:
     LOGS.warn(get_translation('pythonVersionError'))
     quit(1)
 
-KOMUT = {}
+HELP = {}
 BRAIN = []
 BLACKLIST = []
 VALID_PROXY_URL = []
@@ -69,6 +75,7 @@ basicConfig(
 # If missted, the default lang is English.
 SEDEN_LANG = environ.get('SEDEN_LANG', 'en')
 
+
 def set_local_env(key: str, value: str):
     return set_key('config.env', key, value)
 
@@ -81,7 +88,7 @@ def unset_local_env(key: str):
 
 def set_logger():
     # Turns off out printing Session value
-    pyrogram_syncer = getLogger('pyrogram.client.ext.syncer')
+    pyrogram_syncer = getLogger('pyrogram.syncer')
     pyrogram_syncer.setLevel(CRITICAL)
 
     # Closes some junk outputs
@@ -90,6 +97,7 @@ def set_logger():
 
     pyrogram_auth = getLogger('pyrogram.session.auth')
     pyrogram_auth.setLevel(CRITICAL)
+
 
 set_logger()
 
@@ -113,7 +121,7 @@ if not API_HASH:
     LOGS.warn(get_translation('apiHashError'))
     quit(1)
 
-BOT_VERSION = '1.3rc6 Alpha'
+BOT_VERSION = '1.4.2 Beta'
 SUPPORT_GROUP = 'SedenUserBotSupport'
 CHANNEL = 'SedenUserBot'
 
@@ -144,6 +152,13 @@ AUTO_PP = environ.get('AUTO_PP', None)
 
 # RBG API key
 RBG_APIKEY = environ.get('RBG_APIKEY', None)
+
+# Custom sticker pack
+PACKNAME = environ.get('PACKNAME', None)
+PACKNICK = environ.get('PACKNICK', None)
+
+# Deezer ARL Token
+DEEZER_TOKEN = environ.get('DEEZER_TOKEN', None)
 
 # SQL Database URL
 DATABASE_URL = environ.get('DATABASE_URL', None)
@@ -178,7 +193,7 @@ LOG_ID = int(LOG_ID) if LOG_ID and resr(r'^-?\d+$', LOG_ID) else None
 DEEPGRAM = sb(environ.get('DEEPGRAM', 'False'))
 
 # PmPermit PM Auto Ban Stuffs
-PM_AUTO_BAN = environ.get('PM_AUTO_BAN', 'False')
+PM_AUTO_BAN = sb(environ.get('PM_AUTO_BAN', 'False'))
 PM_MSG_COUNT = environ.get('PM_MSG_COUNT', 'default')
 PM_MSG_COUNT = int(PM_MSG_COUNT) if PM_MSG_COUNT.isdigit() else 5
 PM_UNAPPROVED = environ.get('PM_UNAPPROVED', None)
@@ -250,7 +265,7 @@ class PyroClient(Client):
     def __init__(self, session, **args):
         super().__init__(session, **args)
         self.add_handler(MessageHandler(
-            PyroClient.store_msg, Filters.incoming))
+            PyroClient.store_msg, filters.incoming))
 
 
 app = PyroClient(
@@ -261,7 +276,7 @@ app = PyroClient(
     device_model='DerUntergang',
     system_version=f'v{BOT_VERSION}',
     lang_code='tr',
-    test_mode=DEEPGRAM,
+    test_mode=DEEPGRAM
 )
 
 

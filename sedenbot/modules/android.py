@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -12,8 +12,9 @@ from json import loads
 from urllib.parse import urlencode
 from bs4 import BeautifulSoup
 from requests import get
+from datetime import datetime
 
-from sedenbot import KOMUT, VALID_PROXY_URL
+from sedenbot import HELP, VALID_PROXY_URL
 from sedenecem.core import edit, extract_args, sedenify, get_translation
 
 GITHUB = 'https://github.com'
@@ -103,7 +104,7 @@ def codename(message):
     arr = extract_args(message)
     brand = arr
     device = arr
-    if " " in arr:
+    if ' ' in arr:
         args = arr.split(' ', 1)
         brand = args[0].lower()
         device = args[1].lower()
@@ -123,10 +124,7 @@ def codename(message):
         results = [i for i in devices if device.lower(
         ) in i['name'].lower() or device.lower() in i['model'].lower()]
         if results:
-            reply = "{}\n".format(
-                get_translation(
-                    'codenameSearch', [
-                        '**', brand, device]))
+            reply = f'{get_translation("codenameSearch", ["**", brand, device])}\n'
             if len(results) > 8:
                 results = results[:8]
             for item in results:
@@ -177,14 +175,14 @@ def ofox(message):
 
     releases = ofrp_get_packages(args)
 
-    if len(releases) < 1:
+    if len(releases.releases) < 1:
         edit(message, get_translation('ofrpNotFound', ['`', args, OFOX_REPO]),
              preview=False)
         return
 
     out = ''
 
-    for release in releases:
+    for release in releases.releases:
         out += f"[{release.version}{' (Beta)' if release.is_beta() else ''}]({release.file_url}) **{release.file_size}**\n"
         out += f"{release.date or get_translation('ofrpErrorDate')}\n\n"
 
@@ -374,29 +372,48 @@ def get_random_proxy():
     return proxy_dict
 
 
+class OFRPDeviceInfo:
+    def __init__(self, json, releases):
+        if not json:
+            self.releases = []
+            return
+
+        self.codename = json['codename']
+        self.oem = json['oem_name']
+        self.model = json['model_name']
+        self.maintainer_name = json['maintainer']['name']
+        self.maintainer_username = json['maintainer']['username']
+        self.releases = releases
+
+
 class OFRPRelease:
-    def __init__(self, device, type, json):
-        self.type = type
-        self.device = device
-        self.date = json['date']
-        self.unixtime = json['unixtime']
+    def __init__(self, json):
+        self.id = json['_id']
+        self.type = json['type']
+        self.device = json['device_id']
+
+        date = datetime.utcfromtimestamp(
+            int(json['date'])).strftime('%d-%m-%Y %H:%M:%S')
+
+        self.date = date
+        self.file_size = '{:,.2f} MB'.format(
+            int(json['size']) / float(1 << 20))
+        self.md5 = json['md5']
         self.version = json['version']
 
-        url = f'https://api.orangefox.download/v2/device/{device}/releases/{type}/{self.version}'
+        url = f'https://api.orangefox.download/v3/releases/{self.id}'
         res = ofrp_get(url)
 
         if not res:
             self.file_name = None
-            self.file_size = None
             self.file_url = None
             self.changelog = None
 
         json = loads(res)
 
-        self.file_name = json['file_name']
-        self.file_size = json['size_human']
-        self.file_url = json['url']
-        self.changelog = json['changelog']
+        self.file_name = json['filename']
+        self.file_url = list(json['mirrors'].values())[0]
+        self.changelog = '\n'.join(json['changelog'])
 
     def is_beta(self):
         return self.type == 'beta'
@@ -418,27 +435,37 @@ def ofrp_get(url):
 
 
 def ofrp_get_packages(device):
-    url = f'https://api.orangefox.download/v2/device/{device}/releases'
+    url = f'https://api.orangefox.download/v3/devices/get?codename={device}'
     res = ofrp_get(url)
 
     if not res:
         return []
 
-    out = []
-
     json = loads(res)
 
-    if 'stable' in json:
-        stable = json['stable']
-        stable = [OFRPRelease(device, 'stable', x) for x in stable]
+    if '_id' not in json:
+        return OFRPDeviceInfo(None, None)
+
+    url = f'https://api.orangefox.download/v3/releases/?device_id={json["_id"]}'
+    res = ofrp_get(url)
+
+    out = []
+
+    json2 = loads(res)
+    json2 = json2['data']
+
+    stables = [x for x in json2 if x['type'] == 'stable']
+    betas = [x for x in json2 if x['type'] == 'beta']
+
+    if len(stables):
+        stable = [OFRPRelease(x) for x in stables]
         out += stable
 
-    if 'beta' in json:
-        beta = json['beta']
-        beta = [OFRPRelease(device, 'beta', x) for x in beta]
+    if len(betas):
+        beta = [OFRPRelease(x) for x in betas]
         out += beta
 
-    return out
+    return OFRPDeviceInfo(json, out)
 
 
-KOMUT.update({'android': get_translation('androidInfo')})
+HELP.update({'android': get_translation('androidInfo')})

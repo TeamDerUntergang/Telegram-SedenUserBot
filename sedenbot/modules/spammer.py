@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -9,7 +9,7 @@
 
 from threading import Event
 
-from sedenbot import KOMUT
+from sedenbot import HELP
 from sedenecem.core import (edit, reply, reply_img, send_log, extract_args,
                             extract_args_arr, sedenify, get_translation,
                             spam_allowed, increment_spam_count)
@@ -27,7 +27,7 @@ def tspam(message):
         return
 
     for metin in tspam.replace(' ', ''):
-        message.reply(metin)
+        reply(message, metin)
         count = increment_spam_count()
         if not count:
             break
@@ -105,7 +105,7 @@ def delayspam(message):
     for i in range(0, miktar):
         if i != 0:
             delaySpamEvent.wait(gecikme)
-        message.reply(spam_message)
+        reply(message, spam_message)
         count = increment_spam_count()
         if not count:
             break
@@ -113,4 +113,4 @@ def delayspam(message):
     send_log(get_translation('delayspamLog'))
 
 
-KOMUT.update({'spammer': get_translation('spamInfo')})
+HELP.update({'spammer': get_translation('spamInfo')})

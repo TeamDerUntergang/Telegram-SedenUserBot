@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -14,7 +14,7 @@ from barcode.writer import ImageWriter
 from urllib3 import PoolManager
 from bs4 import BeautifulSoup
 
-from sedenbot import KOMUT
+from sedenbot import HELP
 from sedenecem.core import (extract_args, sedenify, edit, reply_doc,
                             download_media_wc, get_translation)
 
@@ -22,10 +22,14 @@ from sedenecem.core import (extract_args, sedenify, edit, reply_doc,
 @sedenify(pattern=r'^.decode$')
 def parseqr(message):
     reply = message.reply_to_message
+    if not reply:
+        return edit(message, f'`{get_translation("wrongCommand")}`')
+
     if not(reply.photo or reply.sticker or (
             reply.document and 'image' in reply.document.mime_type)):
         edit(message, f'`{get_translation("wrongCommand")}`')
         return
+
     downloaded_file_name = download_media_wc(reply)
 
     dw = open(downloaded_file_name, 'rb')
@@ -130,5 +134,5 @@ def makeqr(message):
     message.delete()
 
 
-KOMUT.update({'qrcode': get_translation('makeqrInfo')})
-KOMUT.update({'barcode': get_translation('barcodeInfo')})
+HELP.update({'qrcode': get_translation('makeqrInfo')})
+HELP.update({'barcode': get_translation('barcodeInfo')})

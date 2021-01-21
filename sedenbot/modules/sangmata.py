@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -9,7 +9,7 @@
 
 from pyrogram.errors import YouBlockedUser
 
-from sedenbot import KOMUT
+from sedenbot import HELP
 from sedenecem.core import sedenify, edit, get_translation, PyroConversation
 
 
@@ -43,4 +43,4 @@ def sangmata(client, message):
             edit(message, response.text)
 
 
-KOMUT.update({'sangmata': get_translation('sangmataInfo')})
+HELP.update({'sangmata': get_translation('sangmataInfo')})

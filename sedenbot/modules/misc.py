@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -9,8 +9,9 @@
 
 from random import choice
 
-from sedenbot import KOMUT, SUPPORT_GROUP
-from sedenecem.core import edit, extract_args, sedenify, get_translation
+from sedenbot import HELP, SUPPORT_GROUP
+from sedenecem.core import (edit, reply, extract_args,
+                            sedenify, get_translation)
 
 
 @sedenify(pattern='^.random')
@@ -39,15 +40,15 @@ def userid(message):
         if not reply.forward_from:
             user_id = reply.from_user.id
             if reply.from_user.username:
-                name = '@' + reply.from_user.username
+                name = f'**@{reply.from_user.username}**'
             else:
-                name = '**' + reply.from_user.first_name + '**'
+                name = f'**[{reply.from_user.first_name}](tg://user?id={reply.from_user.id})**'
         else:
             user_id = reply.forward_from.id
             if reply.forward_from.username:
-                name = '@' + reply.forward_from.username
+                name = f'**@{reply.forward_from.username}**'
             else:
-                name = '*' + reply.forward_from.first_name + '*'
+                name = f'**[{reply.forward_from.first_name}](tg://user?id={reply.forward_from.id})**'
         edit(
             message, get_translation(
                 'useridResult', [
@@ -70,7 +71,7 @@ def support(message):
 
 @sedenify(pattern='^.founder')
 def founder(message):
-    edit(message, get_translation('founderResult', ['`']), preview=False)
+    edit(message, get_translation('founderResult', ['`', '**']), preview=False)
 
 
 @sedenify(pattern='^.readme$')
@@ -105,10 +106,10 @@ def repeat(message):
     replyCount = int(cnt)
     toBeRepeated = txt
 
-    replyText = toBeRepeated + '\n'
+    replyText = f'{toBeRepeated}\n'
 
     for i in range(0, replyCount - 1):
-        replyText += toBeRepeated + '\n'
+        replyText += f'{toBeRepeated}\n'
 
     edit(message, replyText)
 
@@ -119,12 +120,27 @@ def crash(message):
     raise Exception(get_translation('testException'))
 
 
-KOMUT.update({'random': get_translation('randomInfo')})
-KOMUT.update({'support': get_translation('supportInfo')})
-KOMUT.update({'repo': get_translation('repoInfo')})
-KOMUT.update({'readme': get_translation('readmeInfo')})
-KOMUT.update({'founder': get_translation('founderInfo')})
-KOMUT.update({'repeat': get_translation('repeatInfo')})
-KOMUT.update({'kickme': get_translation('kickmeInfo')})
-KOMUT.update({'id': get_translation('useridInfo')})
-KOMUT.update({'chatid': get_translation('chatidInfo')})
+@sedenify(pattern='^.tagall$', compat=False, private=False)
+def tagall(client, message):
+    msg = '@tag'
+    chat = message.chat.id
+    length = 0
+    for member in client.iter_chat_members(chat):
+        if length < 4092:
+            msg += f'[\u2063](tg://user?id={member.user.id})'
+            length += 1
+    reply(message, msg, delete_orig=True)
+
+
+@sedenify(pattern='^.report$', compat=False, private=False)
+def report_admin(client, message):
+    msg = '@admin'
+    chat = message.chat.id
+    for member in client.iter_chat_members(chat, filter='administrators'):
+        msg += f'[\u2063](tg://user?id={member.user.id})'
+    re_msg = message.reply_to_message
+    reply(re_msg if re_msg else message, msg)
+    message.delete()
+
+
+HELP.update({'misc': get_translation('miscInfo')})

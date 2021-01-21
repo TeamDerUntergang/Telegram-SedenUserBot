@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -9,7 +9,7 @@
 
 from requests import get
 
-from sedenbot import KOMUT, WEATHER, SEDEN_LANG
+from sedenbot import HELP, WEATHER, SEDEN_LANG
 from sedenecem.core import edit, extract_args, sedenify, get_translation
 
 # ===== CONSTANT =====
@@ -51,4 +51,4 @@ def havadurumu(message):
         raise e
 
 
-KOMUT.update({'weather': get_translation('infoWeather')})
+HELP.update({'weather': get_translation('infoWeather')})

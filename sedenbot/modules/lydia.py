@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -11,8 +11,8 @@ from time import sleep
 from coffeehouse.lydia import LydiaAI
 from coffeehouse.api import API
 
-from sedenbot import KOMUT, LOGS, LYDIA_APIKEY
-from sedenecem.core import (sedenify, edit, reply, get_translation)
+from sedenbot import HELP, LOGS, LYDIA_APIKEY
+from sedenecem.core import sedenify, edit, reply, get_translation
 
 
 def lydia_init():
@@ -121,5 +121,7 @@ def user(message):
     except BaseException:
         pass
 
+    message.continue_propagation()
 
-KOMUT.update({'lydia': get_translation('lydiaInfo')})
+
+HELP.update({'lydia': get_translation('lydiaInfo')})

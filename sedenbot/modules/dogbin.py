@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -10,7 +10,7 @@
 from os import remove
 from requests import get, post, exceptions
 
-from sedenbot import KOMUT, DOWNLOAD_DIRECTORY
+from sedenbot import HELP, DOWNLOAD_DIRECTORY
 from sedenecem.core import edit, extract_args, sedenify, get_translation
 
 DOGBIN_URL = 'https://del.dog/'
@@ -108,4 +108,4 @@ def getpaste(message):
     edit(message, reply_text)
 
 
-KOMUT.update({'dogbin': get_translation('dogbinInfo')})
+HELP.update({'dogbin': get_translation('dogbinInfo')})

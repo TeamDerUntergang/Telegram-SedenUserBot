@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -7,13 +7,12 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-
 from random import choice, randint
 from time import sleep
 
 from pyrogram import ContinuePropagation, StopPropagation
 
-from sedenbot import (KOMUT, TEMP_SETTINGS, PM_AUTO_BAN, app, me as mel)
+from sedenbot import (HELP, TEMP_SETTINGS, PM_AUTO_BAN, app, me as mel)
 from sedenecem.core import (extract_args, sedenify, send_log,
                             edit, reply, get_translation)
 
@@ -158,4 +157,4 @@ def type_afk_is_not_true(message):
     raise ContinuePropagation
 
 
-KOMUT.update({'afk': get_translation('afkInfo')})
+HELP.update({'afk': get_translation('afkInfo')})

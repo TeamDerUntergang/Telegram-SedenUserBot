@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -10,7 +10,7 @@
 from re import match, sub, IGNORECASE, I
 from sre_constants import error as sre_err
 
-from sedenbot import KOMUT
+from sedenbot import HELP
 from sedenecem.core import edit, sedenify, get_translation
 
 DELIMITERS = ('/', ':', '|', '_')
@@ -96,4 +96,4 @@ def sed(message):
             edit(message, get_translation('sedResult', [text]))
 
 
-KOMUT.update({'sed': get_translation('sedInfo')})
+HELP.update({'sed': get_translation('sedInfo')})

@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -9,7 +9,7 @@
 
 from lyricsgenius import Genius
 
-from sedenbot import KOMUT, GENIUS_TOKEN
+from sedenbot import HELP, GENIUS_TOKEN
 from sedenecem.core import (edit, reply_doc, extract_args,
                             sedenify, get_translation)
 
@@ -61,4 +61,4 @@ def lyrics(message):
     return
 
 
-KOMUT.update({'lyrics': get_translation('lyricsInfo')})
+HELP.update({'lyrics': get_translation('lyricsInfo')})

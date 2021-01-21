@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -7,14 +7,15 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from os import execl
+from os import execl, getpid
 from sys import executable, argv
 from requests import get
 from math import floor
 from heroku3 import from_key
 
-from sedenbot import KOMUT, HEROKU_KEY, HEROKU_APPNAME
-from sedenecem.core import edit, sedenify, get_translation, send_log, reply_doc
+from sedenbot import HELP, HEROKU_KEY, HEROKU_APPNAME
+from sedenecem.core import (edit, sedenify, get_translation,
+                            send_log, reply_doc)
 
 
 @sedenify(pattern='^.(quo|ko)ta$')
@@ -125,7 +126,7 @@ def restart(client, message, dyno=False):
 
     def std_off():
         try:
-            client.stop()
+            app.stop()
         except Exception:
             pass
 
@@ -173,7 +174,8 @@ def shutdown(client, message):
 
     def std_off():
         try:
-            client.stop()
+            from subprocess import getoutput
+            getoutput(f'kill -7 {getpid()}')
         except Exception:
             pass
 
@@ -239,9 +241,7 @@ def dyno_logs(message):
     with open(filename, 'w+') as log:
         log.write(heroku_app.get_log())
 
-    reply_doc(message, filename)
+    reply_doc(message, filename, delete_after_send=True, delete_orig=True)
 
 
-KOMUT.update({'heroku': get_translation('herokuInfo')})
-KOMUT.update({'restart': get_translation('restartInfo')})
-KOMUT.update({'shutdown': get_translation('shutdownInfo')})
+HELP.update({'heroku': get_translation('herokuInfo')})

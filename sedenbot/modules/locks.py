@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -7,9 +7,9 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from pyrogram import ChatPermissions
+from pyrogram.types import ChatPermissions
 
-from sedenbot import KOMUT
+from sedenbot import HELP
 from sedenecem.core import edit, sedenify, get_translation, parse_cmd
 
 
@@ -133,4 +133,4 @@ def get_on_none(item, defval):
     return item
 
 
-KOMUT.update({'locks': get_translation('lockInfo')})
+HELP.update({'locks': get_translation('lockInfo')})

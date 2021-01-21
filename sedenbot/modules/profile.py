@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -8,21 +8,23 @@
 #
 
 from os import remove
-from pyrogram.errors import UsernameOccupied
-from pyrogram.api.functions import channels, account
 
-from sedenbot import KOMUT
+from pyrogram.errors import UsernameOccupied
+from pyrogram.raw.functions import channels, account
+
+from sedenbot import HELP
 from sedenecem.core import (edit, extract_args, sedenify, send_log,
                             get_translation, download_media_wc)
 # ====================== CONSTANT ===============================
-INVALID_MEDIA = "`Medya geçerli değil.`"
-PP_CHANGED = "`Profil resmi başarıyla değiştirildi.`"
-PP_ERROR = "`Resim işlenirken bir hata oluştu.`"
+INVALID_MEDIA = get_translation('mediaInvalid')
+PP_CHANGED = get_translation('ppChanged')
+PP_ERROR = get_translation('ppError')
 
-BIO_SUCCESS = "`Biyografi başarıyla değiştirildi.`"
-NAME_OK = "`Adın başarıyla değiştirildi.`"
-USERNAME_SUCCESS = "`Kullanıcı adın başarıyla değiştirildi.`"
-USERNAME_TAKEN = "`Kullanıcı adı müsait değil.`"
+BIO_SUCCESS = get_translation('bioSuccess')
+NAME_OK = get_translation('nameOk')
+
+USERNAME_SUCCESS = get_translation('usernameSuccess')
+USERNAME_TAKEN = get_translation('usernameTaken')
 # ===============================================================
 
 
@@ -48,7 +50,7 @@ def name(client, message):
 
     client.send(account.UpdateProfile(
         first_name=firstname, last_name=lastname))
-    edit(message, NAME_OK)
+    edit(message, f'`{NAME_OK}`')
 
 
 @sedenify(pattern='^.setpfp$', compat=False)
@@ -57,16 +59,16 @@ def set_profilepic(client, message):
     photo = None
     if (reply and reply.media and (reply.photo or (
             reply.document and 'image' in reply.document.mime_type))):
-        photo = download_media_wc(reply, file_name='profile_photo.jpg')
+        photo = download_media_wc(reply, 'profile_photo.jpg')
     else:
-        edit(message, INVALID_MEDIA)
+        edit(message, f'`{INVALID_MEDIA}`')
 
     if photo:
         client.set_profile_photo(photo=photo)
         remove(photo)
-        edit(message, PP_CHANGED)
+        edit(message, f'`{PP_CHANGED}`')
     else:
-        edit(message, PP_ERROR)
+        edit(message, f'`{PP_ERROR}`')
 
 
 @sedenify(pattern=r'^.delpfp', compat=False)
@@ -98,9 +100,9 @@ def username(client, message):
     newusername = extract_args(message)
     try:
         client.send(account.UpdateUsername(username=newusername))
-        edit(message, USERNAME_SUCCESS)
+        edit(message, f'`{USERNAME_SUCCESS}`')
     except UsernameOccupied:
-        edit(message, USERNAME_TAKEN)
+        edit(message, f'`{USERNAME_TAKEN}`')
 
 
 @sedenify(pattern='^.block$', compat=False)
@@ -153,4 +155,4 @@ def unblockpm(client, message):
         edit(message, f'`{get_translation("pmUnblockedUsage")}`')
 
 
-KOMUT.update({'profile': get_translation('profileInfo')})
+HELP.update({'profile': get_translation('profileInfo')})
