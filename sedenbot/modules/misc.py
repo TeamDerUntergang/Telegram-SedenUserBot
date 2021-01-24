@@ -8,10 +8,14 @@
 #
 
 from random import choice
+from requests import post
+from subprocess import PIPE
+from subprocess import run as runapp
+from pybase64 import b64encode, b64decode
 
 from sedenbot import HELP, SUPPORT_GROUP
-from sedenecem.core import (edit, reply, extract_args,
-                            sedenify, get_translation)
+from sedenecem.core import (edit, reply, reply_doc, sedenify,
+                            extract_args, get_translation)
 
 
 @sedenify(pattern='^.random')
@@ -94,7 +98,7 @@ def repo(message):
 
 @sedenify(pattern='^.repeat')
 def repeat(message):
-    '''Copyright (c) Gegham Zakaryan | 2019'''
+    # Copyright (c) Gegham Zakaryan | 2019
     args = extract_args(message).split(' ', 1)
     if len(args) < 2:
         edit(message, f'`{get_translation("wrongCommand")}`')
@@ -141,6 +145,88 @@ def report_admin(client, message):
     re_msg = message.reply_to_message
     reply(re_msg if re_msg else message, msg)
     message.delete()
+
+
+@sedenify(pattern='^.hash')
+def hash(message):
+    hashtxt_ = extract_args(message)
+    if len(hashtxt_) < 1:
+        edit(message, f'`{get_translation("wrongCommand")}`')
+        return
+    hashtxt = open('hash.txt', 'w+')
+    hashtxt.write(hashtxt_)
+    hashtxt.close()
+    md5 = runapp(['md5sum', 'hash.txt'], stdout=PIPE)
+    md5 = md5.stdout.decode()
+    sha1 = runapp(['sha1sum', 'hash.txt'], stdout=PIPE)
+    sha1 = sha1.stdout.decode()
+    sha256 = runapp(['sha256sum', 'hash.txt'], stdout=PIPE)
+    sha256 = sha256.stdout.decode()
+    sha512 = runapp(['sha512sum', 'hash.txt'], stdout=PIPE)
+    runapp(['rm', 'hash.txt'], stdout=PIPE)
+    sha512 = sha512.stdout.decode()
+
+    def rem_filename(st):
+        return st[:st.find(' ')]
+
+    ans = (f'Text: `{hashtxt_}`'
+           f'\nMD5: `{rem_filename(md5)}`'
+           f'\nSHA1: `{rem_filename(sha1)}`'
+           f'\nSHA256: `{rem_filename(sha256)}`'
+           f'\nSHA512: `{rem_filename(sha512)}`')
+    if len(ans) > 4096:
+        hashfile = open('hash.txt', 'w+')
+        hashfile.write(ans)
+        hashfile.close()
+        reply_doc(message,
+                  'hash.txt',
+                  caption=f'`{get_translation("outputTooLarge")}`')
+        runapp(['rm', 'hash.txt'], stdout=PIPE)
+        message.delete()
+    else:
+        edit(message, ans)
+
+
+@sedenify(pattern='^.base64')
+def base64(message):
+    argv = extract_args(message)
+    args = argv.split(' ', 1)
+    if len(args) < 2 or args[0] not in ['en', 'de']:
+        edit(message, f'`{get_translation("wrongCommand")}`')
+        return
+    args[1] = args[1].replace('`', '')
+    if args[0] == 'en':
+        lething = str(b64encode(bytes(args[1], 'utf-8')))[2:]
+        edit(message, f'Input: `{args[1]}`\nEncoded: `{lething[:-1]}`')
+    else:
+        lething = str(b64decode(bytes(args[1], 'utf-8')))[2:]
+        edit(message, f'Input: `{args[1]}`\nDecoded: `{lething[:-1]}`')
+
+
+@sedenify(pattern='^.b[ıi]rakmamseni$')
+def birakmamseni(message):
+    '''Copyright (c) @Adem68 | 2020'''
+    url = 'https://birakmamseni.org/'
+    path = 'api/counter'
+
+    headers = {
+        'User-Agent': 'ajax/7.66.0',
+        'Accept': '*/*',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Origin': f'{url}',
+        'X-Requested-With': 'XMLHttpRequest'}
+
+    try:
+        response = post(url=url + path, headers=headers)
+        count = response.json()['counter'].lstrip('0')
+    except Exception as e:
+        return edit(message, get_translation('banError', ['`', '**', e]))
+
+    sonuc = get_translation('birakmamseniResult', ['**', '`', count])
+
+    edit(message, sonuc, preview=False)
 
 
 HELP.update({'misc': get_translation('miscInfo')})

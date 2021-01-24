@@ -31,7 +31,6 @@ def gmute_user(client, message):
     elif reply:
         user_id = reply.from_user.id
         user = client.get_users(user_id)
-        user_id = user.id
     else:
         edit(message, f'`{get_translation("banFailUser")}`')
         return
@@ -78,7 +77,6 @@ def ungmute_user(client, message):
     elif reply:
         user_id = reply.from_user.id
         user = client.get_users(user_id)
-        user_id = user.id
     else:
         edit(message, f'`{get_translation("banFailUser")}`')
         return
@@ -101,6 +99,19 @@ def ungmute_user(client, message):
     except Exception as e:
         edit(message, get_translation('banError', ['`', '**', e]))
         return
+
+
+@sedenify(pattern='^.listgmute$')
+def gmutelist(message):
+    users = sql.gmuted_users()
+    if not users:
+        return edit(message, f'`{get_translation("listEmpty")}`')
+    gmute_list = f'**{get_translation("gmutedUsers")}**\n'
+    count = 0
+    for i in users:
+        count += 1
+        gmute_list += f'**{count} -** `{i.sender}`\n'
+    return edit(message, gmute_list)
 
 
 @sedenify(incoming=True, outgoing=False, compat=False)

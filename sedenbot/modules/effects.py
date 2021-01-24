@@ -69,8 +69,9 @@ def earrape(message):
         return
 
 
-@sedenify(pattern='^.nightcore')
+@sedenify(pattern='^.nightcore$')
 def nightcore(message):
+    # Copyright (c) @kisekinopureya | 2021
     reply = message.reply_to_message
     nightcore = 'nightcore'
     if path.isfile(nightcore):
@@ -96,8 +97,9 @@ def nightcore(message):
         message.delete()
 
 
-@sedenify(pattern='^.slowedtoperfection')
+@sedenify(pattern='^.slowedtoperfection$')
 def slowedtoperfection(message):
+    # Copyright (c) @kisekinopureya | 2021
     reply = message.reply_to_message
     slowedtoperfection = 'slowedtoperfection'
     if path.isfile(slowedtoperfection):

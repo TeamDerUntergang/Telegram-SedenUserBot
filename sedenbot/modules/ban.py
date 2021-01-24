@@ -32,7 +32,6 @@ def ban_user(client, message):
     elif reply:
         user_id = reply.from_user.id
         user = client.get_users(user_id)
-        user_id = user.id
     else:
         edit(message, f'`{get_translation("banFailUser")}`')
         return
@@ -82,7 +81,6 @@ def unban_user(client, message):
     elif reply:
         user_id = reply.from_user.id
         user = client.get_users(user_id)
-        user_id = user.id
     else:
         edit(message, f'`{get_translation("banFailUser")}`')
         return
@@ -120,7 +118,6 @@ def kick_user(client, message):
     elif reply:
         user_id = reply.from_user.id
         user = client.get_users(user_id)
-        user_id = user.id
     else:
         edit(message, f'`{get_translation("banFailUser")}`')
         return
@@ -170,7 +167,6 @@ def mute_user(client, message):
     elif reply:
         user_id = reply.from_user.id
         user = client.get_users(user_id)
-        user_id = user.id
     else:
         edit(message, f'`{get_translation("banFailUser")}`')
         return
@@ -221,7 +217,6 @@ def unmute_user(client, message):
     elif reply:
         user_id = reply.from_user.id
         user = client.get_users(user_id)
-        user_id = user.id
     else:
         edit(message, f'`{get_translation("banFailUser")}`')
         return
@@ -256,7 +251,6 @@ def promote_user(client, message):
         try:
             user_id = reply.from_user.id
             user = client.get_users(user_id)
-            user_id = user.id
             rank = args
         except Exception:
             return edit(message, f'`{get_translation("banFailUser")}`')
@@ -316,7 +310,6 @@ def demote_user(client, message):
     elif reply:
         user_id = reply.from_user.id
         user = client.get_users(user_id)
-        user_id = user.id
     else:
         edit(message, f'`{get_translation("banFailUser")}`')
         return

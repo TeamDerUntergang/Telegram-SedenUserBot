@@ -27,6 +27,15 @@ def is_gmuted(sender):
         SESSION.close()
 
 
+def gmuted_users():
+    try:
+        return SESSION.query(GMute).all()
+    except BaseException:
+        return None
+    finally:
+        SESSION.close()
+
+
 def gmute(sender):
     adder = GMute(str(sender))
     SESSION.add(adder)

@@ -29,7 +29,6 @@ def gban_user(client, message):
     elif reply:
         user_id = reply.from_user.id
         user = client.get_users(user_id)
-        user_id = user.id
     else:
         edit(message, f'`{get_translation("banFailUser")}`')
         return
@@ -80,7 +79,6 @@ def ungban_user(client, message):
     elif reply:
         user_id = reply.from_user.id
         user = client.get_users(user_id)
-        user_id = user.id
     else:
         edit(message, f'`{get_translation("banFailUser")}`')
         return
@@ -105,6 +103,19 @@ def ungban_user(client, message):
     except Exception as e:
         edit(message, get_translation('banError', ['`', '**', e]))
         return
+
+
+@sedenify(pattern='^.listgban$')
+def gbanlist(message):
+    users = sql.gbanned_users()
+    if not users:
+        return edit(message, f'`{get_translation("listEmpty")}`')
+    gban_list = f'**{get_translation("gbannedUsers")}**\n'
+    count = 0
+    for i in users:
+        count += 1
+        gban_list += f'**{count} -** `{i.sender}`\n'
+    return edit(message, gban_list)
 
 
 @sedenify(incoming=True, outgoing=False, compat=False)

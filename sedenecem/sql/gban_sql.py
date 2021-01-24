@@ -27,6 +27,15 @@ def is_gbanned(sender):
         SESSION.close()
 
 
+def gbanned_users():
+    try:
+        return SESSION.query(GBan).all()
+    except BaseException:
+        return None
+    finally:
+        SESSION.close()
+
+
 def gban(sender):
     adder = GBan(str(sender))
     SESSION.add(adder)

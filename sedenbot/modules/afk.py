@@ -17,20 +17,20 @@ from sedenecem.core import (extract_args, sedenify, send_log,
                             edit, reply, get_translation)
 
 # ========================= CONSTANTS ============================
-
 AFKSTR = [get_translation(f'afkstr{i+1}') for i in range(0, 22)]
-# =================================================================
-
 TEMP_SETTINGS['AFK_USERS'] = {}
 TEMP_SETTINGS['IS_AFK'] = False
 TEMP_SETTINGS['COUNT_MSG'] = 0
+# =================================================================
 
 
 @sedenify(incoming=True, outgoing=False, disable_edited=True,
           private=False, bot=False, disable_notify=True)
 def mention_afk(mention):
     me = mel[0]
-    if mention.mentioned or mention.reply_to_message and mention.reply_to_message.from_user and mention.reply_to_message.from_user.id == me.id:
+    if (mention.mentioned or mention.reply_to_message) and (
+            mention.reply_to_message.from_user) and (
+            mention.reply_to_message.from_user.id == me.id):
         if TEMP_SETTINGS['IS_AFK']:
             if mention.from_user.id not in TEMP_SETTINGS['AFK_USERS']:
                 if 'AFK_REASON' in TEMP_SETTINGS:
