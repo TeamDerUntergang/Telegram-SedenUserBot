@@ -54,7 +54,7 @@ def speed_test(message):
             reply_doc(
                 message, speedtest_image, caption=get_translation(
                     'speedtestResultDoc', [
-                        '**', ms]), delete_after_send=True, delete_orig=True)
+                        '**', ms]), delete_orig=True)
     except Exception as exc:
         edit(message,
              get_translation('speedtestResultText',

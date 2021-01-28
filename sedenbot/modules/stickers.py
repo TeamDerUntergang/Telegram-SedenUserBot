@@ -107,8 +107,9 @@ def kang(client, message):
 
         if limit in status.text:
             pack += 1
-            pname = f'a{myacc.id}_by_{myacc.username}_{pack}'
-            pnick = f"{kanger}'s UserBot pack {pack}"
+            pname = PACKNAME.replace(
+                ' ', '') if PACKNAME else f'a{myacc.id}_by_{myacc.username}_{pack}'
+            pnick = PACKNICK or f"{kanger}'s UserBot pack {pack}"
             edit(message, get_translation('packFull', ['`', '**', str(pack)]))
             return add_exist(conv, pack, pname, pnick)
 
@@ -153,7 +154,7 @@ def getsticker(message):
     photo = download_media_wc(reply)
 
     reply_doc(
-        reply,
+        message,
         photo,
         caption=f'**Sticker ID:** `{reply.sticker.file_id}'
                 f'`\n**Emoji**: `{reply.sticker.emoji}`',
