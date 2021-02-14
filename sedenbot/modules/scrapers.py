@@ -253,8 +253,11 @@ def ddgo(message):
     res1 = soup.findAll('table', {'border': 0})
     res1 = res1[-1].findAll('tr')
 
-    edit(message, get_translation('sedenQuery', [
-         '**', '`', query, do_ddsearch(query, res1)]), preview=False)
+    match = do_ddsearch(query, res1)
+    edit(
+        message, get_translation(
+            'googleResult', [
+                '**', '`', query, match]), preview=False)
     send_log(get_translation('ddgoLog', [query]))
 
 
@@ -287,8 +290,8 @@ def do_ddsearch(query, res1):
         ltxt = link.text.replace('|', '-').replace('...', '').strip()
         desc = (item[1].text.strip()
                 if len(item) > 1
-                else f'{get_translation("ddgoDesc")}')
-        out += (f'{i+1}-[{ltxt}]({link["href"]})\n{desc}\n\n')
+                else get_translation('ddgoDesc'))
+        out += (f'{i+1} - [{ltxt}]({link["href"]})\n{desc}\n\n')
 
     return out
 
@@ -499,7 +502,7 @@ def currency(message):
 HELP.update({'img': get_translation('imgInfo')})
 HELP.update({'currency': get_translation('currencyInfo')})
 HELP.update({'carbon': get_translation('carbonInfo')})
-HELP.update({'google': get_translation('googleInfo')})
+HELP.update({'goolag': get_translation('googleInfo')})
 HELP.update({'duckduckgo': get_translation('ddgoInfo')})
 HELP.update({'wiki': get_translation('wikiInfo')})
 HELP.update({'ud': get_translation('udInfo')})
