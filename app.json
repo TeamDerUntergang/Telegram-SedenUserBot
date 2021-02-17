@@ -36,15 +36,6 @@
             "required": false,
             "value": "/usr/bin/chromedriver"
         },
-        "DOWNLOAD_DIRECTORY": {
-            "description": "Bir\u00e7ok mod\u00fcl i\u00e7in indirme konumu (GDrive, .download vb..)",
-            "required": false,
-            "value": "./downloads/"
-        },
-        "GENIUS_TOKEN": {
-            "description": "Genius API Key, 'https://genius.com/developers' adresinden al\u0131n.",
-            "required": false
-        },
         "HEROKU_APPNAME": {
             "description": "Heroku uygulama ad\u0131n\u0131z\u0131 buraya ekleyin. G\u00fcncellemeler i\u00e7in zorunludur.",
             "required": true
@@ -52,22 +43,6 @@
         "HEROKU_KEY": {
             "description": "Heroku API Key, 'https://dashboard.heroku.com/account' adresinden al\u0131n. G\u00fcncellemeler i\u00e7in zorunludur.",
             "required": true
-        },
-        "LASTFM_API": {
-            "description": "Last.fm mod\u00fcl\u00fc i\u00e7in gereklidir. https://www.last.fm/api/account/create adresinden al\u0131n.",
-            "required": false
-        },
-        "LASTFM_PASSWORD": {
-            "description": "Last.FM \u015eifresi.",
-            "required": false
-        },
-        "LASTFM_SECRET": {
-            "description": "Secret Key. https://www.last.fm/api/account/create adresinden al\u0131n.",
-            "required": false
-        },
-        "LASTFM_USERNAME": {
-            "description": "Last.FM Kullan\u0131c\u0131 ad\u0131.",
-            "required": false
         },
         "LOG_ID": {
             "description": "Log grubu i\u00e7in grup ID. De\u011feri 0 yaparsan\u0131z botunuz log tutmaz. De\u011feri bo\u015f b\u0131rak\u0131rsan\u0131z kay\u0131tl\u0131 mesajlara log g\u00f6nderir.",
@@ -77,14 +52,6 @@
             "description": "Konsol g\u00fcnl\u00fc\u011f\u00fcnde ayr\u0131nt\u0131ya ihtiyac\u0131n\u0131z varsa, bunu True olarak ayarlay\u0131n.",
             "required": false,
             "value": "False"
-        },
-        "LYDIA_APIKEY": {
-            "description": "Lydia mod\u00fcl\u00fc i\u00e7in gereklidir. https://coffeehouse.intellivoid.info/dashboard adresinden al\u0131n.",
-            "required": false
-        },
-        "OCR_APIKEY": {
-            "description": ".ocr komutu i\u00e7in OCR API Key. https://ocr.space/ocrapi adresinden al\u0131n.",
-            "required": false
         },
         "PM_AUTO_BAN": {
             "description": "PM Otomatik Yasaklama \u00d6zelli\u011fi. 'Hey! Bu bir bot.' mod\u00fcl\u00fcd\u00fcr.",
@@ -100,10 +67,6 @@
             "description": "PM Otomatik Yasaklama \u00d6zelli\u011fi i\u00e7in Ki\u015fisel Mesaj Ayarlama. Varsay\u0131lan olarak Kendi Mesaj\u0131m\u0131z Vard\u0131r.",
             "required": false
         },
-        "RBG_APIKEY": {
-            "description": ".rbg komutu i\u00e7in remove.bg API Key. https://www.remove.bg/api adresinden al\u0131n.",
-            "required": false
-        },
         "REPO_URL": {
             "description": "G\u00fcncelleme yapmak i\u00e7in gerekli olan de\u011fi\u015fkendir. Varsay\u0131lan olarak kendi repo adresimiz eklidir.",
             "required": true,
@@ -117,10 +80,6 @@
         "SESSION": {
             "description": "python3 session.py dosyas\u0131n\u0131 yerel olarak \u00e7al\u0131\u015ft\u0131rarak bu de\u011feri al\u0131n.",
             "required": true
-        },
-        "WEATHER": {
-            "description": "Seden UserBot'un hava durumu mod\u00fcl\u00fc i\u00e7in varsay\u0131lan \u015fehri ayarlay\u0131n.",
-            "required": false
         }
     },
     "formation": {
