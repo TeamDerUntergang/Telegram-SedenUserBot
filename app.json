@@ -28,7 +28,7 @@
             "required": true
         },
         "BOT_PREFIX": {
-            "description": "It changes your bot pattern (default pattern is '.'(dot).",
+            "description": "It changes your bot pattern (default pattern is '.' (dot).",
             "required": false
         },
         "CHROME_DRIVER": {
@@ -36,38 +36,13 @@
             "required": false,
             "value": "/usr/bin/chromedriver"
         },
-        "DOWNLOAD_DIRECTORY": {
-            "description": "Download location for many modules (.download etc..)",
-            "required": false,
-            "value": "./downloads/"
-        },
-        "GENIUS_TOKEN": {
-            "description": "Get this value from https://genius.com/developers.",
-            "required": false
-        },
         "HEROKU_APPNAME": {
             "description": "Add the Heroku app name here. Required for updates.",
             "required": true
         },
         "HEROKU_KEY": {
-            "description": "Your Heroku API key, get it from 'https://dashboard.heroku.com/account. Required for updates.",
+            "description": "Heroku API key, get it from 'https://dashboard.heroku.com/account. Required for updates.",
             "required": true
-        },
-        "LASTFM_API": {
-            "description": "Get this value from https://www.last.fm/api/account/create.",
-            "required": false
-        },
-        "LASTFM_PASSWORD": {
-            "description": "Last.FM Password.",
-            "required": false
-        },
-        "LASTFM_SECRET": {
-            "description": "Secret Key. Get this value from https://www.last.fm/api/account/create.",
-            "required": false
-        },
-        "LASTFM_USERNAME": {
-            "description": "Last.FM Username.",
-            "required": false
         },
         "LOG_ID": {
             "description": "Chat ID of the Log group. If value is 0, log feature not work. If value is left blank, logs send in Saved Messages",
@@ -77,14 +52,6 @@
             "description": "If you need verbosity on the console logging.",
             "required": false,
             "value": "False"
-        },
-        "LYDIA_APIKEY": {
-            "description": "Get this value from https://coffeehouse.intellivoid.info/dashboard.",
-            "required": false
-        },
-        "OCR_APIKEY": {
-            "description": "OCR API Key for .ocr command. Get from https://ocr.space/ocrapi",
-            "required": false
         },
         "PM_AUTO_BAN": {
             "description": "PM Auto Ban Feature. Also known as 'bleep blop, this is a bot...'.",
@@ -100,10 +67,6 @@
             "description": "Custom message for PM Auto Ban feature. Also known as Pmpermit Module.",
             "required": false
         },
-        "RBG_APIKEY": {
-            "description": "RBG API Key for .rbg command. Get from https://www.remove.bg/api",
-            "required": false
-        },
         "REPO_URL": {
             "description": "It helps your bot updates, if you maintain a fork repo you can add your repo URL here.",
             "required": true,
@@ -115,12 +78,8 @@
             "value": "en"
         },
         "SESSION": {
-            "description": "Get this value by running python3 session.py in terminal.",
+            "description": "Get this value by running python3 session.py in terminal or bash script.",
             "required": true
-        },
-        "WEATHER": {
-            "description": "Set the default city for Seden UserBot's Weather Module.",
-            "required": false
         }
     },
     "formation": {
