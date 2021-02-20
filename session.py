@@ -46,8 +46,12 @@ Create a new application, by entering the required details\n''')
 \n**API_HASH:** `{API_HASH}`
 \n**SESSION:** `{session}`
 \n**NOTE: Don't give your account information to others!**'''
-        app.send_message('me', out)
-        print('''Session successfully generated!
+        out2 = 'Session successfully generated!'
+        if self.is_bot:
+            print(f'{session}\n{out2}')
+        else:
+            app.send_message('me', out)
+            print('''Session successfully generated!
 Please check your Telegram Saved Messages''')
 
 
@@ -86,8 +90,12 @@ Gerekli ayrıntıları girerek yeni bir uygulama oluşturun\n''')
 \n**API_HASH:** `{API_HASH}`
 \n**SESSION:** `{session}`
 \n**NOT: Hesap bilgileriniz başkalarına vermeyin!**'''
-        app.send_message('me', out)
-        print('''Session başarıyla oluşturuldu!
+        out2 = 'Session başarıyla oluşturuldu!'
+        if self.is_bot:
+            print(f'{session}\n{out2}')
+        else:
+            app.send_message('me', out)
+            print('''Session başarıyla oluşturuldu!
 Lütfen Telegram Kayıtlı Mesajlarınızı kontrol edin.''')
 
 
