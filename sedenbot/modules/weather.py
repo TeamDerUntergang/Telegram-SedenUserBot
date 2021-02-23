@@ -46,9 +46,8 @@ def havadurumu(message):
             raise Exception
         data = data.replace('`', '‛')
         edit(message, f'`{data}`')
-    except Exception as e:
+    except Exception:
         edit(message, f'`{get_translation("weatherErrorServer")}`')
-        raise e
 
 
 HELP.update({'weather': get_translation('infoWeather')})
