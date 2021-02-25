@@ -368,7 +368,7 @@
     "privacySettings": "Privacy settings prevented me from doing this.",
     "privateUsage": "This command can only be used private chats.",
     "processing": "Processing...",
-    "profileInfo": ".username <new username>\nUsage: Changes your Telegram username.\n\n.name <firstname> or .name <firstname> <lastname>\nUsage: Changes your Telegram name.(First and last name will get split by the first space)\n\n.setbio <new bio>\nUsage: Changes your Telegram bio.\n\n.reserved\nUsage: Shows usernames reserved by you.\n\n.block\nUsage: Blocks the person.\n\n.unblock\nUsage: Unblocks the person so they can PM you.\n\n.online <disable>\n\nUsage: It shows your account online even if you are not online on Telegram.\nType .online to turn it on, .online disable to turn it off.\n\nNOTE: Make your last seen settings public to be effective.",
+    "profileInfo": ".username <new username>\nUsage: Changes your Telegram username.\n\n.name <firstname> or .name <firstname> <lastname>\nUsage: Changes your Telegram name.(First and last name will get split by the first space)\n\n.setbio <new bio>\nUsage: Changes your Telegram bio.\n\n.reserved\nUsage: Shows usernames reserved by you.\n\n.block\nUsage: Blocks the person.\n\n.unblock\nUsage: Unblocks the person so they can PM you.\n\n.online <disable>\nUsage: It shows your account online even if you are not online on Telegram.\nType .online to turn it on, .online disable to turn it off.\n\nNOTE: Make your last seen settings public to be effective.",
     "promoteLog": "%1#PROMOTE\nUSER: [%2](tg://user?id=%3)\nGROUP: %4 (%1%5%6%5%1)%1",
     "promoteProcess": "Promoting...",
     "promoteResult": "%1[%2](tg://user?id=%3)%1 %4promoted!%4",
