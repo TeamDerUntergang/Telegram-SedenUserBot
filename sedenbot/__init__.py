@@ -206,8 +206,7 @@ ENV_RESTRICTED_KEYS = [
     'HEROKU_APPNAME',
     'SESSION',
     'API_ID',
-    'API_HASH',
-    'DATABASE_URL']
+    'API_HASH']
 
 
 def load_brain():
