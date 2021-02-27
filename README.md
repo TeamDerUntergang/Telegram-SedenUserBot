@@ -23,7 +23,7 @@ Telegram Python Bot running on Python3 with a Postgresql Sqlalchemy database. It
 git clone https://github.com/TeamDerUntergang/Telegram-SedenUserBot.git
 cd Telegram-SedenUserBot
 
-# Install pip dependincies
+# Install pip dependencies
 pip3 install -r requirements.txt
 
 # Generate session from session.py (skip if there is already)
