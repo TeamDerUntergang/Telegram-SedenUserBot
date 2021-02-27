@@ -162,7 +162,7 @@
     "effectsInfo": ".earrape mp3 veya mp4\nKullan\u0131m: Videonuza veya ses dosyan\u0131za earrape efekti uygular.\n\n.nightcore\nKullan\u0131m: Yollad\u0131\u011f\u0131n\u0131z ses dosyas\u0131n\u0131 nightcore'a \u00c7evirir\n\n.slowedtoperfection \nKullan\u0131m: Yollad\u0131\u011f\u0131n\u0131z ses dosyas\u0131n\u0131 slowed to perfection'a \u00c7evirir.",
     "envCopySuccess": "%1%3%1 %2de\u011fi\u015fkeni ba\u015far\u0131yla%2 %1%4%1 %2de\u011fi\u015fkenine kopyaland\u0131%2",
     "envGetValue": "%2De\u011fi\u015fken:%2 %1%3%1\n%2De\u011fer:%2 %1%4%1",
-    "envInfo": ".env (set, get, rem, copy, move) <De\u011fi\u015fken> <De\u011fer>\nKullan\u0131m: Botun de\u011fi\u015fkenlerini kolayca de\u011fi\u015fmenize yarar.",
+    "envInfo": ".env get <De\u011fi\u015fken>\nKullan\u0131m: Belirtilen de\u011fi\u015fkene verilen de\u011feri g\u00f6sterir.\n\n.env set <De\u011fi\u015fken> <De\u011fer>\nKullan\u0131m: Belirtilen de\u011fi\u015fkene verilen de\u011feri ayarlar.\n\n.env rem <De\u011fi\u015fken>\nKullan\u0131m: Belirtilen de\u011fi\u015fkeni siler.\n\n.env copy <De\u011fi\u015fken 1> <De\u011fi\u015fken 2>\nKullan\u0131m: Kopyalanacak olan de\u011fi\u015fken de\u011ferini verilen de\u011fi\u015fkene kopyalar.\n\n.env move <De\u011fi\u015fken 1> <De\u011fi\u015fken 2>\nKullan\u0131m: Ta\u015f\u0131nacak de\u011fi\u015fken de\u011ferini hedef de\u011fi\u015fkene ta\u015f\u0131r.\n\n.env list\nKullan\u0131m: Mevcut de\u011fi\u015fkenlerin listesini verir.",
     "envListKeys": "%1Mevcut De\u011fi\u015fkenler:%1\n%3",
     "envMoveSuccess": "%1%3%1 %2de\u011fi\u015fkeni ba\u015far\u0131yla%2 %1%4%1 %2de\u011fi\u015fkenine ta\u015f\u0131nd\u0131%2",
     "envNotFound": "%1%3%1 %2de\u011fi\u015fkeni bulunamad\u0131%2",
