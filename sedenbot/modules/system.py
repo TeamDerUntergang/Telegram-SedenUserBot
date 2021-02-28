@@ -35,7 +35,7 @@ def neofetch(message):
             ['neofetch', f'HOSTNAME={HOSTNAME}', f'USER={USER}', '--stdout'],
             stdout=PIPE, stderr=PIPE)
         sonuc, _ = islem.communicate()
-        edit(message, sonuc.decode(), parse=None)
+        edit(message, f'`{sonuc.decode()}`')
     except BaseException:
         edit(message, f'`{get_translation("neofetchNotFound")}`')
 
