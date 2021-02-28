@@ -11,7 +11,7 @@ from time import sleep
 
 from sedenbot import BRAIN
 from sedenecem.sql import gban_sql as sql
-from sedenecem.core import (edit, sedenify, send_log, reply,
+from sedenecem.core import (edit, sedenify, send_log,
                             extract_args, get_translation)
 
 
@@ -49,7 +49,6 @@ def gban_user(client, message):
     try:
         if sql.is_gbanned(user.id):
             return edit(message, f'`{get_translation("alreadyBanned")}`')
-        chat_id = message.chat.id
         sql.gban(user.id)
         edit(
             message, get_translation(

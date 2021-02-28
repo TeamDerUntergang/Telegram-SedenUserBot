@@ -10,13 +10,14 @@
 from os import execl, path
 from sys import executable, argv
 from heroku3 import from_key
-from git import Repo
-from git.exc import (GitCommandError, InvalidGitRepositoryError,
-                     NoSuchPathError)
 
 from sedenbot import HELP, HEROKU_KEY, HEROKU_APPNAME, REPO_URL
 from sedenecem.core import (extract_args, sedenify, edit, me,
                             reply, reply_doc, get_translation)
+
+from git import Repo
+from git.exc import (GitCommandError, InvalidGitRepositoryError,
+                     NoSuchPathError)
 
 requirements_path = path.join(
     path.dirname(path.dirname(path.dirname(__file__))), 'requirements.txt')

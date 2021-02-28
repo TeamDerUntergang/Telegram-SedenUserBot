@@ -8,11 +8,12 @@
 #
 
 from datetime import datetime
-from speedtest import Speedtest
 
 from sedenbot import HELP
 from sedenecem.core import (extract_args, sedenify, edit,
                             reply_doc, get_translation)
+
+from speedtest import Speedtest
 
 
 @sedenify(pattern='^.speedtest')

@@ -42,7 +42,6 @@ def youtubedl(message):
 
     title = video_info.get('title')
     uploader = video_info.get('uploader')
-    duration = video_info.get('duration')
 
     if util == 'mp4':
         edit(message, get_translation('downloadYTVideo', ['**', title, '`']))

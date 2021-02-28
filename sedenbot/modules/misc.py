@@ -8,9 +8,8 @@
 #
 
 from random import choice
+from subprocess import PIPE, run as runapp
 from requests import post
-from subprocess import PIPE
-from subprocess import run as runapp
 from pybase64 import b64encode, b64decode
 
 from sedenbot import HELP, SUPPORT_GROUP

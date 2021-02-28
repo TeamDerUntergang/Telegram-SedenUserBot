@@ -8,16 +8,16 @@
 #
 
 from os import remove
-from qrcode import QRCode, constants
-from barcode import get
-from barcode.writer import ImageWriter
 from urllib3 import PoolManager
 from bs4 import BeautifulSoup
+from barcode import get
+from barcode.writer import ImageWriter
 
 from sedenbot import HELP
 from sedenecem.core import (extract_args, sedenify, edit, reply_doc,
                             download_media_wc, get_translation)
 
+from qrcode import QRCode, constants
 
 @sedenify(pattern=r'^.decode$')
 def parseqr(message):

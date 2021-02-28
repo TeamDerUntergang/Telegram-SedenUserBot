@@ -66,7 +66,6 @@ def addcf(message):
     reply_msg = message.reply_to_message
     if reply_msg:
         session = lydia.create_session()
-        session_id = session.id
         if not reply_msg.from_user.id:
             return edit(message, f'`{get_translation("lydiaError")}`')
         ACC_LYDIA.update({(message.chat.id & reply_msg.from_user.id): session})
@@ -107,7 +106,6 @@ def remcf(message):
           disable_edited=True,
           disable_notify=True)
 def user(message):
-    user_text = message.text
     try:
         session = ACC_LYDIA[message.chat.id & message.from_user.id]
         msg = message.text

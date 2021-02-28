@@ -13,6 +13,7 @@ from re import findall, sub
 from urllib.parse import quote_plus
 from urllib.error import HTTPError
 from mimetypes import guess_type
+from traceback import format_exc
 from urbandict import define
 from wikipedia import set_lang, summary
 from wikipedia.exceptions import DisambiguationError, PageError
@@ -24,8 +25,6 @@ from requests import get
 from bs4 import BeautifulSoup
 
 from pyrogram.types import InputMediaPhoto
-
-from traceback import format_exc
 
 from sedenbot import HELP, SEDEN_LANG
 from sedenecem.core import (sedenify, edit, send_log, reply_doc, reply_voice,
@@ -253,7 +252,7 @@ def ddgo(message):
     res1 = soup.findAll('table', {'border': 0})
     res1 = res1[-1].findAll('tr')
 
-    match = do_ddsearch(query, res1)
+    match = do_ddsearch(res1)
     edit(
         message, get_translation(
             'googleResult', [
@@ -261,7 +260,7 @@ def ddgo(message):
     send_log(get_translation('ddgoLog', [query]))
 
 
-def do_ddsearch(query, res1):
+def do_ddsearch(res1):
     def splitter(res):
         subs = []
         tlist = None

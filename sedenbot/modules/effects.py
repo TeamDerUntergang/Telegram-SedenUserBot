@@ -37,7 +37,7 @@ def earrape(message):
                              '-af',
                              'acrusher=.1:1:64:0:log',
                              f'{media}.mp4'])
-            final, _ = process.communicate()
+            process.communicate()
             edit(message, f'`{get_translation("uploadMedia")}`')
             reply_doc(
                 message,
@@ -59,7 +59,7 @@ def earrape(message):
                              '-af',
                              'acrusher=.1:1:64:0:log',
                              f'{media}.mp3'])
-            final, _ = process.communicate()
+            process.communicate()
             edit(message, f'`{get_translation("uploadMedia")}`')
             reply_voice(message, f'{media}.mp3', delete_orig=True)
             remove(media)
@@ -89,7 +89,7 @@ def nightcore(message):
                         '-af',
                         'asetrate=44100*1.16,aresample=44100,atempo=1',
                         f'{media}.mp3'])
-        final, _ = process.communicate()
+        process.communicate()
         edit(message, f'`{get_translation("uploadMedia")}`')
         reply_voice(message, f'{media}.mp3')
         remove(media)
@@ -117,7 +117,7 @@ def slowedtoperfection(message):
                         '-af',
                         'aecho=1.0:0.7:20:0.5,asetrate=44100*0.84,aresample=44100,atempo=1',
                         f'{media}.mp3'])
-        final, _ = process.communicate()
+        process.communicate()
         edit(message, f'`{get_translation("uploadMedia")}`')
         reply_voice(message, f'{media}.mp3')
         remove(media)

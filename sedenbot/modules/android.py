@@ -10,9 +10,9 @@
 from re import sub
 from json import loads
 from urllib.parse import urlencode
+from datetime import datetime
 from bs4 import BeautifulSoup
 from requests import get
-from datetime import datetime
 
 from sedenbot import HELP, VALID_PROXY_URL
 from sedenecem.core import edit, extract_args, sedenify, get_translation

@@ -66,8 +66,8 @@ def blacklist(message):
         message.continue_propagation()
 
 
-@sedenify(pattern='^.addblacklist', compat=False)
-def addblacklist(client, message):
+@sedenify(pattern='^.addblacklist')
+def addblacklist(message):
     if not sql:
         edit(message, f'`{get_translation("nonSqlMode")}`')
         return

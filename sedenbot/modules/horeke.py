@@ -9,8 +9,8 @@
 
 from os import execl, getpid
 from sys import executable, argv
-from requests import get
 from math import floor
+from requests import get
 from heroku3 import from_key
 
 from sedenbot import HELP, HEROKU_KEY, HEROKU_APPNAME
@@ -111,17 +111,17 @@ def dyno(message):
              app_quota_percent]))
 
 
-@sedenify(pattern='^.(restart|yb)$', compat=False)
-def _restart(client, message):
-    return restart(client, message)
+@sedenify(pattern='^.(restart|yb)$')
+def _restart(message):
+    return restart(message)
 
 
-@sedenify(pattern='^.d(restart|yb)$', compat=False)
-def _drestart(client, message):
-    return restart(client, message, dyno=True)
+@sedenify(pattern='^.d(restart|yb)$')
+def _drestart(message):
+    return restart(message, dyno=True)
 
 
-def restart(client, message, dyno=False):
+def restart(message, dyno=False):
     send_log(get_translation('restartLog'))
 
     def std_off():
@@ -167,8 +167,8 @@ def restart(client, message, dyno=False):
     dynos[0].restart()
 
 
-@sedenify(pattern='^.(shutdown|kapat)$', compat=False)
-def shutdown(client, message):
+@sedenify(pattern='^.(shutdown|kapat)$')
+def shutdown(message):
     edit(message, f'`{get_translation("shutdown")}`')
     send_log(get_translation('shutdownLog'))
 

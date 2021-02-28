@@ -7,7 +7,7 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from os import remove, path, makedirs
+from os import remove
 from requests import post
 
 from sedenbot import HELP, OCR_APIKEY
