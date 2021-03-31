@@ -7,10 +7,17 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
+from time import time
 from os.path import isfile
-from sedenbot import HELP
-from sedenecem.core import (download_media_wc, sedenify, edit,
-                            extract_args, reply_doc, get_translation)
+from sedenbot import HELP, TEMP_SETTINGS
+from sedenecem.core import (
+    download_media_wc,
+    sedenify,
+    edit,
+    extract_args,
+    reply_doc,
+    get_translation,
+)
 
 
 @sedenify(pattern='^.download$')
@@ -20,9 +27,17 @@ def download(message):
         edit(message, f'`{get_translation("downloadReply")}`')
         return
 
+    posix = time()
+    TEMP_SETTINGS[f'upload_{posix}'] = posix
+
     def progress(current, total):
-        edit(message, get_translation('updownDownload', [
-             '`', '(½{:.2f})'.format(current * 100 / total)]))
+        if (curr_posix := time()) - TEMP_SETTINGS[f'upload_{posix}'] > 5:
+            TEMP_SETTINGS[f'upload_{posix}'] = curr_posix
+            edit(
+                message, get_translation(
+                    'updownDownload', [
+                        '`', '(½{:.2f})'.format(
+                            current * 100 / total)]), )
 
     edit(message, f'`{get_translation("downloadMedia")}`')
     media = download_media_wc(reply, progress=progress)
@@ -32,6 +47,7 @@ def download(message):
         return
 
     edit(message, get_translation('updownDownloadSuccess', ['`', media]))
+    del TEMP_SETTINGS[f'upload_{posix}']
 
 
 @sedenify(pattern='^.upload')
@@ -42,9 +58,19 @@ def upload(message):
         edit(message, f'`{get_translation("uploadReply")}`')
         return
 
+    posix = time()
+    TEMP_SETTINGS[f'upload_{posix}'] = posix
+
     def progress(current, total):
-        edit(message, get_translation('updownUpload', [
-             '`', '(½{:.2f})'.format(current * 100 / total), args]))
+        if (curr_posix := time()) - TEMP_SETTINGS[f'upload_{posix}'] > 5:
+            TEMP_SETTINGS[f'upload_{posix}'] = curr_posix
+            edit(
+                message,
+                get_translation(
+                    'updownUpload',
+                    ['`', '(½{:.2f})'.format(current * 100 / total), args],
+                ),
+            )
 
     if isfile(args):
         try:
@@ -55,9 +81,11 @@ def upload(message):
             edit(message, f'`{get_translation("uploadError")}`')
             raise e
 
+        del TEMP_SETTINGS[f'upload_{posix}']
         return
 
     edit(message, f'`{get_translation("uploadFileError")}`')
+    del TEMP_SETTINGS[f'upload_{posix}']
 
 
 HELP.update({'download': get_translation('uploadInfo')})
