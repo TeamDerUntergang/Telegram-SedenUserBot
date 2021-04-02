@@ -16,7 +16,6 @@ from ast import (Add, Sub, Mult, Div, Pow, BitXor, USub,
 
 from pyrogram.raw.functions.help import GetNearestDc
 
-from sedenbot.modules.lovers import saniye
 from sedenbot.modules.ecem import ecem
 from sedenbot import (HELP, ALIVE_MSG, CHANNEL,
                       BOT_VERSION, HOSTNAME, USER)
@@ -102,9 +101,6 @@ def ping(message):
 def alive(message):
     if KULLANICIMESAJI.lower() == 'ecem':
         ecem(message)
-        return
-    elif KULLANICIMESAJI.lower() == 'saniye':
-        saniye(message)
         return
     edit(message, f'{KULLANICIMESAJI}')
 
