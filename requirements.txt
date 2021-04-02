@@ -8,6 +8,7 @@ googletrans==3.1.0a0
 gtts
 heroku3
 humanize
+image_to_ascii
 lyricsgenius
 pillow
 psycopg2-binary

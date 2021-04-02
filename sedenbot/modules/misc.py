@@ -8,9 +8,12 @@
 #
 
 from random import choice
+from os import remove
+
 from subprocess import PIPE, run as runapp
 from requests import post
 from pybase64 import b64encode, b64decode
+from image_to_ascii import ImageToAscii
 
 from sedenbot import HELP, SUPPORT_GROUP
 from sedenecem.core import (edit, reply, reply_doc, sedenify,
@@ -226,6 +229,25 @@ def birakmamseni(message):
     sonuc = get_translation('birakmamseniResult', ['**', '`', count])
 
     edit(message, sonuc, preview=False)
+
+
+@sedenify(pattern='^.ascii$')
+def img_to_ascii(message):
+    reply = message.reply_to_message
+    edit(message, f'`{get_translation("processing")}`')
+    if not reply:
+        edit(message, f'`{get_translation("wrongCommand")}`')
+        return
+
+    if not(reply.photo or reply.sticker or (
+            reply.document and 'image' in reply.document.mime_type)):
+        edit(message, f'`{get_translation("wrongMedia")}`')
+    else:
+        media = download_media_wc(reply, file_name='ascii.png')
+        ImageToAscii(imagePath=media, outputFile="output.txt")
+
+        reply_doc(message, 'output.txt', delete_orig=True, delete_after_send=True)
+        remove('ascii.png')
 
 
 HELP.update({'misc': get_translation('miscInfo')})
