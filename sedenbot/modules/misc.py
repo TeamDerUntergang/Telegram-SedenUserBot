@@ -16,8 +16,8 @@ from pybase64 import b64encode, b64decode
 from image_to_ascii import ImageToAscii
 
 from sedenbot import HELP, SUPPORT_GROUP
-from sedenecem.core import (edit, reply, reply_doc, sedenify,
-                            extract_args, get_translation)
+from sedenecem.core import (edit, reply, reply_doc, sedenify, extract_args,
+                            download_media_wc, get_translation)
 
 
 @sedenify(pattern='^.random')
