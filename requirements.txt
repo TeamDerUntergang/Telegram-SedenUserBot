@@ -13,7 +13,7 @@ pillow
 psycopg2-binary
 pybase64
 pylast
-pyrogram==1.1.13
+pyrogram==1.2.6
 python-barcode
 python-dotenv
 qrcode
@@ -21,7 +21,7 @@ removebg
 requests
 selenium
 speedtest-cli
-sqlalchemy
+sqlalchemy==1.3.23
 tgcrypto
 urbandict
 wikipedia
