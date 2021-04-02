@@ -239,15 +239,15 @@ def img_to_ascii(message):
         edit(message, f'`{get_translation("wrongCommand")}`')
         return
 
-    if not(reply.photo or reply.sticker or (
+    if not(reply.photo or (reply.sticker and not reply.sticker.is_animated) or (
             reply.document and 'image' in reply.document.mime_type)):
         edit(message, f'`{get_translation("wrongMedia")}`')
     else:
         media = download_media_wc(reply, file_name='ascii.png')
         ImageToAscii(imagePath=media, outputFile="output.txt")
-
-        reply_doc(message, 'output.txt', delete_orig=True, delete_after_send=True)
-        remove('ascii.png')
+        reply_doc(reply, 'output.txt', delete_orig=False, delete_after_send=True)
+        message.delete()
+        remove('downloads/ascii.png')
 
 
 HELP.update({'misc': get_translation('miscInfo')})

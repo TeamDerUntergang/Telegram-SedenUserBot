@@ -10,6 +10,8 @@
 from os import remove
 from time import sleep
 
+from PIL import Image
+
 from pyrogram.errors import UsernameOccupied
 from pyrogram.raw.functions import channels, account
 
@@ -66,8 +68,16 @@ def set_profilepic(client, message):
         edit(message, f'`{INVALID_MEDIA}`')
 
     if photo:
-        client.set_profile_photo(photo=photo)
+        image = Image.open(photo)
+        width, height = image.size
+        maxSize = (640, 640)
+        ratio = min(maxSize[0]/width, maxSize[1]/height)
+        image = image.resize((int(width*ratio), int(height*ratio)))
+        new_photo = 'downloads/profile_photo_new.png'
+        image.save(new_photo)
+        client.set_profile_photo(photo=new_photo)
         remove(photo)
+        remove(new_photo)
         edit(message, f'`{PP_CHANGED}`')
     else:
         edit(message, f'`{PP_ERROR}`')
