@@ -245,9 +245,9 @@ def img_to_ascii(message):
     else:
         media = download_media_wc(reply, file_name='ascii.png')
         ImageToAscii(imagePath=media, outputFile="output.txt")
-        reply_doc(reply, 'output.txt', delete_orig=False, delete_after_send=True)
+        reply_doc(reply, 'output.txt', delete_after_send=True)
         message.delete()
-        remove('downloads/ascii.png')
+        remove(media)
 
 
 HELP.update({'misc': get_translation('miscInfo')})
