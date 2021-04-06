@@ -98,8 +98,7 @@ def sedenify(**args):
                             edit(
                                 message,
                                 f'`{get_translation("errorLogSend")}`')
-                        link = get_translation('supportGroup', [SUPPORT_GROUP])
-                        text = get_translation('sedenErrorText', ['**', link])
+                        text = get_translation('sedenErrorText', ['**', '`', exc_info()[1]])
 
                     ftext = get_translation(
                         'sedenErrorText2',
