@@ -7,7 +7,7 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from sedenbot import HELP
+from sedenbot import HELP, BLACKLIST, BRAIN
 from sedenecem.core import (extract_args, sedenify, edit, reply_img,
                             get_translation, download_media_wc)
 
@@ -57,11 +57,14 @@ def who_is(client, message):
         bio = reply_chat.bio or get_translation('notSet')
         status = reply_user.status
         last_seen = LastSeen(bot, status)
+        sudo = SudoCheck(user_id)
+        blacklist = BlacklistCheck(user_id)
 
         caption = get_translation(
             'whoisResult',
             ['**', '`', first_name, last_name, username, user_id, photos,
-             dc_id, bot, scam, verified, chats, bio, last_seen])
+             dc_id, bot, scam, verified, chats, bio, last_seen, sudo
+             if sudo else '', blacklist if blacklist else ''])
 
         if photo and media_perm:
             reply_img(
@@ -87,6 +90,16 @@ def LastSeen(bot, status):
         return get_translation('statusMonth')
     elif status == 'long_time_ago':
         return get_translation('statusLong')
+
+
+def SudoCheck(user_id):
+    if user_id in BRAIN:
+        return get_translation('sudoCheck')
+
+
+def BlacklistCheck(user_id):
+    if user_id in BLACKLIST:
+        return get_translation('blacklistCheck')
 
 
 HELP.update({'whois': get_translation('whoisInfo')})
