@@ -19,6 +19,7 @@ from sedenecem.core import (extract_args, sedenify, edit, reply_doc,
 
 from qrcode import QRCode, constants
 
+
 @sedenify(pattern=r'^.decode$')
 def parseqr(message):
     reply = message.reply_to_message

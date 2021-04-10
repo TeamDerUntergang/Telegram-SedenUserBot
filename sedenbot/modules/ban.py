@@ -473,7 +473,10 @@ def zombie_accounts(client, message):
     sleep(2)
     message.delete()
 
-    send_log(get_translation('zombiesLog', ['**', '`', count, message.chat.title, message.chat.id]))
+    send_log(
+        get_translation(
+            'zombiesLog', [
+                '**', '`', count, message.chat.title, chat_id]))
 
 
 @sedenify(incoming=True, outgoing=False, compat=False)

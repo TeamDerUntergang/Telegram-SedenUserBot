@@ -71,8 +71,8 @@ def set_profilepic(client, message):
         image = Image.open(photo)
         width, height = image.size
         maxSize = (640, 640)
-        ratio = min(maxSize[0]/width, maxSize[1]/height)
-        image = image.resize((int(width*ratio), int(height*ratio)))
+        ratio = min(maxSize[0] / width, maxSize[1] / height)
+        image = image.resize((int(width * ratio), int(height * ratio)))
         new_photo = 'downloads/profile_photo_new.png'
         image.save(new_photo)
         client.set_profile_photo(photo=new_photo)

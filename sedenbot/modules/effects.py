@@ -85,10 +85,10 @@ def nightcore(message):
         media = download_media_wc(reply, file_name=nightcore)
         process = Popen(['ffmpeg',
                         '-i',
-                        f'{media}',
-                        '-af',
-                        'asetrate=44100*1.16,aresample=44100,atempo=1',
-                        f'{media}.mp3'])
+                         f'{media}',
+                         '-af',
+                         'asetrate=44100*1.16,aresample=44100,atempo=1',
+                         f'{media}.mp3'])
         process.communicate()
         edit(message, f'`{get_translation("uploadMedia")}`')
         reply_voice(message, f'{media}.mp3')
@@ -111,12 +111,10 @@ def slowedtoperfection(message):
     else:
         edit(message, f'`{get_translation("applySlowedtoperfection")}`')
         media = download_media_wc(reply, file_name=slowedtoperfection)
-        process = Popen(['ffmpeg',
-                        '-i',
-                        f'{media}',
-                        '-af',
-                        'aecho=1.0:0.7:20:0.5,asetrate=44100*0.84,aresample=44100,atempo=1',
-                        f'{media}.mp3'])
+        process = Popen(
+            ['ffmpeg', '-i', f'{media}', '-af',
+             'aecho=1.0:0.7:20:0.5,asetrate=44100*0.84,aresample=44100,atempo=1',
+             f'{media}.mp3'])
         process.communicate()
         edit(message, f'`{get_translation("uploadMedia")}`')
         reply_voice(message, f'{media}.mp3')
