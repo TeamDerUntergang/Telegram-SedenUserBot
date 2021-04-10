@@ -25,17 +25,18 @@ def magisk(message):
     magisk_dict = {
         'Stable':
         'https://raw.githubusercontent.com/topjohnwu/'
-        'magisk_files/master/stable.json',
+        'magisk-files/master/stable.json',
         'Beta':
         'https://raw.githubusercontent.com/topjohnwu/'
-        'magisk_files/master/beta.json'}
+        'magisk-files/master/beta.json',
+        'Canary':
+        'https://raw.githubusercontent.com/topjohnwu/'
+        'magisk-files/master/canary.json'}
     releases = f'**{get_translation("magiskReleases")}**\n'
     for name, release_url in magisk_dict.items():
         try:
             data = get(release_url).json()
-            releases += f'`{name}:` [ZIP v{data["magisk"]["version"]}]({data["magisk"]["link"]}) | ' \
-                        f'[APK v{data["app"]["version"]}]({data["app"]["link"]}) | ' \
-                        f'[Uninstaller]({data["uninstaller"]["link"]})\n'
+            releases += f'`{name}:` [APK v{data["magisk"]["version"]}]({data["magisk"]["link"]})\n'
         except BaseException:
             pass
     edit(message, releases, preview=False)
