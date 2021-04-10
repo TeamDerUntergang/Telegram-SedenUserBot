@@ -10,7 +10,7 @@
 from time import sleep
 
 from pyrogram.types import ChatPermissions
-from pyrogram.errors import MessageTooLong
+from pyrogram.errors import MessageTooLong, UserAdminInvalid
 
 from sedenbot import HELP, BRAIN
 from sedenecem.core import (edit, sedenify, send_log, reply_doc,
@@ -428,6 +428,52 @@ def get_users(client, message):
                 ['**', f'{get_translation("deleted") if showdel else ""}', '`',
                  message.chat.title]),
             delete_after_send=True, delete_orig=True)
+
+
+@sedenify(pattern='^.zombies', private=False, admin=True, compat=False)
+def zombie_accounts(client, message):
+    args = extract_args(message).lower()
+    chat_id = message.chat.id
+    count = 0
+    msg = f'`{get_translation("zombiesNoAccount")}`'
+
+    if args != 'clean':
+        edit(message, f'`{get_translation("zombiesFind")}`')
+        for i in client.iter_chat_members(chat_id):
+            if i.user.is_deleted:
+                count += 1
+                sleep(1)
+        if count > 0:
+            msg = get_translation('zombiesFound', ['**', '`', count])
+        return edit(message, msg)
+
+    edit(message, f'`{get_translation("zombiesRemove")}`')
+    count = 0
+    users = 0
+
+    for i in client.iter_chat_members(chat_id):
+        if i.user.is_deleted:
+            try:
+                client.kick_chat_member(chat_id, i.user.id)
+            except UserAdminInvalid:
+                count -= 1
+                users += 1
+            except BaseException:
+                return edit(message, f'`{get_translation("zombiesError")}`')
+            client.unban_chat_member(chat_id, i.user.id)
+            count += 1
+
+    if count > 0:
+        msg = get_translation('zombiesResult', ['**', '`', count])
+
+    if users > 0:
+        msg = get_translation('zombiesResult2', ['**', '`', count, users])
+
+    edit(message, msg)
+    sleep(2)
+    message.delete()
+
+    send_log(get_translation('zombiesLog', ['**', '`', count, message.chat.title, message.chat.id]))
 
 
 @sedenify(incoming=True, outgoing=False, compat=False)

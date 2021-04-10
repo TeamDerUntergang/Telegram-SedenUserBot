@@ -1,6 +1,6 @@
 {
     "added": "added",
-    "adminInfo": ".promote <username/reply> <custom rank (optional)>\nUsage: Provides admin rights to the person in the chat.\n\n.demote <username/reply>\nUsage: Revokes the person's admin permissions in the chat.\n\n.ban <username/reply>\nUsage: Bans the person off your chat.\n\n.unban <username/reply>\nUsage: Removes the ban from the person in the chat.\n\n.gban <username/reply>\nUsage: Bans the person in all groups you have in common with them.\n\n.ungban <username/reply>\nUsage: Removes the person from the gbanned list\n\n.mute <username/reply>\nUsage: Mutes the person in the chat.\n\n.unmute <username/reply>\nRemoves the person from the muted list.\n\n.gmute <username/reply>\nUsage: Mutes the person in all groups you have in common with them.\n\n.ungmute <username/reply>\nUsage: Removes the person from the gmuted list\n\n.kick <username/reply>\nUsage: Kicks user.\n\n.pin <reply>\nUsage: Pins the replied message.\n\n.unpin\nUsage: Unpin the pinned message.\n\n.admins\nUsage: Retrieves a list of admins in the chat.\n\n.users\nUsage: Retrieves all users in the chat.\n\n.usersdel\nUsage: Retrieves all deleted users in the chat.\n\n.bots\nUsage: Retrieves a list of bots in the chat.",
+    "adminInfo": ".promote <username/reply> <custom rank (optional)>\nUsage: Provides admin rights to the person in the chat.\n\n.demote <username/reply>\nUsage: Revokes the person's admin permissions in the chat.\n\n.ban <username/reply>\nUsage: Bans the person off your chat.\n\n.unban <username/reply>\nUsage: Removes the ban from the person in the chat.\n\n.gban <username/reply>\nUsage: Bans the person in all groups you have in common with them.\n\n.ungban <username/reply>\nUsage: Removes the person from the gbanned list\n\n.mute <username/reply>\nUsage: Mutes the person in the chat.\n\n.unmute <username/reply>\nRemoves the person from the muted list.\n\n.gmute <username/reply>\nUsage: Mutes the person in all groups you have in common with them.\n\n.ungmute <username/reply>\nUsage: Removes the person from the gmuted list\n\n.kick <username/reply>\nUsage: Kicks user.\n\n.pin <reply>\nUsage: Pins the replied message.\n\n.unpin\nUsage: Unpin the pinned message.\n\n.admins\nUsage: Retrieves a list of admins in the chat.\n\n.users\nUsage: Retrieves all users in the chat.\n\n.usersdel\nUsage: Retrieves all deleted users in the chat.\n\n.bots\nUsage: Retrieves a list of bots in the chat.\n\n.zombies\nUsage: Finds deleted account(s) that are in a group. Use '.zombies clean' command to remove deleted account(s) from the group.",
     "adminUsage": "I'm not admin!",
     "adminlist": "%1Admins in%1 %2%3%2%1:%1",
     "afkEnd": "I'm no longer AFK.",
@@ -613,5 +613,13 @@
     "wrongMedia": "Wrong media type!",
     "yadiskError": "Error: File not found / Download limit exceeded",
     "youtubedlInfo": ".youtubedl <mp3 or mp4> <url>\nUsage: Downloads video or audio from the link you provided.",
-    "zalUsage": "g\u036b \u0306 i\u031b \u033a v\u0347\u0306 e\u030f\u0345   a\u0322\u0366   s\u0334\u032a c\u0322\u0338 a\u0338\u0308 r\u0369\u0363 y\u0356\u035e   t\u0328\u035a e\u0320\u0301 x\u0322\u0356  t\u035b\u0354"
+    "zalUsage": "g\u036b \u0306 i\u031b \u033a v\u0347\u0306 e\u030f\u0345   a\u0322\u0366   s\u0334\u032a c\u0322\u0338 a\u0338\u0308 r\u0369\u0363 y\u0356\u035e   t\u0328\u035a e\u0320\u0301 x\u0322\u0356  t\u035b\u0354",
+    "zombiesError": "I don't have enough rights.",
+    "zombiesFind": "Finding deleted accounts...",
+    "zombiesFound": "%1Found%1 %2%3%2 %1deleted account.\nClean them by using%1 %2.zombies clean%2",
+    "zombiesLog": "#CLEANUP\n%1Removed%1 %2%3%2 %1deleted account.\nGROUP: %4%1 | %2%5%2",
+    "zombiesNoAccount": "No deleted account(s) found!",
+    "zombiesRemove": "Removing deleted account(s)...",
+    "zombiesResult": "%1Removed%1 %2%3%2 %1deleted account(s).%1",
+    "zombiesResult2": "%1Removed%1 %2%3%2 %1deleted account(s).%1\n%2%4%2 %1deleted admin account are not removed.%1"
 }
