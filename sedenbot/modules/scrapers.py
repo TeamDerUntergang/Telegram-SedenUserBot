@@ -472,6 +472,18 @@ def lang(message):
     send_log(get_translation('scraperLog', ['`', scraper, LANG.title()]))
 
 
+@sedenify(pattern='^.d[oö]viz')
+def doviz(message):
+    page = BeautifulSoup(get('https://www.doviz.com/').content, 'html.parser')
+    res = page.find_all('div', {'class', 'item'})
+    out = '**Güncel döviz kurları:**\n\n'
+    for i in res:
+        name = i.find('span', {'class': 'name'}).text
+        value = i.find('span', {'class': 'value'}).text
+        out += f'`•`  **{name}:** `{value}`\n'
+    edit(message, out)
+
+
 @sedenify(pattern='^.currency')
 def currency(message):
     input_str = extract_args(message)
