@@ -516,6 +516,7 @@
     "ssResult": "Sayfan\u0131n ekran g\u00f6r\u00fcnt\u00fcs\u00fc olu\u015fturuluyor...\nSayfan\u0131n y\u00fcksekli\u011fi: %1 piksel\nSayfan\u0131n geni\u015fli\u011fi: %2 piksel\nSayfan\u0131n y\u00fcklenmesi i\u00e7in %3 saniye beklendi.",
     "ssUpload": "Ekran g\u00f6r\u00fcnt\u00fcs\u00fc kar\u015f\u0131ya y\u00fckleniyor ...",
     "ssUsage": "Ekran g\u00f6r\u00fcnt\u00fcs\u00fc alabilmem i\u00e7in ge\u00e7erli bir ba\u011flant\u0131 vermelisin.",
+    "statsResult": "%1Toplam Sohbet:%1 %2%3%2\n%1Kanallar:%1 %2%4%2\n%1Gruplar:%1 %2%5%2\n%1S\u00fcper Gruplar:%1 %2%6%2\n%1Botlar:%1 %2%7%2\n%1\u00d6zel Mesajlar:%1 %2%8%2\n%1Okunmam\u0131\u015f Mesajlar:%1 %2%9%2",
     "statusLong": "Uzun zaman \u00f6nce",
     "statusMonth": "Bir ay i\u00e7inde",
     "statusOnline": "\u00c7evrimi\u00e7i",

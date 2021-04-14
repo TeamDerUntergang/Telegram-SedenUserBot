@@ -195,4 +195,42 @@ def online(client, message):
             return
 
 
+@sedenify(pattern='^.stats$', compat=False)
+def user_stats(client, message):
+    edit(message, f'`{get_translation("processing")}`')
+    chats = 0
+    channels = 0
+    groups = 0
+    sgroups = 0
+    pms = 0
+    bots = 0
+    unread = 0
+    user = []
+    for i in client.iter_dialogs():
+        chats += 1
+        if i.chat.type == 'channel':
+            channels += 1
+        elif i.chat.type == 'group':
+            groups += 1
+        elif i.chat.type == 'supergroup':
+            sgroups += 1
+        else:
+            pms += 1
+            user.append(i.chat.id)
+
+        if i.unread_messages_count > 0:
+            unread += 1
+
+    users = client.get_users(user)
+    for i in users:
+        if i.is_bot:
+            bots += 1
+
+    edit(
+        message,
+        get_translation(
+            'statsResult',
+            ['**', '`', chats, channels, groups, sgroups, bots, pms, unread]))
+
+
 HELP.update({'profile': get_translation('profileInfo')})

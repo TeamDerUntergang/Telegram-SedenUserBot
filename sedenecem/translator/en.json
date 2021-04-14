@@ -516,6 +516,7 @@
     "ssResult": "Generating screenshot of the page...\nHeight of page = %1px\nWidth of page = %2px\nWaiting %3 for the page to load.",
     "ssUpload": "Uploading screenshot ...",
     "ssUsage": "You must provide a valid link before I can take a screenshot.",
+    "statsResult": "%1Total Chats:%1 %2%3%2\n%1Channels:%1 %2%4%2\n%1Groups:%1 %2%5%2\n%1Super Groups:%1 %2%6%2\n%1Bots:%1 %2%7%2\n%1PM's:%1 %2%8%2\n%1Unread Messages:%1 %2%9%2",
     "statusLong": "A long time ago",
     "statusMonth": "Within the last month",
     "statusOnline": "Online",
