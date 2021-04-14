@@ -1,6 +1,7 @@
 bs4
 coffeehouse
 cowpy
+currencyconverter
 deethon
 emoji
 gitpython
