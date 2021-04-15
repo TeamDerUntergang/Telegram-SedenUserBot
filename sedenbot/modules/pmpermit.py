@@ -10,12 +10,20 @@
 from sqlalchemy.exc import IntegrityError
 
 from sedenbot.modules.chat import is_muted
-from sedenbot import (PM_COUNT, HELP, PM_AUTO_BAN, LOGS,
-                      PM_LAST_MSG, PM_UNAPPROVED, PM_MSG_COUNT)
-from sedenecem.core import (sedenify, send_log, me,
-                            edit, reply, get_translation)
+from sedenbot import (
+    PM_COUNT,
+    HELP,
+    PM_AUTO_BAN,
+    LOGS,
+    PM_LAST_MSG,
+    PM_UNAPPROVED,
+    PM_MSG_COUNT,
+    TEMP_SETTINGS,
+)
+from sedenecem.core import sedenify, send_log, edit, reply, get_translation
+
 # ========================= CONSTANTS ============================
-UNAPPROVED_MSG = PM_UNAPPROVED or get_translation('pmpermitMessage', ['`'])
+UNAPPROVED_MSG = PM_UNAPPROVED or get_translation("pmpermitMessage", ["`"])
 # =================================================================
 
 
@@ -23,18 +31,26 @@ def pmpermit_init():
     try:
         global sql
         from importlib import import_module
-        sql = import_module('sedenecem.sql.pm_permit_sql')
+
+        sql = import_module("sedenecem.sql.pm_permit_sql")
     except Exception as e:
         sql = None
-        LOGS.warn(get_translation('pmpermitSqlLog'))
+        LOGS.warn(get_translation("pmpermitSqlLog"))
         raise e
 
 
 pmpermit_init()
 
 
-@sedenify(incoming=True, outgoing=False, disable_edited=True,
-          disable_notify=True, group=False, compat=False, bot=False)
+@sedenify(
+    incoming=True,
+    outgoing=False,
+    disable_edited=True,
+    disable_notify=True,
+    group=False,
+    compat=False,
+    bot=False,
+)
 def permitpm(client, message):
     if message.from_user and message.from_user.is_self:
         message.continue_propagation()
@@ -45,7 +61,7 @@ def permitpm(client, message):
         if auto_accept(client, message):
             return
 
-        self_user = me[0]
+        self_user = TEMP_SETTINGS["ME"]
         if message.chat.id not in [self_user.id, 777000]:
             try:
                 from sedenecem.sql.pm_permit_sql import is_approved
@@ -59,8 +75,7 @@ def permitpm(client, message):
                 if message.chat.id in PM_LAST_MSG:
                     prevmsg = PM_LAST_MSG[message.chat.id]
                     if message.text != prevmsg:
-                        for message in _find_unapproved_msg(
-                                client, message.chat.id):
+                        for message in _find_unapproved_msg(client, message.chat.id):
                             message.delete()
                         if PM_COUNT[message.chat.id] < (PM_MSG_COUNT - 1):
                             ret = reply(message, UNAPPROVED_MSG)
@@ -91,14 +106,15 @@ def permitpm(client, message):
 
                     send_log(
                         get_translation(
-                            'pmpermitLog', [
-                                message.chat.first_name, message.chat.id]))
+                            "pmpermitLog", [message.chat.first_name, message.chat.id]
+                        )
+                    )
 
     message.continue_propagation()
 
 
 def auto_accept(client, message):
-    self_user = me[0]
+    self_user = TEMP_SETTINGS["ME"]
     if message.chat.id not in [self_user.id, 777000]:
         try:
             from sedenecem.sql.pm_permit_sql import approve, is_approved
@@ -110,7 +126,11 @@ def auto_accept(client, message):
             return True
 
         for msg in client.get_history(chat.id, limit=3):
-            if chat.id in PM_LAST_MSG and msg.text != PM_LAST_MSG[chat.id] and msg.from_user.is_self:
+            if (
+                chat.id in PM_LAST_MSG
+                and msg.text != PM_LAST_MSG[chat.id]
+                and msg.from_user.is_self
+            ):
                 try:
                     del PM_COUNT[chat.id]
                     del PM_LAST_MSG[chat.id]
@@ -122,9 +142,8 @@ def auto_accept(client, message):
                     for message in _find_unapproved_msg(client, chat.id):
                         message.delete()
                     send_log(
-                        get_translation(
-                            'pmAutoAccept', [
-                                chat.first_name, chat.id]))
+                        get_translation("pmAutoAccept", [chat.first_name, chat.id])
+                    )
                     return True
                 except BaseException:
                     pass
@@ -132,7 +151,7 @@ def auto_accept(client, message):
     return False
 
 
-@sedenify(outgoing=True, pattern='^.notifoff$')
+@sedenify(outgoing=True, pattern="^.notifoff$")
 def notifoff(message):
     try:
         from sedenecem.sql.keep_read_sql import kread
@@ -144,7 +163,7 @@ def notifoff(message):
     edit(message, f'`{get_translation("pmNotifOff")}`')
 
 
-@sedenify(outgoing=True, pattern='^.notifon$')
+@sedenify(outgoing=True, pattern="^.notifon$")
 def notifon(message):
     try:
         from sedenecem.sql.keep_read_sql import unkread
@@ -156,7 +175,7 @@ def notifon(message):
     edit(message, f'`{get_translation("pmNotifOn")}`')
 
 
-@sedenify(outgoing=True, pattern='^.approve$', compat=False)
+@sedenify(outgoing=True, pattern="^.approve$", compat=False)
 def approvepm(client, message):
     try:
         from sedenecem.sql.pm_permit_sql import approve
@@ -175,7 +194,7 @@ def approvepm(client, message):
         uid = replied_user.id
     else:
         aname = message.chat
-        if not aname.type == 'private':
+        if not aname.type == "private":
             edit(message, f'`{get_translation("pmApproveError")}`')
             return
         name0 = aname.first_name
@@ -189,9 +208,9 @@ def approvepm(client, message):
         edit(message, f'`{get_translation("pmApproveError2")}`')
         return
 
-    edit(message, get_translation('pmApproveSuccess', [name0, uid, '`']))
+    edit(message, get_translation("pmApproveSuccess", [name0, uid, "`"]))
 
-    send_log(get_translation('pmApproveLog', [name0, uid]))
+    send_log(get_translation("pmApproveLog", [name0, uid]))
 
 
 @sedenify(outgoing=True, pattern="^.disapprove$")
@@ -213,7 +232,7 @@ def disapprovepm(message):
         uid = replied_user.id
     else:
         aname = message.chat
-        if not aname.type == 'private':
+        if not aname.type == "private":
             edit(message, f'`{get_translation("pmApproveError")}`')
             return
         name0 = aname.first_name
@@ -221,20 +240,18 @@ def disapprovepm(message):
 
     dissprove(uid)
 
-    edit(message, get_translation('pmDisapprove', [name0, uid, '`']))
+    edit(message, get_translation("pmDisapprove", [name0, uid, "`"]))
 
-    send_log(get_translation('pmDisapprove', [name0, uid, '`']))
+    send_log(get_translation("pmDisapprove", [name0, uid, "`"]))
 
 
 def _find_unapproved_msg(client, chat_id):
     try:
         return client.search_messages(
-            chat_id,
-            from_user='me',
-            limit=10,
-            query=UNAPPROVED_MSG)
+            chat_id, from_user="me", limit=10, query=UNAPPROVED_MSG
+        )
     except BaseException:
         return []
 
 
-HELP.update({'pmpermit': get_translation('pmpermitInfo')})
+HELP.update({"pmpermit": get_translation("pmpermitInfo")})
