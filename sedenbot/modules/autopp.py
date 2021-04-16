@@ -7,15 +7,20 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
+from datetime import datetime
 from os import path, remove
 from time import sleep
-from datetime import datetime
+
 from PIL import Image, ImageDraw, ImageFont
 from requests import get
-
-from sedenbot import HELP, AUTO_PP, TEMP_SETTINGS, LOGS
-from sedenecem.core import (extract_args, sedenify, edit,
-                            get_translation, download_media_wc)
+from sedenbot import AUTO_PP, HELP, LOGS, TEMP_SETTINGS
+from sedenecem.core import (
+    download_media_wc,
+    edit,
+    extract_args,
+    get_translation,
+    sedenify,
+)
 
 # =================== CONSTANT ===================
 KEY_AUTOPP = 'autopic'
@@ -57,7 +62,8 @@ def autopic(client, message):
             try:
                 profile_photo = client.get_profile_photos('me', limit=1)
                 downloaded_file_name = download_media_wc(
-                    profile_photo[0], downloaded_file_name)
+                    profile_photo[0], downloaded_file_name
+                )
             except BaseException:
                 edit(message, f'`{get_translation("autoppConfig")}`')
                 return
@@ -73,7 +79,10 @@ def autopic(client, message):
             size = drawn_text.multiline_textsize(current_time, font=fnt)
             drawn_text.text(
                 ((img.width - size[0]) / 2, (img.height - size[1])),
-                current_time, font=fnt, fill=(255, 255, 255))
+                current_time,
+                font=fnt,
+                fill=(255, 255, 255),
+            )
             img.save(photo)
             client.set_profile_photo(photo=photo)
             remove(photo)

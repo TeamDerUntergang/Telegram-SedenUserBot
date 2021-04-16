@@ -9,11 +9,17 @@
 
 from os import remove
 from random import randint, uniform
-from PIL import Image, ImageEnhance, ImageOps
 
+from PIL import Image, ImageEnhance, ImageOps
 from sedenbot import HELP
-from sedenecem.core import (edit, reply_img, sedenify, parse_cmd,
-                            download_media_wc, get_translation)
+from sedenecem.core import (
+    download_media_wc,
+    edit,
+    get_translation,
+    parse_cmd,
+    reply_img,
+    sedenify,
+)
 
 
 @sedenify(pattern='^.(deepf|f)ry')
@@ -45,8 +51,10 @@ def deepfry(message):
             edit(message, f'`{get_translation("deepfryError")}`')
             return
     else:
-        edit(message, get_translation('deepfryNoPic',
-                                      ['`', f'{"f" if fry else "deepf"}ry']))
+        edit(
+            message,
+            get_translation('deepfryNoPic', ['`', f'{"f" if fry else "deepf"}ry']),
+        )
         return
 
     # Download Media
@@ -56,8 +64,7 @@ def deepfry(message):
     remove(image_file)
 
     # Apply effect to media
-    edit(message, get_translation(
-        'deepfryApply', ['`', f'{"" if fry else "deep"}']))
+    edit(message, get_translation('deepfryApply', ['`', f'{"" if fry else "deep"}']))
     for _ in range(frycount):
         image = deepfry_media(image, fry)
 
@@ -73,33 +80,33 @@ def deepfry_media(img: Image, fry: bool) -> Image:
     if fry:
         colors = (
             (randint(50, 200), randint(40, 170), randint(40, 190)),
-            (randint(190, 255), randint(170, 240), randint(180, 250))
+            (randint(190, 255), randint(170, 240), randint(180, 250)),
         )
 
-    # Resim formatı ayarla
+    # Set image format
     img = img.copy().convert('RGB')
     width, height = img.width, img.height
 
-    temp_num = uniform(.8, .9) if fry else .75
-    img = img.resize((int(width ** temp_num),
-                      int(height ** temp_num)),
-                     resample=Image.LANCZOS)
+    temp_num = uniform(0.8, 0.9) if fry else 0.75
+    img = img.resize(
+        (int(width ** temp_num), int(height ** temp_num)), resample=Image.LANCZOS
+    )
 
-    temp_num = uniform(.85, .95) if fry else .88
-    img = img.resize((int(width ** temp_num),
-                      int(height ** temp_num)),
-                     resample=Image.BILINEAR)
+    temp_num = uniform(0.85, 0.95) if fry else 0.88
+    img = img.resize(
+        (int(width ** temp_num), int(height ** temp_num)), resample=Image.BILINEAR
+    )
 
-    temp_num = uniform(.89, .98) if fry else .9
-    img = img.resize((int(width ** temp_num),
-                      int(height ** temp_num)),
-                     resample=Image.BICUBIC)
+    temp_num = uniform(0.89, 0.98) if fry else 0.9
+    img = img.resize(
+        (int(width ** temp_num), int(height ** temp_num)), resample=Image.BICUBIC
+    )
     img = img.resize((width, height), resample=Image.BICUBIC)
 
     temp_num = randint(3, 7) if fry else 4
     img = ImageOps.posterize(img, temp_num)
 
-    # Renk yerleşimi oluştur
+    # Create a color scheme
     overlay = img.split()[0]
 
     temp_num = uniform(1.0, 2.0) if fry else 2
@@ -109,13 +116,11 @@ def deepfry_media(img: Image, fry: bool) -> Image:
     overlay = ImageEnhance.Brightness(overlay).enhance(temp_num)
 
     overlay = ImageOps.colorize(
-        overlay,
-        colors[0] if fry else (254, 0, 2),
-        colors[1] if fry else (255, 255, 15)
+        overlay, colors[0] if fry else (254, 0, 2), colors[1] if fry else (255, 255, 15)
     )
 
-    # Kırmızı ve sarıyı ana görüntüye yerleştir ve keskinleştir
-    temp_num = uniform(0.1, 0.4) if fry else .75
+    # Place red and yellow in image and sharpen
+    temp_num = uniform(0.1, 0.4) if fry else 0.75
     img = Image.blend(img, overlay, temp_num)
 
     temp_num = randint(5, 300) if fry else 100
@@ -134,8 +139,11 @@ def check_media(reply_message):
             data = True
         elif reply_message.document:
             name = reply_message.document.file_name
-            if name and '.' in name and name[name.find(
-                    '.') + 1:] in ['png', 'jpg', 'jpeg', 'webp']:
+            if (
+                name
+                and '.' in name
+                and name[name.find('.') + 1 :] in ['png', 'jpg', 'jpeg', 'webp']
+            ):
                 data = True
 
     return data

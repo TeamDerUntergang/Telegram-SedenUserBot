@@ -1,5 +1,5 @@
 try:
-    from sedenecem.sql import SESSION, BASE
+    from sedenecem.sql import BASE, SESSION
 except ImportError:
     raise AttributeError
 
@@ -19,8 +19,7 @@ PMPermit.__table__.create(checkfirst=True)
 
 def is_approved(chat_id):
     try:
-        return SESSION.query(PMPermit).filter(
-            PMPermit.chat_id == str(chat_id)).one()
+        return SESSION.query(PMPermit).filter(PMPermit.chat_id == str(chat_id)).one()
     except BaseException:
         return None
     finally:

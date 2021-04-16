@@ -10,8 +10,7 @@
 from collections import OrderedDict
 
 from sedenbot import HELP
-from sedenecem.core import (edit, reply, extract_args,
-                            sedenify, get_translation)
+from sedenecem.core import edit, extract_args, get_translation, reply, sedenify
 
 
 @sedenify(pattern='^.seden')

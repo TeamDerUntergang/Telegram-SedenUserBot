@@ -8,45 +8,45 @@
 #
 
 from os import execl, path
-from sys import executable, argv
-from heroku3 import from_key
+from sys import argv, executable
 
-from sedenbot import HELP, HEROKU_KEY, HEROKU_APPNAME, REPO_URL
+from heroku3 import from_key
+from sedenbot import HELP, HEROKU_APPNAME, HEROKU_KEY, REPO_URL
 from sedenecem.core import (
-    extract_args,
-    sedenify,
     edit,
+    extract_args,
+    get_translation,
     reply,
     reply_doc,
-    get_translation,
+    sedenify,
 )
 
 from git import Repo  # type: ignore
 from git.exc import GitCommandError, InvalidGitRepositoryError, NoSuchPathError
 
 requirements_path = path.join(
-    path.dirname(path.dirname(path.dirname(__file__))), "requirements.txt"
+    path.dirname(path.dirname(path.dirname(__file__))), 'requirements.txt'
 )
 
 
 def gen_chlog(repo, diff):
-    ch_log = ""
-    d_form = "%d/%m/%y"
+    ch_log = ''
+    d_form = '%d/%m/%y'
     for c in repo.iter_commits(diff):
-        ch_log += f"%1•%1  %2[{c.committed_datetime.strftime(d_form)}]: {c.summary} <{c.author}>%2\n"
+        ch_log += f'%1•%1  %2[{c.committed_datetime.strftime(d_form)}]: {c.summary} <{c.author}>%2\n'
     return ch_log
 
 
 def update_requirements():
     reqs = str(requirements_path)
     try:
-        _, ret = execute_command(f"{executable} -m pip install -r {reqs}")
+        _, ret = execute_command(f'{executable} -m pip install -r {reqs}')
         return ret
     except Exception as e:
         return repr(e)
 
 
-@sedenify(pattern="^.update")
+@sedenify(pattern='^.update')
 def upstream(ups):
     edit(ups, f'`{get_translation("updateCheck")}`')
     conf = extract_args(ups)
@@ -59,58 +59,58 @@ def upstream(ups):
         txt += f'**{get_translation("updateLog")}**\n'
         repo = Repo()
     except NoSuchPathError as error:
-        edit(ups, get_translation("updateFolderError", [txt, "`", error]))
+        edit(ups, get_translation('updateFolderError', [txt, '`', error]))
         repo.__del__()
         return
     except GitCommandError as error:
-        edit(ups, get_translation("updateFolderError", [txt, "`", error]))
+        edit(ups, get_translation('updateFolderError', [txt, '`', error]))
         repo.__del__()
         return
     except InvalidGitRepositoryError as error:
-        if conf != "now":
-            edit(ups, get_translation("updateGitNotFound", [error]))
+        if conf != 'now':
+            edit(ups, get_translation('updateGitNotFound', [error]))
             return
         repo = Repo.init()
-        origin = repo.create_remote("upstream", off_repo)
+        origin = repo.create_remote('upstream', off_repo)
         origin.fetch()
         force_update = True
-        repo.create_head("seden", origin.refs.seden)
+        repo.create_head('seden', origin.refs.seden)
         repo.heads.seden.set_tracking_branch(origin.refs.seden)
         repo.heads.seden.checkout(True)
 
     ac_br = repo.active_branch.name
-    if ac_br != "seden":
-        edit(ups, get_translation("updateFolderError", ["**", ac_br]))
+    if ac_br != 'seden':
+        edit(ups, get_translation('updateFolderError', ['**', ac_br]))
         repo.__del__()
         return
 
     try:
-        repo.create_remote("upstream", off_repo)
+        repo.create_remote('upstream', off_repo)
     except BaseException:
         pass
 
-    ups_rem = repo.remote("upstream")
+    ups_rem = repo.remote('upstream')
     ups_rem.fetch(ac_br)
 
-    changelog = gen_chlog(repo, f"HEAD..upstream/{ac_br}")
+    changelog = gen_chlog(repo, f'HEAD..upstream/{ac_br}')
 
     if not changelog and not force_update:
-        edit(ups, get_translation("updaterUsingLatest", ["**", "`", ac_br]))
+        edit(ups, get_translation('updaterUsingLatest', ['**', '`', ac_br]))
         repo.__del__()
         return
 
-    if conf != "now" and not force_update:
+    if conf != 'now' and not force_update:
         if len(changelog) > 4096:
             edit(ups, f'`{get_translation("updateOutput")}`')
-            file = open("changelog.txt", "w+")
+            file = open('changelog.txt', 'w+')
             file.write(changelog)
             file.close()
-            reply_doc(ups, ups.chat.id, "changelog.txt", delete_after_send=True)
+            reply_doc(ups, ups.chat.id, 'changelog.txt', delete_after_send=True)
         else:
             edit(
-                ups, get_translation("updaterHasUpdate", ["**", "`", ac_br, changelog])
+                ups, get_translation('updaterHasUpdate', ['**', '`', ac_br, changelog])
             )
-        reply(ups, get_translation("updateNow", ["**", "`"]))
+        reply(ups, get_translation('updateNow', ['**', '`']))
         return
 
     if force_update:
@@ -136,31 +136,31 @@ def upstream(ups):
             return
         edit(ups, f'`{get_translation("updateBotUpdating")}`')
         ups_rem.fetch(ac_br)
-        repo.git.reset("--hard", "FETCH_HEAD")
+        repo.git.reset('--hard', 'FETCH_HEAD')
         heroku_git_url = heroku_app.git_url.replace(
-            "https://", f"https://api:{HEROKU_KEY}@"
+            'https://', f'https://api:{HEROKU_KEY}@'
         )
-        if "heroku" in repo.remotes:
-            remote = repo.remote("heroku")
+        if 'heroku' in repo.remotes:
+            remote = repo.remote('heroku')
             remote.set_url(heroku_git_url)
         else:
-            remote = repo.create_remote("heroku", heroku_git_url)
+            remote = repo.create_remote('heroku', heroku_git_url)
         try:
-            remote.push(refspec="HEAD:refs/heads/master", force=True)
+            remote.push(refspec='HEAD:refs/heads/master', force=True)
         except GitCommandError as error:
-            edit(ups, get_translation("updaterGitError", ["`", txt, error]))
+            edit(ups, get_translation('updaterGitError', ['`', txt, error]))
             repo.__del__()
             return
         edit(ups, f'`{get_translation("updateComplete")}`')
         try:
-            heroku_app.scale_formation_process("seden", 1)
+            heroku_app.scale_formation_process('seden', 1)
         except BaseException:
             pass
     else:
         try:
             ups_rem.pull(ac_br)
         except GitCommandError:
-            repo.git.reset("--hard", "FETCH_HEAD")
+            repo.git.reset('--hard', 'FETCH_HEAD')
         update_requirements()
         edit(ups, f'`{get_translation("updateLocalComplate")}`')
 
@@ -184,4 +184,4 @@ def execute_command(command):
     return sonuc, islem.returncode
 
 
-HELP.update({"update": get_translation("updateInfo")})
+HELP.update({'update': get_translation('updateInfo')})

@@ -8,17 +8,22 @@
 #
 
 from os import path, remove
-from re import findall, I, M
-from urllib import request, parse
-from requests import post, get
-from PIL import Image
+from re import I, M, findall
+from urllib import parse, request
+
 from bs4 import BeautifulSoup
-
+from PIL import Image
 from pyrogram.types import InputMediaPhoto
-
+from requests import get, post
 from sedenbot import HELP
-from sedenecem.core import (sedenify, edit, reply_doc, extract_args,
-                            download_media_wc, get_translation)
+from sedenecem.core import (
+    download_media_wc,
+    edit,
+    extract_args,
+    get_translation,
+    reply_doc,
+    sedenify,
+)
 
 opener = request.build_opener()
 useragent = 'Mozilla/5.0 (Linux; Android 9; SM-G960F Build/PPR1.180610.011; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/78.0.3904.70 Mobile Safari/537.36'
@@ -50,13 +55,8 @@ def reverse(message):
         image.close()
         # https://stackoverflow.com/questions/23270175/google-reverse-image-search-using-post-request#28792943
         searchUrl = 'https://www.google.com/searchbyimage/upload'
-        multipart = {
-            'encoded_image': (photo, open(photo, 'rb')),
-            'image_content': ''
-        }
-        response = post(searchUrl,
-                        files=multipart,
-                        allow_redirects=False)
+        multipart = {'encoded_image': (photo, open(photo, 'rb')), 'image_content': ''}
+        response = post(searchUrl, files=multipart, allow_redirects=False)
         fetchUrl = response.headers['Location']
 
         if response != 400:
@@ -66,14 +66,12 @@ def reverse(message):
             return
 
         remove(photo)
-        match = ParseSauce(fetchUrl +
-                           '&preferences?hl=en&fg=1#languages')
+        match = ParseSauce(fetchUrl + '&preferences?hl=en&fg=1#languages')
         guess = match['best_guess']
         imgspage = match['similar_images']
 
         if guess and imgspage:
-            edit(message, get_translation(
-                "reverseResult", [guess, fetchUrl, '`']))
+            edit(message, get_translation("reverseResult", [guess, fetchUrl, '`']))
         else:
             edit(message, f'`{get_translation("reverseError2")}`')
             return
@@ -93,8 +91,7 @@ def reverse(message):
             file.close()
             yeet.append(InputMediaPhoto(n))
         reply_doc(message, yeet)
-        edit(message, get_translation(
-            "reverseResult", [guess, fetchUrl, imgspage]))
+        edit(message, get_translation("reverseResult", [guess, fetchUrl, imgspage]))
 
 
 def ParseSauce(googleurl):
@@ -106,8 +103,9 @@ def ParseSauce(googleurl):
 
     try:
         for similar_image in soup.findAll('input', {'class': 'gLFyf'}):
-            url = 'https://www.google.com/search?tbm=isch&q=' + \
-                parse.quote_plus(similar_image.get('value'))
+            url = 'https://www.google.com/search?tbm=isch&q=' + parse.quote_plus(
+                similar_image.get('value')
+            )
             results['similar_images'] = url
     except BaseException:
         pass

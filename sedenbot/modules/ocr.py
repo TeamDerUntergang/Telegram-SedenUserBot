@@ -8,17 +8,19 @@
 #
 
 from os import remove
+
 from requests import post
-
 from sedenbot import HELP, OCR_APIKEY
-from sedenecem.core import (edit, extract_args, sedenify,
-                            get_translation, download_media_wc)
+from sedenecem.core import (
+    download_media_wc,
+    edit,
+    extract_args,
+    get_translation,
+    sedenify,
+)
 
 
-def ocr_file(filename,
-             language='eng',
-             overlay=False,
-             api_key=OCR_APIKEY):
+def ocr_file(filename, language='eng', overlay=False, api_key=OCR_APIKEY):
 
     payload = {
         'isOverlayRequired': overlay,
@@ -38,9 +40,10 @@ def ocr_file(filename,
 def ocr(message):
     if not OCR_APIKEY:
         return edit(
-            message, get_translation(
-                'ocrApiMissing', [
-                    '**', 'OCR Space', '`']), preview=False)
+            message,
+            get_translation('ocrApiMissing', ['**', 'OCR Space', '`']),
+            preview=False,
+        )
 
     match = extract_args(message)
     reply = message.reply_to_message

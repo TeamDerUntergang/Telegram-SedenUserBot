@@ -7,15 +7,24 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from sedenbot import HELP, LOGS, LOG_ID
-from sedenecem.core import (extract_args, sedenify, edit, get_messages,
-                            reply_msg, forward, send_log, get_translation)
+from sedenbot import HELP, LOG_ID, LOGS
+from sedenecem.core import (
+    edit,
+    extract_args,
+    forward,
+    get_messages,
+    get_translation,
+    reply_msg,
+    sedenify,
+    send_log,
+)
 
 
 def snips_init():
     try:
         global sql
         from importlib import import_module
+
         sql = import_module('sedenecem.sql.snips_sql')
     except Exception as e:
         sql = None
@@ -50,12 +59,10 @@ def save_snip(message):
                 string = None
                 msg_o = forward(msg, LOG_ID)
                 if not msg_o:
-                    edit(
-                        message, f'`{get_translation("snipError")}`')
+                    edit(message, f'`{get_translation("snipError")}`')
                     return
                 msg_id = msg_o.message_id
-                send_log(get_translation(
-                    'snipsLog', ['`', message.chat.id, keyword]))
+                send_log(get_translation('snipsLog', ['`', message.chat.id, keyword]))
         else:
             edit(message, f'`{get_translation("wrongCommand")}`')
 

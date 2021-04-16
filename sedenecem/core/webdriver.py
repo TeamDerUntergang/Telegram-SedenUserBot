@@ -7,8 +7,8 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from selenium.webdriver import Chrome, ChromeOptions
 from sedenbot import CHROME_DRIVER
+from selenium.webdriver import Chrome, ChromeOptions
 
 
 def get_webdriver():

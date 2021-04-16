@@ -7,17 +7,24 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from random import choice
 from os import remove
+from random import choice
+from subprocess import PIPE
+from subprocess import run as runapp
 
-from subprocess import PIPE, run as runapp
-from requests import post
-from pybase64 import b64encode, b64decode
 from image_to_ascii import ImageToAscii
-
+from pybase64 import b64decode, b64encode
+from requests import post
 from sedenbot import HELP, SUPPORT_GROUP
-from sedenecem.core import (edit, reply, reply_doc, sedenify, extract_args,
-                            download_media_wc, get_translation)
+from sedenecem.core import (
+    download_media_wc,
+    edit,
+    extract_args,
+    get_translation,
+    reply,
+    reply_doc,
+    sedenify,
+)
 
 
 @sedenify(pattern='^.random')
@@ -28,15 +35,12 @@ def random(message):
         edit(message, f'`{get_translation("randomUsage")}`')
         return
 
-    edit(message, get_translation(
-        'randomResult', ['**', '`', items, choice(args)]))
+    edit(message, get_translation('randomResult', ['**', '`', items, choice(args)]))
 
 
 @sedenify(pattern='^.chatid$', private=False)
 def chatid(message):
-    edit(
-        message,
-        get_translation('chatidResult', ['`', str(message.chat.id)]))
+    edit(message, get_translation('chatidResult', ['`', str(message.chat.id)]))
 
 
 @sedenify(pattern='^.id$')
@@ -55,10 +59,7 @@ def userid(message):
                 name = f'**@{reply.forward_from.username}**'
             else:
                 name = f'**[{reply.forward_from.first_name}](tg://user?id={reply.forward_from.id})**'
-        edit(
-            message, get_translation(
-                'useridResult', [
-                    '**', name, '`', user_id]))
+        edit(message, get_translation('useridResult', ['**', name, '`', user_id]))
     else:
         edit(message, f'`{get_translation("wrongCommand")}`')
 
@@ -71,8 +72,7 @@ def kickme(client, message):
 
 @sedenify(pattern='^.support$')
 def support(message):
-    edit(message, get_translation('supportResult', [SUPPORT_GROUP]),
-         preview=False)
+    edit(message, get_translation('supportResult', [SUPPORT_GROUP]), preview=False)
 
 
 @sedenify(pattern='^.founder')
@@ -86,16 +86,17 @@ def readme(message):
         message,
         '[Seden README.md](https://github.com/TeamDerUntergang/'
         'Telegram-SedenUserBot/blob/seden/README.md)',
-        preview=False)
+        preview=False,
+    )
 
 
 @sedenify(pattern='^.repo$')
 def repo(message):
     edit(
         message,
-        '[Seden Repo](https://github.com/TeamDerUntergang/'
-        'Telegram-SedenUserBot)',
-        preview=False)
+        '[Seden Repo](https://github.com/TeamDerUntergang/' 'Telegram-SedenUserBot)',
+        preview=False,
+    )
 
 
 @sedenify(pattern='^.repeat')
@@ -169,20 +170,20 @@ def hash(message):
     sha512 = sha512.stdout.decode()
 
     def rem_filename(st):
-        return st[:st.find(' ')]
+        return st[: st.find(' ')]
 
-    ans = (f'Text: `{hashtxt_}`'
-           f'\nMD5: `{rem_filename(md5)}`'
-           f'\nSHA1: `{rem_filename(sha1)}`'
-           f'\nSHA256: `{rem_filename(sha256)}`'
-           f'\nSHA512: `{rem_filename(sha512)}`')
+    ans = (
+        f'Text: `{hashtxt_}`'
+        f'\nMD5: `{rem_filename(md5)}`'
+        f'\nSHA1: `{rem_filename(sha1)}`'
+        f'\nSHA256: `{rem_filename(sha256)}`'
+        f'\nSHA512: `{rem_filename(sha512)}`'
+    )
     if len(ans) > 4096:
         hashfile = open('hash.txt', 'w+')
         hashfile.write(ans)
         hashfile.close()
-        reply_doc(message,
-                  'hash.txt',
-                  caption=f'`{get_translation("outputTooLarge")}`')
+        reply_doc(message, 'hash.txt', caption=f'`{get_translation("outputTooLarge")}`')
         runapp(['rm', 'hash.txt'], stdout=PIPE)
         message.delete()
     else:
@@ -218,7 +219,8 @@ def birakmamseni(message):
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/x-www-form-urlencoded',
         'Origin': f'{url}',
-        'X-Requested-With': 'XMLHttpRequest'}
+        'X-Requested-With': 'XMLHttpRequest',
+    }
 
     try:
         response = post(url=url + path, headers=headers)
@@ -239,8 +241,11 @@ def img_to_ascii(message):
         edit(message, f'`{get_translation("wrongCommand")}`')
         return
 
-    if not(reply.photo or (reply.sticker and not reply.sticker.is_animated) or (
-            reply.document and 'image' in reply.document.mime_type)):
+    if not (
+        reply.photo
+        or (reply.sticker and not reply.sticker.is_animated)
+        or (reply.document and 'image' in reply.document.mime_type)
+    ):
         edit(message, f'`{get_translation("wrongMedia")}`')
     else:
         media = download_media_wc(reply, file_name='ascii.png')

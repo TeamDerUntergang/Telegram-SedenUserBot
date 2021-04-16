@@ -7,16 +7,17 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from time import time
 from os.path import isfile
+from time import time
+
 from sedenbot import HELP, TEMP_SETTINGS
 from sedenecem.core import (
     download_media_wc,
-    sedenify,
     edit,
     extract_args,
-    reply_doc,
     get_translation,
+    reply_doc,
+    sedenify,
 )
 
 
@@ -34,10 +35,11 @@ def download(message):
         if (curr_posix := time()) - TEMP_SETTINGS[f'upload_{posix}'] > 5:
             TEMP_SETTINGS[f'upload_{posix}'] = curr_posix
             edit(
-                message, get_translation(
-                    'updownDownload', [
-                        '`', '(½{:.2f})'.format(
-                            current * 100 / total)]), )
+                message,
+                get_translation(
+                    'updownDownload', ['`', '(½{:.2f})'.format(current * 100 / total)]
+                ),
+            )
 
     edit(message, f'`{get_translation("downloadMedia")}`')
     media = download_media_wc(reply, progress=progress)

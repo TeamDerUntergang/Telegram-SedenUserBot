@@ -7,11 +7,11 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
+from .conv import *
+from .image import *
 from .misc import *
+from .replier import *
 from .sedenify import *
 from .sedenlog import *
 from .send import *
-from .replier import *
 from .webdriver import *
-from .image import *
-from .conv import *

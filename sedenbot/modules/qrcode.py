@@ -8,14 +8,20 @@
 #
 
 from os import remove
-from urllib3 import PoolManager
-from bs4 import BeautifulSoup
+
 from barcode import get
 from barcode.writer import ImageWriter
-
+from bs4 import BeautifulSoup
 from sedenbot import HELP
-from sedenecem.core import (extract_args, sedenify, edit, reply_doc,
-                            download_media_wc, get_translation)
+from sedenecem.core import (
+    download_media_wc,
+    edit,
+    extract_args,
+    get_translation,
+    reply_doc,
+    sedenify,
+)
+from urllib3 import PoolManager
 
 from qrcode import QRCode, constants
 
@@ -26,8 +32,11 @@ def parseqr(message):
     if not reply:
         return edit(message, f'`{get_translation("wrongCommand")}`')
 
-    if not(reply.photo or reply.sticker or (
-            reply.document and 'image' in reply.document.mime_type)):
+    if not (
+        reply.photo
+        or reply.sticker
+        or (reply.document and 'image' in reply.document.mime_type)
+    ):
         edit(message, f'`{get_translation("wrongCommand")}`')
         return
 
@@ -39,8 +48,7 @@ def parseqr(message):
 
     try:
         http = PoolManager()
-        t_response = http.request(
-            'POST', 'https://zxing.org/w/decode', fields=files)
+        t_response = http.request('POST', 'https://zxing.org/w/decode', fields=files)
         t_response = t_response.data
         http.clear()
         dw.close()
@@ -120,10 +128,8 @@ def makeqr(message):
 
     try:
         qr = QRCode(
-            version=1,
-            error_correction=constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4)
+            version=1, error_correction=constants.ERROR_CORRECT_L, box_size=10, border=4
+        )
         qr.add_data(qrmsg)
         qr.make(fit=True)
         img = qr.make_image(fill_color='black', back_color='white')

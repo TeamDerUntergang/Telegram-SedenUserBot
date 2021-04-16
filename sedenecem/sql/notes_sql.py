@@ -1,8 +1,8 @@
 try:
-    from sedenecem.sql import SESSION, BASE
+    from sedenecem.sql import BASE, SESSION
 except ImportError:
     raise AttributeError
-from sqlalchemy import Column, UnicodeText, Numeric, String
+from sqlalchemy import Column, Numeric, String, UnicodeText
 
 
 class Notes(BASE):

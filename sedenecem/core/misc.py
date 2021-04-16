@@ -10,15 +10,15 @@
 from re import escape, sub
 
 from pyrogram.types import Message
-from sedenbot import TEMP_SETTINGS, app, BRAIN, BOT_PREFIX
+from sedenbot import BOT_PREFIX, BRAIN, TEMP_SETTINGS, app
 
-MARKDOWN_FIX_CHAR = "\u2064"
+MARKDOWN_FIX_CHAR = '\u2064'
 SPAM_COUNT = [0]
-_parsed_prefix = escape(BOT_PREFIX) if BOT_PREFIX else r"\."
+_parsed_prefix = escape(BOT_PREFIX) if BOT_PREFIX else r'\.'
 
 
 def reply(
-    message, text, preview=True, fix_markdown=False, delete_orig=False, parse="md"
+    message, text, preview=True, fix_markdown=False, delete_orig=False, parse='md'
 ):
     try:
         if fix_markdown:
@@ -40,11 +40,11 @@ def extract_args(message, markdown=True):
     text = message.text or message.caption
 
     text = text.markdown if markdown else text
-    if " " not in text:
-        return ""
+    if ' ' not in text:
+        return ''
 
-    text = sub(r"\s+", " ", text)
-    text = text[text.find(" ") :].strip()
+    text = sub(r'\s+', ' ', text)
+    text = text[text.find(' ') :].strip()
     return text
 
 
@@ -52,11 +52,11 @@ def extract_args_arr(message, markdown=True):
     return extract_args(message, markdown).split()
 
 
-def edit(message, text, preview=True, fix_markdown=False, parse="md"):
+def edit(message, text, preview=True, fix_markdown=False, parse='md'):
     try:
         if fix_markdown:
             text += MARKDOWN_FIX_CHAR
-        if message.from_user.id != TEMP_SETTINGS["ME"].id:
+        if message.from_user.id != TEMP_SETTINGS['ME'].id:
             reply(message, text, preview=preview, parse=parse)
             return
         message.edit_text(
@@ -72,28 +72,28 @@ def download_media(client, data, file_name=None, progress=None, sticker_orig=Tru
             file_name = (
                 data.document.file_name
                 if data.document.file_name
-                else f"{data.document.file_id}.bin"
+                else f'{data.document.file_id}.bin'
             )
         elif data.audio:
             file_name = (
                 data.audio.file_name
                 if data.audio.file_name
-                else f"{data.audio.file_id}.mp3"
+                else f'{data.audio.file_id}.mp3'
             )
         elif data.photo:
-            file_name = f"{data.photo.file_id}.png"
+            file_name = f'{data.photo.file_id}.png'
         elif data.voice:
-            file_name = f"{data.voice.file_id}.ogg"
+            file_name = f'{data.voice.file_id}.ogg'
         elif data.video:
             file_name = (
                 data.video.file_name
                 if data.video.file_name
-                else f"{data.video.file_id}.mp4"
+                else f'{data.video.file_id}.mp4'
             )
         elif data.animation:
-            file_name = f"{data.animation.file_id}.mp4"
+            file_name = f'{data.animation.file_id}.mp4'
         elif data.video_note:
-            file_name = f"{data.video_note.file_id}.mp4"
+            file_name = f'{data.video_note.file_id}.mp4'
         elif data.sticker:
             file_name = f'sticker.{("tgs" if sticker_orig else "TGS") if data.sticker.is_animated else ("webp" if sticker_orig else "png")}'
         else:
@@ -115,21 +115,21 @@ def get_me():
 
 def forward(message, chat_id):
     try:
-        return message.forward(chat_id or "me")
+        return message.forward(chat_id or 'me')
     except Exception as e:
         raise e
 
 
 def get_messages(chat_id, msg_ids=None, client=app):
     try:
-        ret = client.get_messages(chat_id=(chat_id or "me"), message_ids=msg_ids)
+        ret = client.get_messages(chat_id=(chat_id or 'me'), message_ids=msg_ids)
         return [ret] if ret and isinstance(ret, Message) else ret
     except BaseException:
         return []
 
 
 def amisudo():
-    return TEMP_SETTINGS["ME"].id in BRAIN
+    return TEMP_SETTINGS['ME'].id in BRAIN
 
 
 def increment_spam_count():
@@ -146,11 +146,11 @@ def get_cmd(message):
     if text:
         text = text.strip()
         return parse_cmd(text)
-    return ""
+    return ''
 
 
 def parse_cmd(text):
-    cmd = sub(r"\s+", " ", text)
+    cmd = sub(r'\s+', ' ', text)
     cmd = cmd.split()[0]
     cmd = cmd.split(_parsed_prefix)[-1] if BOT_PREFIX else cmd[1:]
     return cmd

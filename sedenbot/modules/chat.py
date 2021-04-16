@@ -8,15 +8,16 @@
 #
 
 from time import sleep
+
 from sedenbot import HELP, LOGS
-from sedenecem.core import (edit, sedenify, extract_args,
-                            send_log, get_translation)
+from sedenecem.core import edit, extract_args, get_translation, sedenify, send_log
 
 
 def chat_init():
     try:
         global sql
         from importlib import import_module
+
         sql = import_module('sedenecem.sql.keep_read_sql')
     except Exception as e:
         sql = None

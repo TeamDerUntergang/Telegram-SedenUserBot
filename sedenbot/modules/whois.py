@@ -7,9 +7,15 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from sedenbot import HELP, BLACKLIST, BRAIN
-from sedenecem.core import (extract_args, sedenify, edit, reply_img,
-                            get_translation, download_media_wc)
+from sedenbot import BLACKLIST, BRAIN, HELP
+from sedenecem.core import (
+    download_media_wc,
+    edit,
+    extract_args,
+    get_translation,
+    reply_img,
+    sedenify,
+)
 
 
 @sedenify(pattern='^.whois', compat=False)
@@ -45,8 +51,11 @@ def who_is(client, message):
 
         first_name = reply_user.first_name or get_translation('notSet')
         last_name = reply_user.last_name or get_translation('notSet')
-        username = f'@{reply_user.username}' if reply_user.username else get_translation(
-            'notSet')
+        username = (
+            f'@{reply_user.username}'
+            if reply_user.username
+            else get_translation('notSet')
+        )
         user_id = reply_user.id
         photos = client.get_profile_photos_count(user_id)
         dc_id = reply_user.dc_id
@@ -62,17 +71,30 @@ def who_is(client, message):
 
         caption = get_translation(
             'whoisResult',
-            ['**', '`', first_name, last_name, username, user_id, photos,
-             dc_id, bot, scam, verified, chats, bio, last_seen, sudo
-             if sudo else '', blacklist if blacklist else ''])
+            [
+                '**',
+                '`',
+                first_name,
+                last_name,
+                username,
+                user_id,
+                photos,
+                dc_id,
+                bot,
+                scam,
+                verified,
+                chats,
+                bio,
+                last_seen,
+                sudo if sudo else '',
+                blacklist if blacklist else '',
+            ],
+        )
 
         if photo and media_perm:
             reply_img(
-                message,
-                photo,
-                caption=caption,
-                delete_file=True,
-                delete_orig=True)
+                message, photo, caption=caption, delete_file=True, delete_orig=True
+            )
         else:
             return edit(message, caption)
 

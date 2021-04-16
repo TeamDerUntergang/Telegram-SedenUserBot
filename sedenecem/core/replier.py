@@ -8,17 +8,19 @@
 #
 
 from os import remove
+
 from .misc import MARKDOWN_FIX_CHAR, download_media_wc
 
 
 def reply_img(
-        message,
-        photo,
-        caption='',
-        fix_markdown=False,
-        delete_orig=False,
-        delete_file=False,
-        parse='md'):
+    message,
+    photo,
+    caption='',
+    fix_markdown=False,
+    delete_orig=False,
+    delete_file=False,
+    parse='md',
+):
     try:
         if len(caption) > 0 and fix_markdown:
             caption += MARKDOWN_FIX_CHAR
@@ -32,12 +34,7 @@ def reply_img(
         pass
 
 
-def reply_audio(
-        message,
-        audio,
-        caption='',
-        fix_markdown=False,
-        delete_orig=False):
+def reply_audio(message, audio, caption='', fix_markdown=False, delete_orig=False):
     try:
         if len(caption) > 0 and fix_markdown:
             caption += MARKDOWN_FIX_CHAR
@@ -48,12 +45,7 @@ def reply_audio(
         pass
 
 
-def reply_voice(
-        message,
-        voice,
-        caption='',
-        fix_markdown=False,
-        delete_orig=False):
+def reply_voice(message, voice, caption='', fix_markdown=False, delete_orig=False):
     try:
         if len(caption) > 0 and fix_markdown:
             caption += MARKDOWN_FIX_CHAR
@@ -65,19 +57,19 @@ def reply_voice(
 
 
 def reply_doc(
-        message,
-        doc,
-        caption='',
-        fix_markdown=False,
-        delete_orig=False,
-        progress=None,
-        delete_after_send=False):
+    message,
+    doc,
+    caption='',
+    fix_markdown=False,
+    delete_orig=False,
+    progress=None,
+    delete_after_send=False,
+):
     try:
         if len(caption) > 0 and fix_markdown:
             caption += MARKDOWN_FIX_CHAR
         if isinstance(doc, str):
-            message.reply_document(
-                doc, caption=caption.strip(), progress=progress)
+            message.reply_document(doc, caption=caption.strip(), progress=progress)
             if delete_after_send:
                 remove(doc)
         else:

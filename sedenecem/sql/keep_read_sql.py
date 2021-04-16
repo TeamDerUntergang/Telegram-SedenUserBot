@@ -1,5 +1,5 @@
 try:
-    from sedenecem.sql import SESSION, BASE
+    from sedenecem.sql import BASE, SESSION
 except ImportError:
     raise AttributeError
 

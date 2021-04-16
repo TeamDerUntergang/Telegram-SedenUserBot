@@ -7,26 +7,24 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from dotenv import compat
-from sedenbot.modules.admin.helpers import is_admin
 from time import sleep
 
-from pyrogram.types import ChatPermissions
 from pyrogram.errors import MessageTooLong, UserAdminInvalid
-
-from sedenbot import HELP, BRAIN
+from pyrogram.types import ChatPermissions
+from sedenbot import BRAIN, HELP
+from sedenbot.modules.admin.helpers import is_admin
 from sedenecem.core import (
     edit,
-    sedenify,
-    send_log,
-    reply_doc,
     extract_args,
     get_translation,
+    reply_doc,
+    sedenify,
+    send_log,
 )
 from sedenecem.sql import mute_sql as sql
 
 
-@sedenify(pattern="^.ban", compat=False, private=False, admin=True)
+@sedenify(pattern='^.ban', compat=False, private=False, admin=True)
 def ban_user(client, message):
     args = extract_args(message)
     reply = message.reply_to_message
@@ -54,28 +52,28 @@ def ban_user(client, message):
     if user.id in BRAIN:
         return edit(
             message,
-            get_translation("brainError", ["`", "**", user.first_name, user.id]),
+            get_translation('brainError', ['`', '**', user.first_name, user.id]),
         )
 
     try:
         chat_id = message.chat.id
         client.kick_chat_member(chat_id, user.id)
         edit(
-            message, get_translation("banResult", ["**", user.first_name, user.id, "`"])
+            message, get_translation('banResult', ['**', user.first_name, user.id, '`'])
         )
         sleep(1)
         send_log(
             get_translation(
-                "banLog",
-                ["**", user.first_name, user.id, message.chat.title, "`", chat_id],
+                'banLog',
+                [user.first_name, user.id, message.chat.title, '`', chat_id],
             )
         )
     except Exception as e:
-        edit(message, get_translation("banError", ["`", "**", e]))
+        edit(message, get_translation('banError', ['`', '**', e]))
         return
 
 
-@sedenify(pattern="^.unban", compat=False, private=False, admin=True)
+@sedenify(pattern='^.unban', compat=False, private=False, admin=True)
 def unban_user(client, message):
     args = extract_args(message)
     reply = message.reply_to_message
@@ -105,14 +103,14 @@ def unban_user(client, message):
         client.unban_chat_member(chat_id, user.id)
         edit(
             message,
-            get_translation("unbanResult", ["**", user.first_name, user.id, "`"]),
+            get_translation('unbanResult', ['**', user.first_name, user.id, '`']),
         )
     except Exception as e:
-        edit(message, get_translation("banError", ["`", "**", e]))
+        edit(message, get_translation('banError', ['`', '**', e]))
         return
 
 
-@sedenify(pattern="^.kick", compat=False, private=False, admin=True)
+@sedenify(pattern='^.kick', compat=False, private=False, admin=True)
 def kick_user(client, message):
     args = extract_args(message)
     reply = message.reply_to_message
@@ -140,7 +138,7 @@ def kick_user(client, message):
     if user.id in BRAIN:
         return edit(
             message,
-            get_translation("brainError", ["`", "**", user.first_name, user.id]),
+            get_translation('brainError', ['`', '**', user.first_name, user.id]),
         )
 
     try:
@@ -149,28 +147,27 @@ def kick_user(client, message):
         client.unban_chat_member(chat_id, user.id)
         edit(
             message,
-            get_translation("kickResult", ["**", user.first_name, user.id, "`"]),
+            get_translation('kickResult', ['**', user.first_name, user.id, '`']),
         )
         sleep(1)
         send_log(
             get_translation(
-                "kickLog",
+                'kickLog',
                 [
-                    "**",
                     user.first_name,
                     user.id,
                     message.chat.title,
-                    "`",
+                    '`',
                     message.chat.id,
                 ],
             )
         )
     except Exception as e:
-        edit(message, get_translation("banError", ["`", "**", e]))
+        edit(message, get_translation('banError', ['`', '**', e]))
         return
 
 
-@sedenify(pattern="^.mute", compat=False, private=False, admin=True)
+@sedenify(pattern='^.mute', compat=False, private=False, admin=True)
 def mute_user(client, message):
     args = extract_args(message)
     reply = message.reply_to_message
@@ -198,7 +195,7 @@ def mute_user(client, message):
     if user.id in BRAIN:
         return edit(
             message,
-            get_translation("brainError", ["`", "**", user.first_name, user.id]),
+            get_translation('brainError', ['`', '**', user.first_name, user.id]),
         )
 
     try:
@@ -208,21 +205,21 @@ def mute_user(client, message):
         sql.mute(chat_id, user.id)
         edit(
             message,
-            get_translation("muteResult", ["**", user.first_name, user.id, "`"]),
+            get_translation('muteResult', ['**', user.first_name, user.id, '`']),
         )
         sleep(1)
         send_log(
             get_translation(
-                "muteLog",
-                ["**", user.first_name, user.id, message.chat.title, "`", chat_id],
+                'muteLog',
+                [user.first_name, user.id, message.chat.title, '`', chat_id],
             )
         )
     except Exception as e:
-        edit(message, get_translation("banError", ["`", "**", e]))
+        edit(message, get_translation('banError', ['`', '**', e]))
         return
 
 
-@sedenify(pattern="^.unmute", compat=False, private=False, admin=True)
+@sedenify(pattern='^.unmute', compat=False, private=False, admin=True)
 def unmute_user(client, message):
     args = extract_args(message)
     reply = message.reply_to_message
@@ -253,14 +250,14 @@ def unmute_user(client, message):
         client.unban_chat_member(chat_id, user.id)
         edit(
             message,
-            get_translation("unmuteResult", ["**", user.first_name, user.id, "`"]),
+            get_translation('unmuteResult', ['**', user.first_name, user.id, '`']),
         )
     except Exception as e:
-        edit(message, get_translation("banError", ["`", "**", e]))
+        edit(message, get_translation('banError', ['`', '**', e]))
         return
 
 
-@sedenify(pattern="^.promote", admin=True, private=False, compat=False)
+@sedenify(pattern='^.promote', admin=True, private=False, compat=False)
 def promote_user(client, message):
     args = extract_args(message)
     reply = message.reply_to_message
@@ -273,14 +270,14 @@ def promote_user(client, message):
             rank = args
         except Exception:
             return edit(message, f'`{get_translation("banFailUser")}`')
-    elif " " not in args:
+    elif ' ' not in args:
         try:
             user = client.get_users(args)
         except Exception:
             return edit(message, f'`{get_translation("banFailUser")}`')
     elif args:
         try:
-            arr = args.split(" ", 1)
+            arr = args.split(' ', 1)
             user = client.get_users(arr[0])
             rank = arr[1]
         except Exception:
@@ -306,21 +303,21 @@ def promote_user(client, message):
             client.set_administrator_title(chat_id, user.id, rank)
         edit(
             message,
-            get_translation("promoteResult", ["**", user.first_name, user.id, "`"]),
+            get_translation('promoteResult', ['**', user.first_name, user.id, '`']),
         )
         sleep(1)
         send_log(
             get_translation(
-                "promoteLog",
-                ["**", user.first_name, user.id, message.chat.title, "`", chat_id],
+                'promoteLog',
+                [user.first_name, user.id, message.chat.title, '`', chat_id],
             )
         )
     except Exception as e:
-        edit(message, get_translation("banError", ["`", "**", e]))
+        edit(message, get_translation('banError', ['`', '**', e]))
         return
 
 
-@sedenify(pattern="^.demote", compat=False, private=False, admin=True)
+@sedenify(pattern='^.demote', compat=False, private=False, admin=True)
 def demote_user(client, message):
     args = extract_args(message)
     reply = message.reply_to_message
@@ -359,14 +356,14 @@ def demote_user(client, message):
         )
         edit(
             message,
-            get_translation("demoteResult", ["**", user.first_name, user.id, "`"]),
+            get_translation('demoteResult', ['**', user.first_name, user.id, '`']),
         )
     except Exception as e:
-        edit(message, get_translation("banError", ["`", "**", e]))
+        edit(message, get_translation('banError', ['`', '**', e]))
         return
 
 
-@sedenify(pattern="^.pin$", compat=False, private=False, admin=True)
+@sedenify(pattern='^.pin$', compat=False, private=False, admin=True)
 def pin_message(client, message):
     reply = message.reply_to_message
 
@@ -379,13 +376,13 @@ def pin_message(client, message):
         client.pin_chat_message(chat_id, message_id)
         edit(message, f'`{get_translation("pinResult")}`')
         sleep(1)
-        send_log(get_translation("pinLog", ["**", message.chat.title, "`", chat_id]))
+        send_log(get_translation('pinLog', [message.chat.title, '`', chat_id]))
     except Exception as e:
-        edit(message, get_translation("banError", ["`", "**", e]))
+        edit(message, get_translation('banError', ['`', '**', e]))
         return
 
 
-@sedenify(pattern="^.unpin$", compat=False, private=False, admin=True)
+@sedenify(pattern='^.unpin$', compat=False, private=False, admin=True)
 def unpin_message(client, message):
     reply = message.reply_to_message
     chat_id = message.chat.id
@@ -393,44 +390,44 @@ def unpin_message(client, message):
         try:
             client.unpin_chat_message(chat_id, reply.message_id)
         except Exception as e:
-            edit(message, get_translation("banError", ["`", "**", e]))
+            edit(message, get_translation('banError', ['`', '**', e]))
             return
     else:
         try:
             client.unpin_all_chat_messages(chat_id)
         except Exception as e:
-            edit(message, get_translation("banError", ["`", "**", e]))
+            edit(message, get_translation('banError', ['`', '**', e]))
             return
 
     message.delete()
 
 
-@sedenify(pattern="^.(admins|bots|user(s|sdel))$", compat=False, private=False)
+@sedenify(pattern='^.(admins|bots|user(s|sdel))$', compat=False, private=False)
 def get_users(client, message):
-    args = message.text.split(" ", 1)
-    users = args[0][1:5] == "user"
-    showdel = users and args[0][-3:] == "del"
-    bots = not users and args[0][1:5] == "bots"
-    admins = not bots and args[0][1:7] == "admins"
+    args = message.text.split(' ', 1)
+    users = args[0][1:5] == 'user'
+    showdel = users and args[0][-3:] == 'del'
+    bots = not users and args[0][1:5] == 'bots'
+    admins = not bots and args[0][1:7] == 'admins'
 
-    out = ""
+    out = ''
     if users:
         out = get_translation(
-            "userlist",
+            'userlist',
             [
-                "**",
+                '**',
                 f'{get_translation("deleted") if showdel else ""}',
-                "`",
+                '`',
                 message.chat.title,
             ],
         )
-        filtr = "all"
+        filtr = 'all'
     elif admins:
-        out = get_translation("adminlist", ["**", "`", message.chat.title])
-        filtr = "administrators"
+        out = get_translation('adminlist', ['**', '`', message.chat.title])
+        filtr = 'administrators'
     elif bots:
-        out = get_translation("botlist", ["**", "`", message.chat.title])
-        filtr = "bots"
+        out = get_translation('botlist', ['**', '`', message.chat.title])
+        filtr = 'bots'
 
     try:
         chat_id = message.chat.id
@@ -439,7 +436,7 @@ def get_users(client, message):
             if not i.user.is_deleted and showdel:
                 continue
             name = f'[{get_translation("deletedAcc") if i.user.is_deleted else i.user.first_name}](tg://user?id={i.user.id}) | `{i.user.id}`'
-            out += f"\n`•`  **{name}**"
+            out += f'\n`•`  **{name}**'
     except Exception as e:
         out += f'\n{get_translation("banError", ["`", "**", e])}'
 
@@ -447,18 +444,18 @@ def get_users(client, message):
         edit(message, out)
     except MessageTooLong:
         edit(message, f'`{get_translation("outputTooLarge")}`')
-        file = open("userslist.txt", "w+")
+        file = open('userslist.txt', 'w+')
         file.write(out)
         file.close()
         reply_doc(
             message,
-            "userslist.txt",
+            'userslist.txt',
             caption=get_translation(
-                "userlist",
+                'userlist',
                 [
-                    "**",
+                    '**',
                     f'{get_translation("deleted") if showdel else ""}',
-                    "`",
+                    '`',
                     message.chat.title,
                 ],
             ),
@@ -467,21 +464,21 @@ def get_users(client, message):
         )
 
 
-@sedenify(pattern="^.zombies", private=False, compat=False)
+@sedenify(pattern='^.zombies', private=False, admin=True, compat=False)
 def zombie_accounts(client, message):
     args = extract_args(message).lower()
     chat_id = message.chat.id
     count = 0
     msg = f'`{get_translation("zombiesNoAccount")}`'
 
-    if args != "clean":
+    if args != 'clean':
         edit(message, f'`{get_translation("zombiesFind")}`')
         for i in client.iter_chat_members(chat_id):
             if i.user.is_deleted:
                 count += 1
                 sleep(1)
         if count > 0:
-            msg = get_translation("zombiesFound", ["**", "`", count])
+            msg = get_translation('zombiesFound', ['**', '`', count])
         return edit(message, msg)
 
     if not is_admin(message):
@@ -505,17 +502,17 @@ def zombie_accounts(client, message):
             count += 1
 
     if count > 0:
-        msg = get_translation("zombiesResult", ["**", "`", count])
+        msg = get_translation('zombiesResult', ['**', '`', count])
 
     if users > 0:
-        msg = get_translation("zombiesResult2", ["**", "`", count, users])
+        msg = get_translation('zombiesResult2', ['**', '`', count, users])
 
     edit(message, msg)
     sleep(2)
     message.delete()
 
     send_log(
-        get_translation("zombiesLog", ["**", "`", count, message.chat.title, chat_id])
+        get_translation('zombiesLog', ['**', '`', count, message.chat.title, chat_id])
     )
 
 
@@ -537,4 +534,4 @@ def mute_check(client, message):
     message.continue_propagation()
 
 
-HELP.update({"admin": get_translation("adminInfo")})
+HELP.update({'admin': get_translation('adminInfo')})

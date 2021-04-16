@@ -8,11 +8,17 @@
 #
 
 from time import sleep
-from pyrogram.errors import FloodWait
 
+from pyrogram.errors import FloodWait
 from sedenbot import HELP
-from sedenecem.core import (extract_args, sedenify, edit,
-                            send_log, reply, get_translation)
+from sedenecem.core import (
+    edit,
+    extract_args,
+    get_translation,
+    reply,
+    sedenify,
+    send_log,
+)
 
 
 @sedenify(pattern='^.purge$', compat=False, admin=True)
@@ -20,9 +26,8 @@ def purge(client, message):
     msg = message.reply_to_message
     if msg:
         itermsg = client.iter_history(
-            message.chat.id,
-            offset_id=msg.message_id,
-            reverse=True)
+            message.chat.id, offset_id=msg.message_id, reverse=True
+        )
     else:
         edit(message, f'`{get_translation("purgeUsage")}`')
         return
@@ -39,10 +44,7 @@ def purge(client, message):
             edit(message, get_translation('purgeError', ['`', '**', e]))
             return
 
-    done = reply(
-        message, get_translation(
-            'purgeResult', [
-                '**', '`', str(count)]))
+    done = reply(message, get_translation('purgeResult', ['**', '`', str(count)]))
     send_log(get_translation('purgeLog', ['**', '`', str(count)]))
     sleep(2)
     done.delete()
@@ -62,10 +64,7 @@ def purgeme(client, message):
         i = i + 1
         message.delete()
 
-    smsg = reply(
-        message, get_translation(
-            'purgeResult', [
-                '**', '`', str(count)]))
+    smsg = reply(message, get_translation('purgeResult', ['**', '`', str(count)]))
     send_log(get_translation('purgeLog', ['**', '`', str(count)]))
     sleep(2)
     i = 1

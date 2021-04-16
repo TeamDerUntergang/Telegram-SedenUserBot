@@ -13,10 +13,8 @@ from random import randint
 from textwrap import wrap
 
 from PIL import Image, ImageChops, ImageDraw, ImageFont
-
 from sedenbot import HELP
-from sedenecem.core import (extract_args, sedenify, edit,
-                            send_sticker, get_translation)
+from sedenecem.core import edit, extract_args, get_translation, sedenify, send_sticker
 
 
 @sedenify(pattern='^.rgb', compat=False)
@@ -52,8 +50,9 @@ def sticklet(client, message):
         font = ImageFont.truetype(FONT_FILE, size=int(fontsize))
 
     width, height = draw.multiline_textsize(sticktext, font=font)
-    draw.multiline_text(((512 - width) / 2, (512 - height) / 2),
-                        sticktext, font=font, fill=(R, G, B))
+    draw.multiline_text(
+        ((512 - width) / 2, (512 - height) / 2), sticktext, font=font, fill=(R, G, B)
+    )
 
     image_stream = BytesIO()
     image_stream.name = 'image.webp'

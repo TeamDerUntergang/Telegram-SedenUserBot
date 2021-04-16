@@ -8,25 +8,25 @@
 #
 
 from os import path, remove
-from removebg import RemoveBg
 
-from sedenbot import HELP, RBG_APIKEY, DOWNLOAD_DIRECTORY
-from sedenecem.core import (sedenify, edit, reply_doc,
-                            get_translation, download_media_wc)
+from removebg import RemoveBg
+from sedenbot import DOWNLOAD_DIRECTORY, HELP, RBG_APIKEY
+from sedenecem.core import download_media_wc, edit, get_translation, reply_doc, sedenify
 
 
 @sedenify(pattern='^.rbg$')
 def rbg(message):
     if not RBG_APIKEY:
         return edit(
-            message, get_translation(
-                'rbgApiMissing', [
-                    '**', 'Remove.BG', '`']), preview=False)
+            message,
+            get_translation('rbgApiMissing', ['**', 'Remove.BG', '`']),
+            preview=False,
+        )
     reply = message.reply_to_message
 
     if reply and (
-            reply.photo or (
-            reply.document and 'image' in reply.document.mime_type)):
+        reply.photo or (reply.document and 'image' in reply.document.mime_type)
+    ):
         edit(message, f'`{get_translation("processing")}`')
     else:
         edit(message, f'`{get_translation("rbgUsage")}`')
@@ -42,8 +42,7 @@ def rbg(message):
         remove_bg = RemoveBg(RBG_APIKEY, f'{get_translation("rbgLog")}')
         remove_bg.remove_background_from_img_file(IMG_PATH)
         rbg_img = IMG_PATH + '_no_bg.png'
-        reply_doc(reply, rbg_img,
-                  caption=get_translation('rbgResult'))
+        reply_doc(reply, rbg_img, caption=get_translation('rbgResult'))
         message.delete()
     except Exception as e:
         return edit(message, get_translation('banError', ['`', '**', e]))

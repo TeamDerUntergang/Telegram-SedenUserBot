@@ -10,9 +10,18 @@
 from threading import Event
 
 from sedenbot import HELP
-from sedenecem.core import (edit, reply, reply_img, send_log, extract_args,
-                            extract_args_arr, sedenify, get_translation,
-                            spam_allowed, increment_spam_count)
+from sedenecem.core import (
+    edit,
+    extract_args,
+    extract_args_arr,
+    get_translation,
+    increment_spam_count,
+    reply,
+    reply_img,
+    sedenify,
+    send_log,
+    spam_allowed,
+)
 
 
 @sedenify(pattern='^.tspam')

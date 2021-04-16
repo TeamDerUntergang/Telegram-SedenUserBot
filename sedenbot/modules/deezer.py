@@ -8,10 +8,8 @@
 #
 
 from deethon import Session
-
-from sedenbot import HELP, DEEZER_TOKEN
-from sedenecem.core import (sedenify, extract_args, edit,
-                            get_translation, reply_audio)
+from sedenbot import DEEZER_TOKEN, HELP
+from sedenecem.core import edit, extract_args, get_translation, reply_audio, sedenify
 
 
 @sedenify(pattern='^.deezer')

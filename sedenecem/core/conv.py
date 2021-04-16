@@ -7,13 +7,13 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from time import sleep
 from os import remove
+from time import sleep
+
 from sedenbot import CONVERSATION, app
 
 
 class PyroConversation:
-
     def __init__(self, client, chat_id):
         self.client = client or app
         self.chat_id = chat_id

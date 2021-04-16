@@ -9,11 +9,10 @@
 
 from re import sub
 from urllib.parse import quote
-from pylast import User, LastFMNetwork, md5
 
+from pylast import LastFMNetwork, User, md5
 from sedenbot import HELP, environ
-from sedenecem.core import sedenify, edit, get_translation
-
+from sedenecem.core import edit, get_translation, sedenify
 
 # =================== CONSTANT ===================
 LASTFM_API = environ.get('LASTFM_API', None)
@@ -22,10 +21,12 @@ LASTFM_USERNAME = environ.get('LASTFM_USERNAME', None)
 LASTFM_PASSWORD_PLAIN = environ.get('LASTFM_PASSWORD', None)
 LASTFM_PASS = md5(LASTFM_PASSWORD_PLAIN)
 if LASTFM_API and LASTFM_SECRET and LASTFM_USERNAME and LASTFM_PASS:
-    lastfm = LastFMNetwork(api_key=LASTFM_API,
-                           api_secret=LASTFM_SECRET,
-                           username=LASTFM_USERNAME,
-                           password_hash=LASTFM_PASS)
+    lastfm = LastFMNetwork(
+        api_key=LASTFM_API,
+        api_secret=LASTFM_SECRET,
+        username=LASTFM_USERNAME,
+        password_hash=LASTFM_PASS,
+    )
 else:
     lastfm = None
 # ================================================
@@ -36,9 +37,8 @@ def last_fm(message):
     edit(message, f'`{get_translation("processing")}`')
     if not lastfm:
         return edit(
-            message, get_translation(
-                'lastfmApiMissing', [
-                    '**', '`']), preview=False)
+            message, get_translation('lastfmApiMissing', ['**', '`']), preview=False
+        )
 
     playing = User(LASTFM_USERNAME, lastfm).get_now_playing()
     username = f'https://www.last.fm/user/{LASTFM_USERNAME}'
@@ -47,14 +47,13 @@ def last_fm(message):
         rectrack = quote(f'{playing}')
         rectrack = sub('^', 'https://open.spotify.com/search/', rectrack)
         output = get_translation(
-            'lastfmProcess', [
-                LASTFM_USERNAME, username, '__', playing, rectrack, '`', tags])
+            'lastfmProcess',
+            [LASTFM_USERNAME, username, '__', playing, rectrack, '`', tags],
+        )
     else:
         recent = User(LASTFM_USERNAME, lastfm).get_recent_tracks(limit=5)
         playing = User(LASTFM_USERNAME, lastfm).get_now_playing()
-        output = get_translation(
-            'lastfmProcess2', [
-                LASTFM_USERNAME, username, '__'])
+        output = get_translation('lastfmProcess2', [LASTFM_USERNAME, username, '__'])
         for i, track in enumerate(recent):
             printable = artist_and_song(track)
             tags = gettags(track)

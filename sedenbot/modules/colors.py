@@ -8,10 +8,8 @@
 #
 
 from PIL import Image, ImageColor
-
 from sedenbot import HELP
-from sedenecem.core import (edit, reply_img, extract_args,
-                            sedenify, get_translation)
+from sedenecem.core import edit, extract_args, get_translation, reply_img, sedenify
 
 
 @sedenify(pattern='^.color')
@@ -32,7 +30,8 @@ def color(message):
                 'sedencik.png',
                 caption=input_str,
                 delete_file=True,
-                delete_orig=True)
+                delete_orig=True,
+            )
     else:
         edit(message, f'`{get_translation("colorsUsage")}`')
 

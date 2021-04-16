@@ -7,28 +7,28 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from re import sub
-from json import loads
-from urllib.parse import urlencode
 from datetime import datetime
+from json import loads
+from re import sub
+from urllib.parse import urlencode
+
 from bs4 import BeautifulSoup
 from requests import get
-
 from sedenbot import HELP, TEMP_SETTINGS
-from sedenecem.core import edit, extract_args, sedenify, get_translation
+from sedenecem.core import edit, extract_args, get_translation, sedenify
 
-GITHUB = "https://github.com"
+GITHUB = 'https://github.com'
 
 
-@sedenify(pattern="^.magisk$")
+@sedenify(pattern='^.magisk$')
 def magisk(message):
     magisk_dict = {
-        "Stable": "https://raw.githubusercontent.com/topjohnwu/"
-        "magisk-files/master/stable.json",
-        "Beta": "https://raw.githubusercontent.com/topjohnwu/"
-        "magisk-files/master/beta.json",
-        "Canary": "https://raw.githubusercontent.com/topjohnwu/"
-        "magisk-files/master/canary.json",
+        'Stable': 'https://raw.githubusercontent.com/topjohnwu/'
+        'magisk-files/master/stable.json',
+        'Beta': 'https://raw.githubusercontent.com/topjohnwu/'
+        'magisk-files/master/beta.json',
+        'Canary': 'https://raw.githubusercontent.com/topjohnwu/'
+        'magisk-files/master/canary.json',
     }
     releases = f'**{get_translation("magiskReleases")}**\n'
     for name, release_url in magisk_dict.items():
@@ -40,37 +40,37 @@ def magisk(message):
     edit(message, releases, preview=False)
 
 
-@sedenify(pattern="^.phh")
+@sedenify(pattern='^.phh')
 def phh(message):
     get_phh = get(
-        "https://api.github.com/repos/phhusson/treble_experimentations/releases/latest"
+        'https://api.github.com/repos/phhusson/treble_experimentations/releases/latest'
     ).json()
     search = extract_args(message)
-    releases = "{}\n".format(
+    releases = '{}\n'.format(
         get_translation(
-            "androidPhhHeader", ["`", "{} ".format(search) if len(search) > 0 else ""]
+            'androidPhhHeader', ['`', "{} ".format(search) if len(search) > 0 else ""]
         )
     )
     count = 0
     for i in range(len(get_phh)):
         try:
-            name = get_phh["assets"][i]["name"]
-            if not name.endswith("img.xz"):
+            name = get_phh['assets'][i]['name']
+            if not name.endswith('img.xz'):
                 continue
             elif search not in name:
                 continue
             count += 1
-            url = get_phh["assets"][i]["browser_download_url"]
-            releases += f"[{name}]({url})\n"
+            url = get_phh['assets'][i]['browser_download_url']
+            releases += f'[{name}]({url})\n'
         except IndexError:
             continue
 
     if count < 1:
-        releases = get_translation("phhError", ["`", "**", search])
+        releases = get_translation('phhError', ['`', '**', search])
     edit(message, releases, preview=False)
 
 
-@sedenify(pattern=r"^.device")
+@sedenify(pattern=r'^.device')
 def device(message):
     textx = message.reply_to_message
     codename = extract_args(message)
@@ -83,55 +83,55 @@ def device(message):
         return
     data = loads(
         get(
-            "https://raw.githubusercontent.com/androidtrackers/"
-            "certified-android-devices/master/by_device.json"
+            'https://raw.githubusercontent.com/androidtrackers/'
+            'certified-android-devices/master/by_device.json'
         ).text
     )
     results = data.get(codename)
     if results:
-        reply = "{}\n".format(get_translation("deviceSearch", ["**", codename]))
+        reply = "{}\n".format(get_translation('deviceSearch', ['**', codename]))
         for item in results:
             reply += get_translation(
-                "deviceSearchResultChild",
-                ["**", item["brand"], item["name"], item["model"]],
+                'deviceSearchResultChild',
+                ['**', item['brand'], item['name'], item['model']],
             )
     else:
-        reply = get_translation("deviceError", ["`", codename])
+        reply = get_translation('deviceError', ['`', codename])
     edit(message, reply)
 
 
-@sedenify(pattern=r"^.codename")
+@sedenify(pattern=r'^.codename')
 def codename(message):
     textx = message.reply_to_message
     arr = extract_args(message)
     brand = arr
     device = arr
-    if " " in arr:
-        args = arr.split(" ", 1)
+    if ' ' in arr:
+        args = arr.split(' ', 1)
         brand = args[0].lower()
         device = args[1].lower()
     elif textx:
-        brand = textx.text.split(" ")[0]
-        device = " ".join(textx.text.split(" ")[1:])
+        brand = textx.text.split(' ')[0]
+        device = ' '.join(textx.text.split(' ')[1:])
     else:
         edit(message, f'`{get_translation("codenameUsage")}`')
         return
     data = loads(
         get(
-            "https://raw.githubusercontent.com/androidtrackers/"
-            "certified-android-devices/master/by_brand.json"
+            'https://raw.githubusercontent.com/androidtrackers/'
+            'certified-android-devices/master/by_brand.json'
         ).text
     )
     devices_lower = {k.lower(): v for k, v in data.items()}
     devices = devices_lower.get(brand)
     if not devices:
-        reply = get_translation("codenameError", ["`", device])
+        reply = get_translation('codenameError', ['`', device])
     else:
         results = [
             i
             for i in devices
-            if device.lower() in i["name"].lower()
-            or device.lower() in i["model"].lower()
+            if device.lower() in i['name'].lower()
+            or device.lower() in i['model'].lower()
         ]
         if results:
             reply = f'{get_translation("codenameSearch", ["**", brand, device])}\n'
@@ -139,43 +139,43 @@ def codename(message):
                 results = results[:8]
             for item in results:
                 reply += get_translation(
-                    "codenameSearchResultChild",
-                    ["**", item["device"], item["name"], item["model"]],
+                    'codenameSearchResultChild',
+                    ['**', item['device'], item['name'], item['model']],
                 )
         else:
-            reply = get_translation("codenameError", ["`", device])
+            reply = get_translation('codenameError', ['`', device])
     edit(message, reply)
 
 
-@sedenify(pattern=r"^.twrp")
+@sedenify(pattern=r'^.twrp')
 def twrp(message):
     textx = message.reply_to_message
     device = extract_args(message)
     if device:
         pass
     elif textx:
-        device = textx.text.split(" ")[0]
+        device = textx.text.split(' ')[0]
     else:
         edit(message, f'`{get_translation("twrpUsage")}`')
         return
-    url = get(f"https://dl.twrp.me/{device}/")
+    url = get(f'https://dl.twrp.me/{device}/')
     if url.status_code == 404:
-        reply = get_translation("twrpError", ["`", device])
+        reply = get_translation('twrpError', ['`', device])
         edit(message, reply)
         return
-    page = BeautifulSoup(url.content, "html.parser")
-    download = page.find("table").find("tr").find("a")
+    page = BeautifulSoup(url.content, 'html.parser')
+    download = page.find('table').find('tr').find('a')
     dl_link = f"https://dl.twrp.me{download['href']}"
     dl_file = download.text
-    size = page.find("span", {"class": "filesize"}).text
-    date = page.find("em").text.strip()
+    size = page.find('span', {'class': 'filesize'}).text
+    date = page.find('em').text.strip()
     reply = get_translation(
-        "twrpResult", ["**", "__", device, dl_file, dl_link, size, date]
+        'twrpResult', ['**', '__', device, dl_file, dl_link, size, date]
     )
     edit(message, reply)
 
 
-@sedenify(pattern=r"^.o(range|)f(ox|rp)")
+@sedenify(pattern=r'^.o(range|)f(ox|rp)')
 def ofox(message):
     if len(args := extract_args(message)) < 1:
         edit(message, f'`{get_translation("ofrpUsage")}`')
@@ -190,12 +190,12 @@ def ofox(message):
     if len(releases.releases) < 1:
         edit(
             message,
-            get_translation("ofrpNotFound", ["`", args, OFOX_REPO]),
+            get_translation('ofrpNotFound', ['`', args, OFOX_REPO]),
             preview=False,
         )
         return
 
-    out = ""
+    out = ''
 
     for release in releases.releases:
         out += f"[{release.version}{' (Beta)' if release.is_beta() else ''}]({release.file_url}) **{release.file_size}**\n"
@@ -205,10 +205,10 @@ def ofox(message):
         edit(message, f'`{get_translation("ofrpError")}`')
         return
 
-    edit(message, f"**OrangeFox Recovery ({args}):**\n{out}")
+    edit(message, f'**OrangeFox Recovery ({args}):**\n{out}')
 
 
-@sedenify(pattern=r"^.specs")
+@sedenify(pattern=r'^.specs')
 def specs(message):
     args = extract_args(message)
     if len(args) < 1:
@@ -227,53 +227,53 @@ def specs(message):
     req = get(
         link,
         headers={
-            "User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; "
-            "+http://www.google.com/bot.html)"
+            'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; '
+            '+http://www.google.com/bot.html)'
         },
         proxies=proxy,
     )
-    soup = BeautifulSoup(req.text, features="html.parser")
+    soup = BeautifulSoup(req.text, features='html.parser')
 
-    def get_spec(query, key="data-spec", cls="td"):
+    def get_spec(query, key='data-spec', cls='td'):
         try:
             result = soup.find(cls, {key: query.split()}).text.strip()
-            result = get_translation("specsError2") if len(result) < 1 else result
+            result = get_translation('specsError2') if len(result) < 1 else result
             return result
         except BaseException:
-            return get_translation("specsError2")
+            return get_translation('specsError2')
 
-    title = get_spec("specs-phone-name-title", "class", "h1")
-    launch = get_spec("released-hl", cls="span")
-    body = sub(", ", "g, ", get_spec("body-hl", cls="span"))
-    os = get_spec("os-hl", cls="span")
-    storage = get_spec("internalmemory")
-    stortyp = get_spec("memoryother")
-    dispsize = get_spec("displaysize-hl", cls="span")
-    dispres = get_spec("displayres-hl", cls="div")
-    bcampx = get_spec("cam1modules")
-    bcamft = get_spec("cam1features")
-    bcamvd = get_spec("cam1video")
-    fcampx = get_spec("cam2modules")
-    fcamft = get_spec("cam2features")
-    fcamvd = get_spec("cam2video")
-    cpuname = get_spec("chipset")
-    cpuchip = get_spec("cpu")
-    gpuname = get_spec("gpu")
-    battery = get_spec("batdescription1")
-    wlan = get_spec("wlan")
-    bluetooth = get_spec("bluetooth")
-    gps = get_spec("gps")
-    sensors = get_spec("sensors")
-    sarus = sub(r"\s\s+", ", ", get_spec("sar-us"))
-    sareu = sub(r"\s\s+", ", ", get_spec("sar-eu"))
+    title = get_spec('specs-phone-name-title', 'class', 'h1')
+    launch = get_spec('released-hl', cls='span')
+    body = sub(', ', 'g, ', get_spec('body-hl', cls='span'))
+    os = get_spec('os-hl', cls='span')
+    storage = get_spec('internalmemory')
+    stortyp = get_spec('memoryother')
+    dispsize = get_spec('displaysize-hl', cls='span')
+    dispres = get_spec('displayres-hl', cls='div')
+    bcampx = get_spec('cam1modules')
+    bcamft = get_spec('cam1features')
+    bcamvd = get_spec('cam1video')
+    fcampx = get_spec('cam2modules')
+    fcamft = get_spec('cam2features')
+    fcamvd = get_spec('cam2video')
+    cpuname = get_spec('chipset')
+    cpuchip = get_spec('cpu')
+    gpuname = get_spec('gpu')
+    battery = get_spec('batdescription1')
+    wlan = get_spec('wlan')
+    bluetooth = get_spec('bluetooth')
+    gps = get_spec('gps')
+    sensors = get_spec('sensors')
+    sarus = sub(r'\s\s+', ', ', get_spec('sar-us'))
+    sareu = sub(r'\s\s+', ', ', get_spec('sar-eu'))
 
     edit(
         message,
         get_translation(
-            "specsResult",
+            'specsResult',
             [
-                "**",
-                "`",
+                '**',
+                '`',
                 title,
                 launch,
                 body,
@@ -309,35 +309,35 @@ def find_device(query, proxy):
     raw_query = query.lower()
 
     def replace_query(query):
-        return urlencode({"sSearch": query})
+        return urlencode({'sSearch': query})
 
     query = replace_query(raw_query)
     req = get(
-        f"https://www.gsmarena.com/res.php3?{query}",
+        f'https://www.gsmarena.com/res.php3?{query}',
         headers={
-            "User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; "
-            "+http://www.google.com/bot.html)"
+            'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; '
+            '+http://www.google.com/bot.html)'
         },
         proxies=proxy,
     )
-    soup = BeautifulSoup(req.text, features="html.parser")
+    soup = BeautifulSoup(req.text, features='html.parser')
 
-    if "Too" in soup.find("title").text:  # GSMArena geçici ban atarsa
+    if 'Too' in soup.find('title').text:  # GSMArena geçici ban atarsa
         return None
 
-    res = soup.findAll("div", {"class": ["makers"]})
+    res = soup.findAll('div', {'class': ['makers']})
 
     if not res or len(res) < 1:  # hiçbir cihaz bulunamazsa
         return None
 
-    res = res[0].findAll("li")
+    res = res[0].findAll('li')
 
     for item in res:
-        name = str(item.find("span"))
-        name = sub("(<|</)span>", "", name)
+        name = str(item.find('span'))
+        name = sub('(<|</)span>', '', name)
         if (
-            name[name.find(">") + 1 :].lower() == raw_query
-            or sub("<br(>|/>)", " ", name).lower() == raw_query
+            name[name.find('>') + 1 :].lower() == raw_query
+            or sub('<br(>|/>)', ' ', name).lower() == raw_query
         ):
             link = f"https://www.gsmarena.com/{item.find('a')['href']}"
             return link
@@ -345,11 +345,11 @@ def find_device(query, proxy):
 
 
 def get_stored_proxy():
-    return TEMP_SETTINGS.get("VALID_PROXY_URL", "")
+    return TEMP_SETTINGS.get('VALID_PROXY_URL', '')
 
 
 def put_stored_proxy(proxy):
-    TEMP_SETTINGS["VALID_PROXY_URL"] = proxy
+    TEMP_SETTINGS['VALID_PROXY_URL'] = proxy
 
 
 def _xget_random_proxy():
@@ -361,18 +361,18 @@ def _xget_random_proxy():
             return try_valid
 
     head = {
-        "Accept-Encoding": "gzip, deflate, sdch",
-        "Accept-Language": "en-US,en;q=0.8",
-        "User-Agent": "ArabyBot (compatible; Mozilla/5.0; GoogleBot; FAST Crawler 6.4; http://www.araby.com;)",
-        "Referer": "https://www.google.com/search?q=sslproxies",
+        'Accept-Encoding': 'gzip, deflate, sdch',
+        'Accept-Language': 'en-US,en;q=0.8',
+        'User-Agent': 'ArabyBot (compatible; Mozilla/5.0; GoogleBot; FAST Crawler 6.4; http://www.araby.com;)',
+        'Referer': 'https://www.google.com/search?q=sslproxies',
     }
 
-    req = get("https://sslproxies.org/", headers=head)
-    soup = BeautifulSoup(req.text, "html.parser")
-    res = soup.find("table", {"id": "proxylisttable"}).find("tbody")
-    res = res.findAll("tr")
+    req = get('https://sslproxies.org/', headers=head)
+    soup = BeautifulSoup(req.text, 'html.parser')
+    res = soup.find('table', {'id': 'proxylisttable'}).find('tbody')
+    res = res.findAll('tr')
     for item in res:
-        infos = item.findAll("td")
+        infos = item.findAll('td')
         ip = infos[0].text
         port = infos[1].text
         proxy = (ip, port)
@@ -384,10 +384,10 @@ def _xget_random_proxy():
 
 def _try_proxy(proxy):
     try:
-        prxy = f"http://{proxy[0]}:{proxy[1]}"
+        prxy = f'http://{proxy[0]}:{proxy[1]}'
         req = get(
-            "https://www.gsmarena.com/",
-            proxies={"http": prxy, "https": prxy},
+            'https://www.gsmarena.com/',
+            proxies={'http': prxy, 'https': prxy},
             timeout=1,
         )
         if req.status_code == 200:
@@ -401,12 +401,12 @@ def get_random_proxy():
     proxy = _xget_random_proxy()
     if not proxy:
         return None
-    proxy = f"http://{proxy[0]}:{proxy[1]}"
+    proxy = f'http://{proxy[0]}:{proxy[1]}'
     put_stored_proxy(proxy)
 
     proxy_dict = {
-        "https": proxy,
-        "http": proxy,
+        'https': proxy,
+        'http': proxy,
     }
 
     return proxy_dict
@@ -418,30 +418,30 @@ class OFRPDeviceInfo:
             self.releases = []
             return
 
-        self.codename = json["codename"]
-        self.oem = json["oem_name"]
-        self.model = json["model_name"]
-        self.maintainer_name = json["maintainer"]["name"]
-        self.maintainer_username = json["maintainer"]["username"]
+        self.codename = json['codename']
+        self.oem = json['oem_name']
+        self.model = json['model_name']
+        self.maintainer_name = json['maintainer']['name']
+        self.maintainer_username = json['maintainer']['username']
         self.releases = releases
 
 
 class OFRPRelease:
     def __init__(self, json):
-        self.id = json["_id"]
-        self.type = json["type"]
-        self.device = json["device_id"]
+        self.id = json['_id']
+        self.type = json['type']
+        self.device = json['device_id']
 
-        date = datetime.utcfromtimestamp(int(json["date"])).strftime(
-            "%d-%m-%Y %H:%M:%S"
+        date = datetime.utcfromtimestamp(int(json['date'])).strftime(
+            '%d-%m-%Y %H:%M:%S'
         )
 
         self.date = date
-        self.file_size = "{:,.2f} MB".format(int(json["size"]) / float(1 << 20))
-        self.md5 = json["md5"]
-        self.version = json["version"]
+        self.file_size = '{:,.2f} MB'.format(int(json['size']) / float(1 << 20))
+        self.md5 = json['md5']
+        self.version = json['version']
 
-        url = f"https://api.orangefox.download/v3/releases/{self.id}"
+        url = f'https://api.orangefox.download/v3/releases/{self.id}'
         res = ofrp_get(url)
 
         if not res:
@@ -451,23 +451,23 @@ class OFRPRelease:
 
         json = loads(res)
 
-        self.file_name = json["filename"]
-        self.file_url = list(json["mirrors"].values())[0]
-        self.changelog = "\n".join(json["changelog"])
+        self.file_name = json['filename']
+        self.file_url = list(json['mirrors'].values())[0]
+        self.changelog = '\n'.join(json['changelog'])
 
     def is_beta(self):
-        return self.type == "beta"
+        return self.type == 'beta'
 
 
 def ofrp_get(url):
     try:
         head = {
-            "Accept-Language": "en-US,en;q=0.8",
-            "User-Agent": "ArabyBot (compatible; Mozilla/5.0; GoogleBot; FAST Crawler 6.4; http://www.araby.com;)",
-            "Referer": "https://orangefox.download/en",
+            'Accept-Language': 'en-US,en;q=0.8',
+            'User-Agent': 'ArabyBot (compatible; Mozilla/5.0; GoogleBot; FAST Crawler 6.4; http://www.araby.com;)',
+            'Referer': 'https://orangefox.download/en',
         }
         req = get(url, headers=head)
-        if "{" not in req.text:
+        if '{' not in req.text:
             raise BaseException
         return req.text
     except BaseException:
@@ -475,7 +475,7 @@ def ofrp_get(url):
 
 
 def ofrp_get_packages(device):
-    url = f"https://api.orangefox.download/v3/devices/get?codename={device}"
+    url = f'https://api.orangefox.download/v3/devices/get?codename={device}'
     res = ofrp_get(url)
 
     if not res:
@@ -483,7 +483,7 @@ def ofrp_get_packages(device):
 
     json = loads(res)
 
-    if "_id" not in json:
+    if '_id' not in json:
         return OFRPDeviceInfo(None, None)
 
     url = f'https://api.orangefox.download/v3/releases/?device_id={json["_id"]}'
@@ -492,10 +492,10 @@ def ofrp_get_packages(device):
     out = []
 
     json2 = loads(res)
-    json2 = json2["data"]
+    json2 = json2['data']
 
-    stables = [x for x in json2 if x["type"] == "stable"]
-    betas = [x for x in json2 if x["type"] == "beta"]
+    stables = [x for x in json2 if x['type'] == 'stable']
+    betas = [x for x in json2 if x['type'] == 'beta']
 
     if len(stables):
         stable = [OFRPRelease(x) for x in stables]
@@ -508,4 +508,4 @@ def ofrp_get_packages(device):
     return OFRPDeviceInfo(json, out)
 
 
-HELP.update({"android": get_translation("androidInfo")})
+HELP.update({'android': get_translation('androidInfo')})

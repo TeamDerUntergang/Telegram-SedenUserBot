@@ -7,20 +7,25 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
+from ast import Add, BinOp, BitXor, Div, Mult, Num, Pow, Sub, UnaryOp, USub, parse
 from datetime import datetime
-from shutil import which
 from getpass import getuser
-from operator import add, sub, mul, truediv, pow, xor, neg
-from ast import (Add, Sub, Mult, Div, Pow, BitXor, USub,
-                 parse, Num, BinOp, UnaryOp)
+from operator import add, mul, neg, pow, sub, truediv, xor
+from shutil import which
 
 from pyrogram.raw.functions.help import GetNearestDc
-
+from sedenbot import ALIVE_MSG, BOT_VERSION, CHANNEL, HELP, HOSTNAME, USER
 from sedenbot.modules.ecem import ecem
-from sedenbot import (HELP, ALIVE_MSG, CHANNEL,
-                      BOT_VERSION, HOSTNAME, USER)
-from sedenecem.core import (edit, reply, reply_doc, send_log,
-                            extract_args, sedenify, get_translation)
+from sedenecem.core import (
+    edit,
+    extract_args,
+    get_translation,
+    reply,
+    reply_doc,
+    sedenify,
+    send_log,
+)
+
 # ================= CONSTANT =================
 KULLANICIMESAJI = ALIVE_MSG or f"`{get_translation('sedenAlive')}`"
 # ============================================
@@ -30,9 +35,12 @@ KULLANICIMESAJI = ALIVE_MSG or f"`{get_translation('sedenAlive')}`"
 def neofetch(message):
     try:
         from subprocess import PIPE, Popen
+
         islem = Popen(
             ['neofetch', f'HOSTNAME={HOSTNAME}', f'USER={USER}', '--stdout'],
-            stdout=PIPE, stderr=PIPE)
+            stdout=PIPE,
+            stderr=PIPE,
+        )
         sonuc, _ = islem.communicate()
         edit(message, f'`{sonuc.decode()}`')
     except BaseException:
@@ -43,19 +51,23 @@ def neofetch(message):
 def botver(message):
     if which('git'):
         from subprocess import PIPE, Popen
-        degisiklik = Popen(['git', 'rev-list', '--all', '--count'],
-                           stdout=PIPE, stderr=PIPE, universal_newlines=True)
+
+        degisiklik = Popen(
+            ['git', 'rev-list', '--all', '--count'],
+            stdout=PIPE,
+            stderr=PIPE,
+            universal_newlines=True,
+        )
         sonuc, _ = degisiklik.communicate()
 
-        edit(message,
-             get_translation('sedenShowBotVersion',
-                             ['**',
-                              '`',
-                              'Seden UserBot',
-                              CHANNEL,
-                              BOT_VERSION,
-                              sonuc]),
-             preview=False)
+        edit(
+            message,
+            get_translation(
+                'sedenShowBotVersion',
+                ['**', '`', 'Seden UserBot', CHANNEL, BOT_VERSION, sonuc],
+            ),
+            preview=False,
+        )
     else:
         edit(message, f'`{get_translation("sedenGitNotFound")}`')
 
@@ -67,8 +79,10 @@ def pip3(message):
         edit(message, f'`{get_translation("pipSearch")}`')
         pipsorgu = f"pip3 search {pipmodule}"
         from subprocess import PIPE, Popen
-        islem = Popen(pipsorgu.split(), stdout=PIPE,
-                      stderr=PIPE, universal_newlines=True)
+
+        islem = Popen(
+            pipsorgu.split(), stdout=PIPE, stderr=PIPE, universal_newlines=True
+        )
         sonuc, _ = islem.communicate()
 
         if sonuc:
@@ -79,11 +93,15 @@ def pip3(message):
                 file.close()
                 reply_doc(message, 'pip3.txt', delete_after_send=True)
                 return
-            edit(message, get_translation(
-                'sedenQuery', ['**', '`', pipsorgu, sonuc]))
+            edit(message, get_translation('sedenQuery', ['**', '`', pipsorgu, sonuc]))
         else:
-            edit(message, get_translation('sedenQuery', [
-                 '**', '`', pipsorgu, get_translation('sedenZeroResults')]))
+            edit(
+                message,
+                get_translation(
+                    'sedenQuery',
+                    ['**', '`', pipsorgu, get_translation('sedenZeroResults')],
+                ),
+            )
     else:
         edit(message, f'`{get_translation("pipHelp")}`')
 
@@ -119,8 +137,13 @@ def echo(message):
 def dc(client, message):
     sonuc = client.send(GetNearestDc())
 
-    edit(message, get_translation('sedenNearestDC', [
-         '**', '`', sonuc.country, sonuc.nearest_dc, sonuc.this_dc]))
+    edit(
+        message,
+        get_translation(
+            'sedenNearestDC',
+            ['**', '`', sonuc.country, sonuc.nearest_dc, sonuc.this_dc],
+        ),
+    )
 
 
 @sedenify(pattern='^.term')
@@ -134,6 +157,7 @@ def terminal(message):
     curruser = getuser()
     try:
         from os import geteuid
+
         uid = geteuid()
     except ImportError:
         uid = 0
@@ -145,6 +169,7 @@ def terminal(message):
     sonuc = f'`{get_translation("termNoResult")}`'
     try:
         from subprocess import getoutput
+
         sonuc = getoutput(command)
     except BaseException:
         pass
@@ -153,14 +178,15 @@ def terminal(message):
         output = open('output.txt', 'w+')
         output.write(sonuc)
         output.close()
-        reply_doc(message, 'output.txt',
-                  caption=f'`{get_translation("outputTooLarge")}`',
-                  delete_after_send=True)
+        reply_doc(
+            message,
+            'output.txt',
+            caption=f'`{get_translation("outputTooLarge")}`',
+            delete_after_send=True,
+        )
         return
 
-    edit(
-        message,
-        f'`{curruser}:~{"#" if uid == 0 else "$"} {command}\n{sonuc}`')
+    edit(message, f'`{curruser}:~{"#" if uid == 0 else "$"} {command}\n{sonuc}`')
 
     send_log(get_translation('termLog', [command]))
 
@@ -180,26 +206,39 @@ def eval(message):
                     file = open('output.txt', 'w+')
                     file.write(evaluation)
                     file.close()
-                    reply_doc(message,
-                              'output.txt',
-                              caption=f'`{get_translation("outputTooLarge")}`',
-                              delete_after_send=True)
+                    reply_doc(
+                        message,
+                        'output.txt',
+                        caption=f'`{get_translation("outputTooLarge")}`',
+                        delete_after_send=True,
+                    )
                     return
-                edit(message, get_translation(
-                    'sedenQuery', ['**', '`', args, evaluation]))
+                edit(
+                    message,
+                    get_translation('sedenQuery', ['**', '`', args, evaluation]),
+                )
         else:
-            edit(message, get_translation('sedenQuery', [
-                 '**', '`', args, get_translation('sedenErrorResult')]))
+            edit(
+                message,
+                get_translation(
+                    'sedenQuery', ['**', '`', args, get_translation('sedenErrorResult')]
+                ),
+            )
     except Exception as err:
-        edit(message, get_translation(
-            'sedenQuery', ['**', '`', args, str(err)]))
+        edit(message, get_translation('sedenQuery', ['**', '`', args, str(err)]))
 
     send_log(get_translation('evalLog', [args]))
 
 
-operators = {Add: add, Sub: sub, Mult: mul,
-             Div: truediv, Pow: pow, BitXor: xor,
-             USub: neg}
+operators = {
+    Add: add,
+    Sub: sub,
+    Mult: mul,
+    Div: truediv,
+    Pow: pow,
+    BitXor: xor,
+    USub: neg,
+}
 
 
 def safe_eval(expr):

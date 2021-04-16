@@ -8,10 +8,8 @@
 #
 
 from lyricsgenius import Genius
-
-from sedenbot import HELP, GENIUS_TOKEN
-from sedenecem.core import (edit, reply_doc, extract_args,
-                            sedenify, get_translation)
+from sedenbot import GENIUS_TOKEN, HELP
+from sedenecem.core import edit, extract_args, get_translation, reply_doc, sedenify
 
 
 @sedenify(pattern='^.lyrics')
@@ -52,12 +50,15 @@ def lyrics(message):
     if len(songs.lyrics) > 4096:
         edit(message, f'`{get_translation("lyricsOutput")}`')
         with open('lyrics.txt', 'w+') as f:
-            f.write(get_translation('lyricsQuery', [
-                    '', '', artist, song, songs.lyrics]))
+            f.write(
+                get_translation('lyricsQuery', ['', '', artist, song, songs.lyrics])
+            )
         reply_doc(message, 'lyrics.txt', delete_after_send=True)
     else:
-        edit(message, get_translation('lyricsQuery', [
-             '**', '`', artist, song, songs.lyrics]))
+        edit(
+            message,
+            get_translation('lyricsQuery', ['**', '`', artist, song, songs.lyrics]),
+        )
     return
 
 

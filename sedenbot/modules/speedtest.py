@@ -10,8 +10,7 @@
 from datetime import datetime
 
 from sedenbot import HELP
-from sedenecem.core import (extract_args, sedenify, edit,
-                            reply_doc, get_translation)
+from sedenecem.core import edit, extract_args, get_translation, reply_doc, sedenify
 
 from speedtest import Speedtest
 
@@ -41,44 +40,52 @@ def speed_test(message):
         response = spdtst.results.share()
         speedtest_image = response
         if as_text:
-            edit(message,
-                 get_translation('speedtestResultText',
-                                 ['**',
-                                  ms,
-                                  convert_from_bytes(download_speed),
-                                  convert_from_bytes(upload_speed),
-                                  ping_time,
-                                  i_s_p,
-                                  i_s_p_rating,
-                                  '']))
+            edit(
+                message,
+                get_translation(
+                    'speedtestResultText',
+                    [
+                        '**',
+                        ms,
+                        convert_from_bytes(download_speed),
+                        convert_from_bytes(upload_speed),
+                        ping_time,
+                        i_s_p,
+                        i_s_p_rating,
+                        '',
+                    ],
+                ),
+            )
         else:
             reply_doc(
-                message, speedtest_image, caption=get_translation(
-                    'speedtestResultDoc', [
-                        '**', ms]), delete_orig=True)
+                message,
+                speedtest_image,
+                caption=get_translation('speedtestResultDoc', ['**', ms]),
+                delete_orig=True,
+            )
     except Exception as exc:
-        edit(message,
-             get_translation('speedtestResultText',
-                             ['**',
-                              ms,
-                              convert_from_bytes(download_speed),
-                              convert_from_bytes(upload_speed),
-                              ping_time,
-                              i_s_p,
-                              i_s_p_rating,
-                              f'ERROR: {str(exc)}']))
+        edit(
+            message,
+            get_translation(
+                'speedtestResultText',
+                [
+                    '**',
+                    ms,
+                    convert_from_bytes(download_speed),
+                    convert_from_bytes(upload_speed),
+                    ping_time,
+                    i_s_p,
+                    i_s_p_rating,
+                    f'ERROR: {str(exc)}',
+                ],
+            ),
+        )
 
 
 def convert_from_bytes(size):
-    power = 2**10
+    power = 2 ** 10
     _ = 0
-    units = {
-        0: '',
-        1: 'kilobytes',
-        2: 'megabytes',
-        3: 'gigabytes',
-        4: 'terabytes'
-    }
+    units = {0: '', 1: 'kilobytes', 2: 'megabytes', 3: 'gigabytes', 4: 'terabytes'}
     while size > power:
         size /= power
         _ += 1

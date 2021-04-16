@@ -7,7 +7,7 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     from sedenbot import app
 
     app.run()

@@ -8,6 +8,7 @@
 #
 
 from math import floor
+
 from PIL import Image
 
 

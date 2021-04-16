@@ -7,18 +7,27 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from re import fullmatch, IGNORECASE
+from re import IGNORECASE, fullmatch
 
-from sedenbot import HELP, LOGS, LOG_ID
-from sedenecem.core import (extract_args, sedenify, edit, get_messages,
-                            reply_msg, reply, forward, send_log,
-                            get_translation)
+from sedenbot import HELP, LOG_ID, LOGS
+from sedenecem.core import (
+    edit,
+    extract_args,
+    forward,
+    get_messages,
+    get_translation,
+    reply,
+    reply_msg,
+    sedenify,
+    send_log,
+)
 
 
 def filters_init():
     try:
         global sql
         from importlib import import_module
+
         sql = import_module('sedenecem.sql.filters_sql')
     except Exception as e:
         sql = None
@@ -93,12 +102,10 @@ def add_filter(message):
                 string = None
                 msg_o = forward(msg, LOG_ID)
                 if not msg_o:
-                    edit(
-                        message, f'`{get_translation("filterError")}`')
+                    edit(message, f'`{get_translation("filterError")}`')
                     return
                 msg_id = msg_o.message_id
-                send_log(get_translation(
-                    'filterLog', ['`', message.chat.id, keyword]))
+                send_log(get_translation('filterLog', ['`', message.chat.id, keyword]))
         else:
             edit(message, f'`{get_translation("wrongCommand")}`')
 

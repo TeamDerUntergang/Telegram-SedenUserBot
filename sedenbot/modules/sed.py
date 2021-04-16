@@ -7,18 +7,21 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from re import match, sub, IGNORECASE, I
+from re import IGNORECASE, I, match, sub
 from sre_constants import error as sre_err
 
 from sedenbot import HELP
-from sedenecem.core import edit, sedenify, get_translation
+from sedenecem.core import edit, get_translation, sedenify
 
 DELIMITERS = ('/', ':', '|', '_')
 
 
 def separate_sed(sed_string):
-    if (len(sed_string) > 3 and sed_string[3] in DELIMITERS
-            and sed_string.count(sed_string[3]) >= 2):
+    if (
+        len(sed_string) > 3
+        and sed_string[3] in DELIMITERS
+        and sed_string.count(sed_string[3]) >= 2
+    ):
         delim = sed_string[3]
         start = counter = 4
         while counter < len(sed_string):
@@ -37,9 +40,12 @@ def separate_sed(sed_string):
             return None
 
         while counter < len(sed_string):
-            if (sed_string[counter] == '\\' and counter + 1 < len(sed_string)
-                    and sed_string[counter + 1] == delim):
-                sed_string = sed_string[:counter] + sed_string[counter + 1:]
+            if (
+                sed_string[counter] == '\\'
+                and counter + 1 < len(sed_string)
+                and sed_string[counter + 1] == delim
+            ):
+                sed_string = sed_string[:counter] + sed_string[counter + 1 :]
 
             elif sed_string[counter] == delim:
                 replace_with = sed_string[start:counter]
@@ -83,8 +89,7 @@ def sed(message):
             if 'i' in flags and 'g' in flags:
                 text = sub(repl, repl_with, to_fix, flags=I).strip()
             elif 'i' in flags:
-                text = sub(repl, repl_with, to_fix, count=1,
-                           flags=I).strip()
+                text = sub(repl, repl_with, to_fix, count=1, flags=I).strip()
             elif 'g' in flags:
                 text = sub(repl, repl_with, to_fix).strip()
             else:

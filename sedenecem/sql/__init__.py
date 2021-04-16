@@ -1,7 +1,7 @@
+from sedenbot import DATABASE_URL
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, scoped_session
-from sedenbot import DATABASE_URL
+from sqlalchemy.orm import scoped_session, sessionmaker
 
 BASE = declarative_base()
 

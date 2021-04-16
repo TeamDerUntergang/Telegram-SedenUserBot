@@ -8,10 +8,10 @@
 #
 
 from os import remove
-from requests import get, post, exceptions
 
-from sedenbot import HELP, DOWNLOAD_DIRECTORY
-from sedenecem.core import edit, extract_args, sedenify, get_translation
+from requests import exceptions, get, post
+from sedenbot import DOWNLOAD_DIRECTORY, HELP
+from sedenecem.core import edit, extract_args, get_translation, sedenify
 
 DOGBIN_URL = 'https://del.dog/'
 
@@ -29,7 +29,7 @@ def paste(client, message):
     if match:
         dogbin = match
     elif reply_id:
-        dogbin = (message.reply_to_message)
+        dogbin = message.reply_to_message
         if dogbin.media:
             downloaded_file_name = client.download_media(
                 dogbin,
@@ -55,11 +55,10 @@ def paste(client, message):
 
         if response['isUrl']:
             reply_text = get_translation(
-                'dogbinPasteResult2', [
-                    '`', dogbin_final_url, f'{DOGBIN_URL}v/{key}'])
+                'dogbinPasteResult2', ['`', dogbin_final_url, f'{DOGBIN_URL}v/{key}']
+            )
         else:
-            reply_text = get_translation(
-                'dogbinPasteResult', ['`', dogbin_final_url])
+            reply_text = get_translation('dogbinPasteResult', ['`', dogbin_final_url])
     else:
         reply_text = f'`{get_translation("dogbinReach")}`'
 
@@ -79,11 +78,11 @@ def getpaste(message):
     format_view = f'{DOGBIN_URL}v/'
 
     if dogbin.startswith(format_view):
-        dogbin = dogbin[len(format_view):]
+        dogbin = dogbin[len(format_view) :]
     elif dogbin.startswith(format_normal):
-        dogbin = dogbin[len(format_normal):]
+        dogbin = dogbin[len(format_normal) :]
     elif dogbin.startswith('del.dog/'):
-        dogbin = dogbin[len('del.dog/'):]
+        dogbin = dogbin[len('del.dog/') :]
     else:
         edit(message, f'`{get_translation("dogbinUrlError")}`')
         return
@@ -99,8 +98,7 @@ def getpaste(message):
         edit(message, get_translation('dogbinTimeOut', [str(TimeoutErr)]))
         return
     except exceptions.TooManyRedirects as RedirectsErr:
-        edit(message, get_translation(
-            'dogbinTooManyRedirects', [str(RedirectsErr)]))
+        edit(message, get_translation('dogbinTooManyRedirects', [str(RedirectsErr)]))
         return
 
     reply_text = get_translation('dogbinResult', ['`', resp.text])

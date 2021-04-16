@@ -11,13 +11,18 @@ from os import remove
 from time import sleep
 
 from PIL import Image
-
 from pyrogram.errors import UsernameOccupied
-from pyrogram.raw.functions import channels, account
-
+from pyrogram.raw.functions import account, channels
 from sedenbot import HELP, TEMP_SETTINGS
-from sedenecem.core import (edit, extract_args, sedenify, send_log,
-                            get_translation, download_media_wc)
+from sedenecem.core import (
+    download_media_wc,
+    edit,
+    extract_args,
+    get_translation,
+    sedenify,
+    send_log,
+)
+
 # ====================== CONSTANT ===============================
 INVALID_MEDIA = get_translation('mediaInvalid')
 PP_CHANGED = get_translation('ppChanged')
@@ -52,8 +57,7 @@ def name(client, message):
         firstname = namesplit[0]
         lastname = namesplit[1]
 
-    client.send(account.UpdateProfile(
-        first_name=firstname, last_name=lastname))
+    client.send(account.UpdateProfile(first_name=firstname, last_name=lastname))
     edit(message, f'`{NAME_OK}`')
 
 
@@ -61,8 +65,11 @@ def name(client, message):
 def set_profilepic(client, message):
     reply = message.reply_to_message
     photo = None
-    if (reply and reply.media and (reply.photo or (
-            reply.document and 'image' in reply.document.mime_type))):
+    if (
+        reply
+        and reply.media
+        and (reply.photo or (reply.document and 'image' in reply.document.mime_type))
+    ):
         photo = download_media_wc(reply, 'profile_photo.jpg')
     else:
         edit(message, f'`{INVALID_MEDIA}`')
@@ -142,6 +149,7 @@ def blockpm(client, message):
 
     try:
         from sedenecem.sql.pm_permit_sql import dissprove
+
         dissprove(uid)
     except BaseException:
         pass
@@ -230,7 +238,9 @@ def user_stats(client, message):
         message,
         get_translation(
             'statsResult',
-            ['**', '`', chats, channels, groups, sgroups, bots, pms, unread]))
+            ['**', '`', chats, channels, groups, sgroups, bots, pms, unread],
+        ),
+    )
 
 
 HELP.update({'profile': get_translation('profileInfo')})

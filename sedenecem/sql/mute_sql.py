@@ -1,5 +1,5 @@
 try:
-    from sedenecem.sql import SESSION, BASE
+    from sedenecem.sql import BASE, SESSION
 except ImportError:
     raise AttributeError
 
@@ -21,8 +21,11 @@ Mute.__table__.create(checkfirst=True)
 
 def is_muted(chat_id, sender):
     try:
-        ret = SESSION.query(Mute).filter(Mute.chat_id == str(
-            chat_id), Mute.sender == str(sender)).all()
+        ret = (
+            SESSION.query(Mute)
+            .filter(Mute.chat_id == str(chat_id), Mute.sender == str(sender))
+            .all()
+        )
         return len(ret) > 0
     except BaseException:
         return None
@@ -37,8 +40,11 @@ def mute(chat_id, sender):
 
 
 def unmute(chat_id, sender):
-    rem = SESSION.query(Mute).filter(Mute.chat_id == str(
-        chat_id), Mute.sender == str(sender)).all()
+    rem = (
+        SESSION.query(Mute)
+        .filter(Mute.chat_id == str(chat_id), Mute.sender == str(sender))
+        .all()
+    )
     if len(rem):
         for item in rem:
             SESSION.delete(item)

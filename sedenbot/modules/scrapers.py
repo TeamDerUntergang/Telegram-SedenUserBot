@@ -7,29 +7,36 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from os import remove, path
-from time import sleep
-from re import findall, sub
-from urllib.parse import quote_plus
-from urllib.error import HTTPError
 from mimetypes import guess_type
+from os import path, remove
+from re import findall, sub
+from time import sleep
 from traceback import format_exc
+from urllib.error import HTTPError
+from urllib.parse import quote_plus
+
+from bs4 import BeautifulSoup
+from currency_converter import CurrencyConverter
+from emoji import get_emoji_regexp
+from googletrans import LANGUAGES, Translator
+from gtts import gTTS
+from gtts.lang import tts_langs
+from pyrogram.types import InputMediaPhoto
+from requests import get
+from sedenbot import HELP, SEDEN_LANG
+from sedenecem.core import (
+    edit,
+    extract_args,
+    get_translation,
+    get_webdriver,
+    reply_doc,
+    reply_voice,
+    sedenify,
+    send_log,
+)
 from urbandict import define
 from wikipedia import set_lang, summary
 from wikipedia.exceptions import DisambiguationError, PageError
-from gtts import gTTS
-from gtts.lang import tts_langs
-from googletrans import LANGUAGES, Translator
-from emoji import get_emoji_regexp
-from requests import get
-from bs4 import BeautifulSoup
-
-from currency_converter import CurrencyConverter
-from pyrogram.types import InputMediaPhoto
-
-from sedenbot import HELP, SEDEN_LANG
-from sedenecem.core import (sedenify, edit, send_log, reply_doc, reply_voice,
-                            extract_args, get_webdriver, get_translation)
 
 CARBONLANG = 'auto'
 TTS_LANG = SEDEN_LANG
@@ -66,7 +73,9 @@ def carbon(message):
     driver.get(CARBON)
     edit(message, f'`{get_translation("processing")}\n%50`')
     driver.command_executor._commands['send_command'] = (
-        'POST', '/session/$sessionId/chromium/send_command')
+        'POST',
+        '/session/$sessionId/chromium/send_command',
+    )
     driver.find_element_by_xpath("//button[contains(text(),'Export')]").click()
     edit(message, f'`{get_translation("processing")}\n%`75')
     while not path.isfile('./carbon.png'):
@@ -74,8 +83,13 @@ def carbon(message):
     edit(message, f'`{get_translation("processing")}\n%100`')
     file = './carbon.png'
     edit(message, f'`{get_translation("carbonUpload")}`')
-    reply_doc(message, file, caption=get_translation('carbonResult'),
-              delete_orig=True, delete_after_send=True)
+    reply_doc(
+        message,
+        file,
+        caption=get_translation('carbonResult'),
+        delete_orig=True,
+        delete_after_send=True,
+    )
     driver.quit()
 
 
@@ -98,19 +112,29 @@ def img(message):
         return
     edit(message, f'`{get_translation("processing")}`')
 
-    url = f'https://www.google.com/search?tbm=isch&q={query}&gbv=2&sa=X&biw=1920&bih=1080'
+    url = (
+        f'https://www.google.com/search?tbm=isch&q={query}&gbv=2&sa=X&biw=1920&bih=1080'
+    )
     driver = get_webdriver()
     driver.get(url)
     count = 1
     files = []
     for i in driver.find_elements_by_xpath(
-            '//div[contains(@class,"isv-r PNCib MSM1fd BUooTd")]'):
+        '//div[contains(@class,"isv-r PNCib MSM1fd BUooTd")]'
+    ):
         i.click()
         try_count = 0
-        while len(element := driver.find_elements_by_xpath(
-                '//img[contains(@class,"n3VNCb") and contains(@src,"http")]')) < 1 and try_count < 20:
+        while (
+            len(
+                element := driver.find_elements_by_xpath(
+                    '//img[contains(@class,"n3VNCb") and contains(@src,"http")]'
+                )
+            )
+            < 1
+            and try_count < 20
+        ):
             try_count += 1
-            sleep(.1)
+            sleep(0.1)
         if len(element) < 1:
             continue
         link = element[0].get_attribute('src')
@@ -119,16 +143,14 @@ def img(message):
             with open(filename, 'wb') as result:
                 result.write(get(link).content)
             ftype = guess_type(filename)
-            if not ftype[0] or ftype[0].split(
-                    '/')[1] not in ['png', 'jpg', 'jpeg']:
+            if not ftype[0] or ftype[0].split('/')[1] not in ['png', 'jpg', 'jpeg']:
                 remove(filename)
                 continue
         except Exception:
             continue
         files.append(InputMediaPhoto(filename))
         sleep(1)
-        driver.find_elements_by_xpath(
-            '//a[contains(@class,"hm60ue")]')[0].click()
+        driver.find_elements_by_xpath('//a[contains(@class,"hm60ue")]')[0].click()
         count += 1
         if lim < count:
             break
@@ -154,14 +176,14 @@ def google(message):
     except BaseException:
         page = 1
     msg = do_gsearch(match, page)
-    edit(message, get_translation('googleResult', ['**', '`', match, msg]),
-         preview=False)
+    edit(
+        message, get_translation('googleResult', ['**', '`', match, msg]), preview=False
+    )
 
     send_log(get_translation('googleLog', [match]))
 
 
 def do_gsearch(query, page):
-
     def find_page(num):
         if num < 1:
             num = 1
@@ -171,18 +193,14 @@ def do_gsearch(query, page):
         return keywords.replace(' ', '+')
 
     def replacer(st):
-        return sub(
-            r'[`\*_]',
-            '',
-            st).replace(
-            '\n',
-            ' ').replace(
-            '(',
-            '〈').replace(
-                ')',
-                '〉').replace(
-                    '!',
-            'ⵑ').strip()
+        return (
+            sub(r'[`\*_]', '', st)
+            .replace('\n', ' ')
+            .replace('(', '〈')
+            .replace(')', '〉')
+            .replace('!', 'ⵑ')
+            .strip()
+        )
 
     def link_replacer(link):
         rep = {'(': '%28', ')': '%29', '[': '%5B', ']': '%5D', '%': '½'}
@@ -207,7 +225,9 @@ def do_gsearch(query, page):
         f'https://www.google.com/search?q={query}&gbv=1&sei=2oR3X4nhGY611fAP_5-EkAw&start={find_page(page)}',
         headers={
             'User-Agent': 'Mozilla/5.0 (compatible; Konqueror/2.2-12; Linux)',
-            'Content-Type': 'text/html'})
+            'Content-Type': 'text/html',
+        },
+    )
     soup = BeautifulSoup(req.text, 'html.parser')
     res1 = soup.findAll('div', {'class': ['ezO2md']})
 
@@ -248,16 +268,19 @@ def ddgo(message):
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'
             'AppleWebKit/537.36 (KHTML, like Gecko)'
             'Chrome/81.0.4044.138 Safari/537.36',
-            'Content-Type': 'text/html'})
+            'Content-Type': 'text/html',
+        },
+    )
     soup = BeautifulSoup(req.text, 'html.parser')
     res1 = soup.findAll('table', {'border': 0})
     res1 = res1[-1].findAll('tr')
 
     match = do_ddsearch(res1)
     edit(
-        message, get_translation(
-            'googleResult', [
-                '**', '`', query, match]), preview=False)
+        message,
+        get_translation('googleResult', ['**', '`', query, match]),
+        preview=False,
+    )
     send_log(get_translation('ddgoLog', [query]))
 
 
@@ -288,10 +311,8 @@ def do_ddsearch(res1):
         item = res1[i]
         link = item[0]
         ltxt = link.text.replace('|', '-').replace('...', '').strip()
-        desc = (item[1].text.strip()
-                if len(item) > 1
-                else get_translation('ddgoDesc'))
-        out += (f'{i+1} - [{ltxt}]({link["href"]})\n{desc}\n\n')
+        desc = item[1].text.strip() if len(item) > 1 else get_translation('ddgoDesc')
+        out += f'{i+1} - [{ltxt}]({link["href"]})\n{desc}\n\n'
 
     return out
 
@@ -317,17 +338,31 @@ def urbandictionary(message):
         if int(meanlen) >= 4096:
             edit(message, f'`{get_translation("outputTooLarge")}`')
             file = open('urbandictionary.txt', 'w+')
-            file.write('Query: ' + query + '\n\nMeaning: ' + mean[0]['def'] +
-                       '\n\n' + 'Örnek: \n' + mean[0]['example'])
+            file.write(
+                'Query: '
+                + query
+                + '\n\nMeaning: '
+                + mean[0]['def']
+                + '\n\n'
+                + 'Örnek: \n'
+                + mean[0]['example']
+            )
             file.close()
-            reply_doc(message, 'urbandictionary.txt',
-                      caption=f'`{get_translation("outputTooLarge")}`')
+            reply_doc(
+                message,
+                'urbandictionary.txt',
+                caption=f'`{get_translation("outputTooLarge")}`',
+            )
             if path.exists('urbandictionary.txt'):
                 remove('urbandictionary.txt')
             message.delete()
             return
-        edit(message, get_translation('sedenQueryUd', [
-             '**', '`', query, mean[0]['def'], mean[0]['example']]))
+        edit(
+            message,
+            get_translation(
+                'sedenQueryUd', ['**', '`', query, mean[0]['def'], mean[0]['example']]
+            ),
+        )
     else:
         edit(message, get_translation('udNoResult', ['**', query]))
 
@@ -353,8 +388,7 @@ def wiki(message):
         file = open('wiki.txt', 'w+')
         file.write(result)
         file.close()
-        reply_doc(message, 'wiki.txt',
-                  caption=f'`{get_translation("outputTooLarge")}`')
+        reply_doc(message, 'wiki.txt', caption=f'`{get_translation("outputTooLarge")}`')
         if path.exists('wiki.txt'):
             remove('wiki.txt')
         return
@@ -424,15 +458,14 @@ def trt(message):
     transl_lan = LANGUAGES[f'{reply_text.dest.lower()}']
     reply_text = '{}\n\n{}'.format(
         get_translation(
-            'transHeader',
-            ['**', '`', source_lan.title(),
-             transl_lan.title()]),
-        reply_text.text)
+            'transHeader', ['**', '`', source_lan.title(), transl_lan.title()]
+        ),
+        reply_text.text,
+    )
 
     edit(message, reply_text)
 
-    send_log(get_translation(
-        'trtLog', [source_lan.title(), transl_lan.title()]))
+    send_log(get_translation('trtLog', [source_lan.title(), transl_lan.title()]))
 
 
 def deEmojify(inputString):
@@ -467,8 +500,7 @@ def lang(message):
         else:
             edit(message, get_translation('scraperTts', ['`', tts_langs()]))
             return
-    edit(message, get_translation(
-        'scraperResult', ['`', scraper, LANG.title()]))
+    edit(message, get_translation('scraperResult', ['`', scraper, LANG.title()]))
 
     send_log(get_translation('scraperLog', ['`', scraper, LANG.title()]))
 
@@ -498,14 +530,12 @@ def currency(message):
             currency_to = input_sgra[2].upper()
             convert = currency.convert(number, currency_from, currency_to)
             out = round(number * convert, 2)
-            edit(
-                message,
-                f'**{number} {currency_from} = {out} {currency_to}**')
+            edit(message, f'**{number} {currency_from} = {out} {currency_to}**')
         except Exception as e:
             edit(message, str(e))
     else:
         edit(message, f'`{get_translation("syntaxError")}`')
-        return 
+        return
 
 
 HELP.update({'img': get_translation('imgInfo')})

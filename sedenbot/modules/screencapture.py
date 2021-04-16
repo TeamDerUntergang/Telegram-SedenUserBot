@@ -7,13 +7,19 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from time import sleep
 from base64 import b64decode
 from re import match
+from time import sleep
 
 from sedenbot import HELP
-from sedenecem.core import (sedenify, edit, reply_doc, extract_args,
-                            get_webdriver, get_translation)
+from sedenecem.core import (
+    edit,
+    extract_args,
+    get_translation,
+    get_webdriver,
+    reply_doc,
+    sedenify,
+)
 
 
 @sedenify(pattern=r'^.ss')
@@ -44,8 +50,7 @@ def ss(message):
     )
     driver.set_window_size(width + 125, height + 125)
     wait_for = int(height / 1000)
-    edit(
-        message, f'`{get_translation("ssResult", [height, width, wait_for])}`')
+    edit(message, f'`{get_translation("ssResult", [height, width, wait_for])}`')
     sleep(wait_for)
     im_png = driver.get_screenshot_as_base64()
     driver.close()
@@ -54,11 +59,8 @@ def ss(message):
         out.write(b64decode(im_png))
     edit(message, f'`{get_translation("ssUpload")}`')
     reply_doc(
-        message,
-        name,
-        caption=input_str,
-        delete_after_send=True,
-        delete_orig=True)
+        message, name, caption=input_str, delete_after_send=True, delete_orig=True
+    )
 
 
 HELP.update({'ss': get_translation('ssInfo')})

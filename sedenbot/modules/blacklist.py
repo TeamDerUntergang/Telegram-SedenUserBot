@@ -8,17 +8,25 @@
 #
 
 from io import BytesIO
-from re import escape, search, IGNORECASE
+from re import IGNORECASE, escape, search
 
 from sedenbot import HELP, LOGS
-from sedenecem.core import (edit, reply, send_log, reply_doc,
-                            extract_args, sedenify, get_translation)
+from sedenecem.core import (
+    edit,
+    extract_args,
+    get_translation,
+    reply,
+    reply_doc,
+    sedenify,
+    send_log,
+)
 
 
 def blacklist_init():
     try:
         global sql
         from importlib import import_module
+
         sql = import_module('sedenecem.sql.blacklist_sql')
     except Exception as e:
         sql = None
@@ -57,8 +65,7 @@ def blacklist(message):
                 message.delete()
                 msg_removed = True
             except Exception:
-                reply(
-                    message, f'`{get_translation("blacklistPermission")}`')
+                reply(message, f'`{get_translation("blacklistPermission")}`')
                 sql.rm_from_blacklist(message.chat.id, snip.lower())
             break
 
@@ -75,8 +82,9 @@ def addblacklist(message):
     if len(text) < 1:
         edit(message, f'`{get_translation("blacklistText")}`')
         return
-    to_blacklist = list(set(trigger.strip()
-                            for trigger in text.split("\n") if trigger.strip()))
+    to_blacklist = list(
+        set(trigger.strip() for trigger in text.split("\n") if trigger.strip())
+    )
     for trigger in to_blacklist:
         sql.add_to_blacklist(message.chat.id, trigger.lower())
     edit(message, get_translation('blacklistAddSuccess', ['**', '`', text]))
@@ -99,8 +107,9 @@ def showblacklist(message):
     if len(OUT_STR) > 4096:
         with BytesIO(str.encode(OUT_STR)) as out_file:
             out_file.name = 'blacklist.text'
-            reply_doc(message, out_file,
-                      caption=f'**{get_translation("blacklistChats")}**')
+            reply_doc(
+                message, out_file, caption=f'**{get_translation("blacklistChats")}**'
+            )
             message.delete()
     else:
         edit(message, OUT_STR)
@@ -115,8 +124,9 @@ def rmblacklist(message):
     if len(text) < 1:
         edit(message, f'`{get_translation("blacklistText")}`')
         return
-    to_unblacklist = list(set(trigger.strip()
-                              for trigger in text.split("\n") if trigger.strip()))
+    to_unblacklist = list(
+        set(trigger.strip() for trigger in text.split("\n") if trigger.strip())
+    )
     successful = 0
     for trigger in to_unblacklist:
         if sql.rm_from_blacklist(message.chat.id, trigger.lower()):

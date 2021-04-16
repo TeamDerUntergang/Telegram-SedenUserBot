@@ -7,15 +7,14 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from os import execl, getpid
-from sys import executable, argv
 from math import floor
-from requests import get
-from heroku3 import from_key
+from os import execl, getpid
+from sys import argv, executable
 
-from sedenbot import HELP, HEROKU_KEY, HEROKU_APPNAME
-from sedenecem.core import (edit, sedenify, get_translation,
-                            send_log, reply_doc)
+from heroku3 import from_key
+from requests import get
+from sedenbot import HELP, HEROKU_APPNAME, HEROKU_KEY
+from sedenecem.core import edit, get_translation, reply_doc, sedenify, send_log
 
 
 @sedenify(pattern='^.(quo|ko)ta$')
@@ -32,7 +31,8 @@ def dyno(message):
     if not HEROKU_APPNAME:
         edit(
             message,
-            f'`{get_translation("updateHerokuVariables", ["HEROKU_APPNAME "])}`')
+            f'`{get_translation("updateHerokuVariables", ["HEROKU_APPNAME "])}`',
+        )
 
     for app in heroku_applications:
         if app.name == HEROKU_APPNAME:
@@ -42,7 +42,8 @@ def dyno(message):
     if heroku_app is None:
         edit(
             message,
-            f'`{get_translation("updateHerokuVariables", ["HEROKU_APPNAME "])}`')
+            f'`{get_translation("updateHerokuVariables", ["HEROKU_APPNAME "])}`',
+        )
         return
 
     acc_id = heroku.account().id
@@ -54,8 +55,8 @@ def dyno(message):
     }
 
     req = get(
-        f'https://api.heroku.com/accounts/{acc_id}/actions/get-quota',
-        headers=headers)
+        f'https://api.heroku.com/accounts/{acc_id}/actions/get-quota', headers=headers
+    )
 
     if req.status_code != 200:
         edit(message, f"`{get_translation('covidError')}`")
@@ -97,18 +98,21 @@ def dyno(message):
         message,
         get_translation(
             'herokuQuotaInfo',
-            ['`', '**',
-             get_translation(
-                 'herokuQuotaInHM', [acc_total_hrs, acc_total_min]),
-             get_translation(
-                 'herokuQuotaInHM', [acc_used_hrs, acc_used_min]),
-             acc_quota_percent,
-             get_translation(
-                 'herokuQuotaInHM', [acc_remaining_hrs, acc_remaining_min]),
-             acc_quota_rem_percent,
-             get_translation(
-                 'herokuQuotaInHM', [app_quota_hrs, app_quota_min]),
-             app_quota_percent]))
+            [
+                '`',
+                '**',
+                get_translation('herokuQuotaInHM', [acc_total_hrs, acc_total_min]),
+                get_translation('herokuQuotaInHM', [acc_used_hrs, acc_used_min]),
+                acc_quota_percent,
+                get_translation(
+                    'herokuQuotaInHM', [acc_remaining_hrs, acc_remaining_min]
+                ),
+                acc_quota_rem_percent,
+                get_translation('herokuQuotaInHM', [app_quota_hrs, app_quota_min]),
+                app_quota_percent,
+            ],
+        ),
+    )
 
 
 @sedenify(pattern='^.(restart|yb)$')
@@ -145,7 +149,8 @@ def restart(message, dyno=False):
     if not HEROKU_APPNAME:
         edit(
             message,
-            f'`{get_translation("updateHerokuVariables", ["HEROKU_APPNAME "])}`')
+            f'`{get_translation("updateHerokuVariables", ["HEROKU_APPNAME "])}`',
+        )
         std_ret()
         return
 
@@ -157,7 +162,8 @@ def restart(message, dyno=False):
     if heroku_app is None:
         edit(
             message,
-            f'`{get_translation("updateHerokuVariables", ["HEROKU_APPNAME "])}`')
+            f'`{get_translation("updateHerokuVariables", ["HEROKU_APPNAME "])}`',
+        )
         std_ret()
         return
 
@@ -175,6 +181,7 @@ def shutdown(message):
     def std_off():
         try:
             from subprocess import getoutput
+
             getoutput(f'kill -7 {getpid()}')
         except Exception:
             pass
@@ -189,7 +196,8 @@ def shutdown(message):
     if not HEROKU_APPNAME:
         edit(
             message,
-            f'`{get_translation("updateHerokuVariables", ["HEROKU_APPNAME "])}`')
+            f'`{get_translation("updateHerokuVariables", ["HEROKU_APPNAME "])}`',
+        )
         std_off()
         return
 
@@ -201,7 +209,8 @@ def shutdown(message):
     if heroku_app is None:
         edit(
             message,
-            f'`{get_translation("updateHerokuVariables", ["HEROKU_APPNAME "])}`')
+            f'`{get_translation("updateHerokuVariables", ["HEROKU_APPNAME "])}`',
+        )
         std_off()
         return
 
@@ -223,7 +232,8 @@ def dyno_logs(message):
     if not HEROKU_APPNAME:
         edit(
             message,
-            f'`{get_translation("updateHerokuVariables", ["HEROKU_APPNAME "])}`')
+            f'`{get_translation("updateHerokuVariables", ["HEROKU_APPNAME "])}`',
+        )
 
     for app in heroku_applications:
         if app.name == HEROKU_APPNAME:
@@ -233,7 +243,8 @@ def dyno_logs(message):
     if heroku_app is None:
         edit(
             message,
-            f'`{get_translation("updateHerokuVariables", ["HEROKU_APPNAME "])}`')
+            f'`{get_translation("updateHerokuVariables", ["HEROKU_APPNAME "])}`',
+        )
         return
 
     filename = 'seden_heroku_log.txt'

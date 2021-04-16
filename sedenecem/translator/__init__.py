@@ -7,8 +7,8 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from os import getcwd, listdir, path
 from json import loads
+from os import getcwd, listdir, path
 
 pwd = f'{getcwd()}/sedenecem/translator'
 

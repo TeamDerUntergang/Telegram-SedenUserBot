@@ -8,10 +8,10 @@
 #
 
 from json import loads
-from requests import get
 
+from requests import get
 from sedenbot import HELP
-from sedenecem.core import sedenify, edit, extract_args, get_translation
+from sedenecem.core import edit, extract_args, get_translation, sedenify
 
 
 @sedenify(pattern='^.github')
@@ -81,25 +81,33 @@ def github(message):
             out += f'{i}\n'
         return out
 
-    edit(message, f'**{get_translation("gitUserInfo", [login])}**\n\n' +
-                  format_info(get_translation("gitUser"), user_id) +
-                  format_info(get_translation("gitAccount"), acc_type) +
-                  format_info(get_translation("gitName"), name) +
-                  format_info(get_translation("gitCompany"), company) +
-                  format_info(get_translation("gitWebsite"), blog) +
-                  format_info(get_translation("gitLocation"), location) +
-                  format_info(get_translation("gitMail"), email) +
-                  format_info(get_translation("gitBio"), bio) +
-                  format_info(get_translation("gitTwitter"), twitter) +
-                  format_info(get_translation("gitTotalRepo"), repo_count) +
-                  format_info(get_translation("gitTotalGist"), gist_count) +
-                  ((format_info(get_translation("gitFollowers"), followers) +
-                    format_info(get_translation("gitFollowing"), following))
-                   if acc_type == 'User'
-                   else '') +
-                  format_info(get_translation("gitCreationDate"), created) +
-                  format_info(get_translation("gitDateOfUpdate"), updated) +
-                  f'\n{get_translation("gitRepoList")}\n{get_repos()}', preview=False)
+    edit(
+        message,
+        f'**{get_translation("gitUserInfo", [login])}**\n\n'
+        + format_info(get_translation("gitUser"), user_id)
+        + format_info(get_translation("gitAccount"), acc_type)
+        + format_info(get_translation("gitName"), name)
+        + format_info(get_translation("gitCompany"), company)
+        + format_info(get_translation("gitWebsite"), blog)
+        + format_info(get_translation("gitLocation"), location)
+        + format_info(get_translation("gitMail"), email)
+        + format_info(get_translation("gitBio"), bio)
+        + format_info(get_translation("gitTwitter"), twitter)
+        + format_info(get_translation("gitTotalRepo"), repo_count)
+        + format_info(get_translation("gitTotalGist"), gist_count)
+        + (
+            (
+                format_info(get_translation("gitFollowers"), followers)
+                + format_info(get_translation("gitFollowing"), following)
+            )
+            if acc_type == 'User'
+            else ''
+        )
+        + format_info(get_translation("gitCreationDate"), created)
+        + format_info(get_translation("gitDateOfUpdate"), updated)
+        + f'\n{get_translation("gitRepoList")}\n{get_repos()}',
+        preview=False,
+    )
 
 
 HELP.update({'git': get_translation('gitInfo')})

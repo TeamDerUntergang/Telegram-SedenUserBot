@@ -1,9 +1,9 @@
 try:
-    from sedenecem.sql import SESSION, BASE
+    from sedenecem.sql import BASE, SESSION
 except ImportError:
     raise AttributeError
 
-from sqlalchemy import Column, UnicodeText, Numeric
+from sqlalchemy import Column, Numeric, UnicodeText
 
 
 class Snips(BASE):

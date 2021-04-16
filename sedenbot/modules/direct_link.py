@@ -7,15 +7,14 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from re import findall, sub
 from json import JSONDecodeError
+from re import findall, sub
 from urllib.parse import unquote, urlparse
-from bs4 import BeautifulSoup
-from requests import get, Session
 
+from bs4 import BeautifulSoup
+from requests import Session, get
 from sedenbot import HELP
-from sedenecem.core import (edit, extract_args, sedenify,
-                            get_webdriver, get_translation)
+from sedenecem.core import edit, extract_args, get_translation, get_webdriver, sedenify
 
 
 @sedenify(pattern=r'^.direct')
@@ -38,7 +37,7 @@ def direct(message):
             return url.startswith(items) if starts else items in url
 
         for item in items:
-            if (url.startswith(item) if starts else item in url):
+            if url.startswith(item) if starts else item in url:
                 return True
         return False
 
@@ -84,8 +83,7 @@ def zippy_share(link: str) -> str:
     size = font[4].text
     button = driver.find_element_by_xpath('//a[contains(@id, "dlbutton")]')
     link = button.get_attribute('href')
-    reply += '{}\n'.format(get_translation('directZippyLink',
-                                           [name, size, link]))
+    reply += '{}\n'.format(get_translation('directZippyLink', [name, size, link]))
     driver.quit()
     return reply
 
@@ -118,21 +116,24 @@ def sourceforge(link: str) -> str:
     file_path = findall(r'files(.*)/download', link)[0]
     reply = f"Mirrors for __{file_path.split('/')[-1]}__\n"
     project = findall(r'projects?/(.*?)/files', link)[0]
-    mirrors = f'https://sourceforge.net/settings/mirror_choices?' \
+    mirrors = (
+        f'https://sourceforge.net/settings/mirror_choices?'
         f'projectname={project}&filename={file_path}'
+    )
     page = BeautifulSoup(get(mirrors).content, 'html.parser')
     info = page.find('ul', {'id': 'mirrorList'}).findAll('li')
     for mirror in info[1:]:
         name = findall(r'\((.*)\)', mirror.text.strip())[0]
-        dl_url = f'https://{mirror["id"]}.dl.sourceforge.net/project/{project}/{file_path}'
+        dl_url = (
+            f'https://{mirror["id"]}.dl.sourceforge.net/project/{project}/{file_path}'
+        )
         reply += f'[{name}]({dl_url}) '
     return reply
 
 
 def osdn(link: str) -> str:
     osdn_link = 'https://osdn.net'
-    page = BeautifulSoup(
-        get(link, allow_redirects=True).content, 'html.parser')
+    page = BeautifulSoup(get(link, allow_redirects=True).content, 'html.parser')
     info = page.find('a', {'class': 'mirror_link'})
     link = unquote(osdn_link + info['href'])
     reply = f"Mirrors for __{link.split('/')[-1]}__\n"
@@ -175,11 +176,7 @@ def androidfilehost(link: str) -> str:
         'authority': 'androidfilehost.com',
         'x-requested-with': 'XMLHttpRequest',
     }
-    data = {
-        'submit': 'submit',
-        'action': 'getdownloadmirrors',
-        'fid': f'{fid}'
-    }
+    data = {'submit': 'submit', 'action': 'getdownloadmirrors', 'fid': f'{fid}'}
     mirrors = None
     reply = f'URL: {link}\n'
     error = f'`{get_translation("mirrorError")}`\n'
@@ -188,7 +185,8 @@ def androidfilehost(link: str) -> str:
             'https://androidfilehost.com/libs/otf/mirrors.otf.php',
             headers=headers,
             data=data,
-            cookies=res.cookies)
+            cookies=res.cookies,
+        )
         mirrors = req.json()['MIRRORS']
     except (JSONDecodeError, TypeError):
         reply += error

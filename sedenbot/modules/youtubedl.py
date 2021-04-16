@@ -10,18 +10,17 @@
 
 from os import remove
 
-from youtube_dl import YoutubeDL
-from youtube_dl.utils import DownloadError
-
 from sedenbot import HELP
 from sedenecem.core import (
     edit,
     extract_args,
-    sedenify,
     get_translation,
+    reply_audio,
     reply_doc,
-    get_translation,
-    reply_audio)
+    sedenify,
+)
+from youtube_dl import YoutubeDL
+from youtube_dl.utils import DownloadError
 
 
 @sedenify(pattern='^.(youtube|yt)dl')
@@ -47,7 +46,8 @@ def youtubedl(message):
         edit(message, get_translation('downloadYTVideo', ['**', title, '`']))
         ydl_opts = {
             'outtmpl': f'{title}.%(ext)s',
-            'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best'}
+            'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
+        }
         with YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
         edit(message, f'{get_translation("uploadMedia")}')
@@ -56,7 +56,8 @@ def youtubedl(message):
             f'{title}.mp4',
             caption=f"{get_translation('title', ['**' , ':'])} {title}`\n`{get_translation('uploader',['**',':'])} {uploader}",
             delete_after_send=True,
-            delete_orig=True)
+            delete_orig=True,
+        )
 
     elif util == 'mp3':
         edit(message, get_translation('downloadYTAudio', ['**', title, '`']))
@@ -68,7 +69,9 @@ def youtubedl(message):
                     'key': 'FFmpegExtractAudio',
                     'preferredcodec': 'mp3',
                     'preferredquality': '320',
-                }]}
+                }
+            ],
+        }
         with YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
         edit(message, f'`{get_translation("uploadMedia")}`')
@@ -76,7 +79,8 @@ def youtubedl(message):
             message,
             f'{title}.mp3',
             caption=f"{get_translation('uploader',['**',':'])} {uploader}",
-            delete_orig=True)
+            delete_orig=True,
+        )
         remove(f'{title}.mp3')
 
 

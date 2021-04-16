@@ -8,25 +8,11 @@
 #
 
 from time import sleep
-from coffeehouse.lydia import LydiaAI
+
 from coffeehouse.api import API
-
+from coffeehouse.lydia import LydiaAI
 from sedenbot import HELP, LOGS, LYDIA_APIKEY
-from sedenecem.core import sedenify, edit, reply, get_translation
-
-
-def lydia_init():
-    try:
-        global sql
-        from importlib import import_module
-        sql = import_module('sedenecem.sql.lydia_sql')
-    except Exception as e:
-        sql = None
-        LOGS.warn(get_translation('lydiaSqlLog'))
-        raise e
-
-
-lydia_init()
+from sedenecem.core import edit, get_translation, reply, sedenify
 
 ACC_LYDIA = {}
 
@@ -40,9 +26,8 @@ if LYDIA_APIKEY:
 def repcf(message):
     if not LYDIA_APIKEY:
         return edit(
-            message, get_translation(
-                'lydiaMissingApi', [
-                    '**', '`']), preview=False)
+            message, get_translation('lydiaMissingApi', ['**', '`']), preview=False
+        )
     edit(message, f'`{get_translation("processing")}`')
     try:
         session = lydia.create_session()
@@ -58,9 +43,8 @@ def repcf(message):
 def addcf(message):
     if not LYDIA_APIKEY:
         return edit(
-            message, get_translation(
-                'lydiaMissingApi', [
-                    '**', '`']), preview=False)
+            message, get_translation('lydiaMissingApi', ['**', '`']), preview=False
+        )
     edit(message, f'`{get_translation("processing")}`')
     sleep(3)
     reply_msg = message.reply_to_message
@@ -73,8 +57,9 @@ def addcf(message):
             message,
             get_translation(
                 'lydiaResult2',
-                ['**', '`', str(reply_msg.from_user.id),
-                 str(message.chat.id)]))
+                ['**', '`', str(reply_msg.from_user.id), str(message.chat.id)],
+            ),
+        )
     else:
         edit(message, f'`{get_translation("lydiaError2")}`')
 
@@ -83,9 +68,8 @@ def addcf(message):
 def remcf(message):
     if not LYDIA_APIKEY:
         return edit(
-            message, get_translation(
-                'lydiaMissingApi', [
-                    '**', '`']), preview=False)
+            message, get_translation('lydiaMissingApi', ['**', '`']), preview=False
+        )
     edit(message, f'`{get_translation("processing")}`')
     sleep(3)
     reply_msg = message.reply_to_message
@@ -95,16 +79,14 @@ def remcf(message):
             message,
             get_translation(
                 'lydiaResult3',
-                ['**', '`', str(reply_msg.from_user.id),
-                 str(message.chat.id)]))
+                ['**', '`', str(reply_msg.from_user.id), str(message.chat.id)],
+            ),
+        )
     except Exception:
         edit(message, f'`{get_translation("lydiaError3")}`')
 
 
-@sedenify(incoming=True,
-          outgoing=False,
-          disable_edited=True,
-          disable_notify=True)
+@sedenify(incoming=True, outgoing=False, disable_edited=True, disable_notify=True)
 def user(message):
     try:
         session = ACC_LYDIA[message.chat.id & message.from_user.id]
