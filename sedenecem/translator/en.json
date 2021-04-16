@@ -41,6 +41,7 @@
     "alwaysOnline2": "Always online mode is already enabled!",
     "alwaysOnlineOff": "Always online mode disabled!",
     "alwaysOnlineOff2": "Always online mode is already disabled!",
+    "amogusInfo": ".amogus\nUsage: Converts typed text to amogus",
     "androidInfo": ".magisk\nGet latest Magisk releases\n\n.device <codename>\nUsage: Get info about android device codename or model.\n\n.codename <brand> <device>\nUsage: Search for android device codename.\n\n.specs <brand> <device>\nUsage: Get device specifications info.\n\n.twrp <codename>\nUsage: Get latest twrp download for android device.\n\n.orangefox <codename>\nUsage: Get latest OrangeFox download for android device.\n\n.phh <ABI>\nGet latest Phh releases",
     "androidPhhHeader": "%1Latest Phh %2AOSP Releases%1",
     "answerFromBot": "I didn't get an answer from bot!",

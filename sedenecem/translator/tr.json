@@ -41,6 +41,7 @@
     "alwaysOnline2": "S\u00fcrekli \u00e7evrimi\u00e7i modu zaten etkinle\u015ftirildi!",
     "alwaysOnlineOff": "S\u00fcrekli \u00e7evrimi\u00e7i modu devre d\u0131\u015f\u0131 b\u0131rak\u0131ld\u0131!",
     "alwaysOnlineOff2": "S\u00fcrekli \u00e7evrimi\u00e7i modu zaten devre d\u0131\u015f\u0131 b\u0131rak\u0131ld\u0131!",
+    "amogusInfo": ".amogus\nKullan\u0131m: Yaz\u0131lan metni amogus yapar",
     "androidInfo": ".magisk\nG\u00fcncel Magisk s\u00fcr\u00fcmleri\n\n.device <kod ad\u0131>\nKullan\u0131m: Android cihaz\u0131 hakk\u0131nda bilgi\n\n.codename <marka> <cihaz>\nKullan\u0131m: Android cihaz kod adlar\u0131n\u0131 aray\u0131n.\n\nspecs <marka> <cihaz>\nKullan\u0131m: Cihaz \u00f6zellikleri hakk\u0131nda bilgi al\u0131n.\n\n.twrp <kod ad\u0131>\nKullan\u0131m: Hedeflenen cihaz i\u00e7in resmi olan g\u00fcncel TWRP s\u00fcr\u00fcmlerini al\u0131n.\n\n.orangefox <kod ad\u0131>\nKullan\u0131m: Hedeflenen cihaz i\u00e7in resmi olan g\u00fcncel OrangeFox Recovery s\u00fcr\u00fcmlerini al\u0131n.\n\n.phh <mimari>\nG\u00fcncel Phh AOSP s\u00fcr\u00fcmlerini al\u0131n.",
     "androidPhhHeader": "%1G\u00fcncel PHH %2AOSP S\u00fcr\u00fcmleri%1",
     "answerFromBot": "Botdan cevap alamad\u0131m!",

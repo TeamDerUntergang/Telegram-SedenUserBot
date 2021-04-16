@@ -107,10 +107,8 @@ set_logger()
 
 # Check that the config is edited using the previously used variable.
 # Basically, check for config file.
-CONFIG_CHECK = environ.get('___________DELETE_______THIS_____LINE__________', None)
-
-if CONFIG_CHECK:
-    LOGS.warn(get_translation('removeFirstLine'))
+if environ.get('___________DELETE_______THIS_____LINE__________', None):
+    LOGS.warn(get_translation("removeFirstLine"))
     quit(1)
 
 # Telegram APP ID and HASH
