@@ -777,6 +777,28 @@ def h(message):
     )
 
 
+@sedenify(pattern='^.gay')
+def gay_calculator(message):
+    args = extract_args(message)
+    reply = message.reply_to_message
+    random = randint(0, 100)
+
+    try:
+        replied_user = reply.from_user
+    except BaseException:
+        pass
+
+    if random:
+        if args:
+            return edit(message, f'**{get_translation("gayString", [args, random])}**')
+        if reply:
+            if replied_user.is_self:
+                edit(message, f'**{get_translation("gayString3", [random])}**')
+            else:
+                return edit(message, f'**{get_translation("gayString2", [random])}**')
+        edit(message, f'**{get_translation("gayString3", [random])}**')
+
+
 @sedenify(pattern='^.react$')
 def react(message):
     edit(message, choice(REACTS))
@@ -794,13 +816,10 @@ def run(message):
 
 @sedenify(pattern='^.xda$')
 def xda(message):
+    """
+    Copyright (c) @NaytSeyd, Quotes taken
+    from friendly-telegram (https://gitlab.com/friendly-telegram) | 2020"""
     edit(message, choice(XDA_STRINGS))
-
-
-'''
-Copyright (c) @NaytSeyd, Quotes taken
-from friendly-telegram (https://gitlab.com/friendly-telegram) | 2020
-'''
 
 
 @sedenify(pattern='^.f (.*)')

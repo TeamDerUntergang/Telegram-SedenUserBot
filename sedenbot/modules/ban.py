@@ -464,7 +464,7 @@ def get_users(client, message):
         )
 
 
-@sedenify(pattern='^.zombies', private=False, admin=True, compat=False)
+@sedenify(pattern='^.zombies', private=False, compat=False)
 def zombie_accounts(client, message):
     args = extract_args(message).lower()
     chat_id = message.chat.id
