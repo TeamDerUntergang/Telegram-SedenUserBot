@@ -39,7 +39,7 @@ def sticklet(client, message):
     draw = ImageDraw.Draw(image)
     fontsize = 230
 
-    FONT_FILE = 'sedenecem/fonts/GoogleSans.ttf'
+    FONT_FILE = 'sedenecem/fonts/OpenSans.ttf'
 
     font = ImageFont.truetype(FONT_FILE, size=fontsize)
 

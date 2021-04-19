@@ -28,7 +28,7 @@ def amogus(client, message):
 
     arr = randint(1, 12)
     fontsize = 100
-    FONT_FILE = 'sedenecem/fonts/GoogleSans.ttf'
+    FONT_FILE = 'sedenecem/fonts/OpenSans.ttf'
     url = 'https://raw.githubusercontent.com/KeyZenD/AmongUs/master/'  # Thanks
     font = ImageFont.truetype(FONT_FILE, size=int(fontsize))
 
