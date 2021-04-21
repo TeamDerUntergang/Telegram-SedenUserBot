@@ -206,33 +206,6 @@ def base64(message):
         edit(message, f'Input: `{args[1]}`\nDecoded: `{lething[:-1]}`')
 
 
-@sedenify(pattern='^.b[ıi]rakmamseni$')
-def birakmamseni(message):
-    '''Copyright (c) @Adem68 | 2020'''
-    url = 'https://birakmamseni.org/'
-    path = 'api/counter'
-
-    headers = {
-        'User-Agent': 'ajax/7.66.0',
-        'Accept': '*/*',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Origin': f'{url}',
-        'X-Requested-With': 'XMLHttpRequest',
-    }
-
-    try:
-        response = post(url=url + path, headers=headers)
-        count = response.json()['counter'].lstrip('0')
-    except Exception as e:
-        return edit(message, get_translation('banError', ['`', '**', e]))
-
-    sonuc = get_translation('birakmamseniResult', ['**', '`', count])
-
-    edit(message, sonuc, preview=False)
-
-
 @sedenify(pattern='^.ascii$')
 def img_to_ascii(message):
     reply = message.reply_to_message
