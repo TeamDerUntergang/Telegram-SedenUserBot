@@ -12,7 +12,6 @@ from time import sleep
 from pyrogram.errors import MessageTooLong, UserAdminInvalid
 from pyrogram.types import ChatPermissions
 from sedenbot import BRAIN, HELP
-from sedenbot.modules.admin.helpers import is_admin
 from sedenecem.core import (
     edit,
     extract_args,
@@ -20,6 +19,7 @@ from sedenecem.core import (
     reply_doc,
     sedenify,
     send_log,
+    is_admin
 )
 from sedenecem.sql import mute_sql as sql
 

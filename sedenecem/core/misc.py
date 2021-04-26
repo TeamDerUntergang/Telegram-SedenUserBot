@@ -15,6 +15,7 @@ from sedenbot import BOT_PREFIX, BRAIN, TEMP_SETTINGS, app
 MARKDOWN_FIX_CHAR = '\u2064'
 SPAM_COUNT = [0]
 _parsed_prefix = escape(BOT_PREFIX) if BOT_PREFIX else r'\.'
+_admin_status_list = ['creator', 'administrator']
 
 
 def reply(
@@ -154,3 +155,11 @@ def parse_cmd(text):
     cmd = cmd.split()[0]
     cmd = cmd.split(_parsed_prefix)[-1] if BOT_PREFIX else cmd[1:]
     return cmd
+
+
+def is_admin(message):
+    if not 'group' in message.chat.type:
+        return True
+
+    user = app.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
+    return user.status in _admin_status_list

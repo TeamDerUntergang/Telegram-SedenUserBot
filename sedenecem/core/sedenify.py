@@ -15,18 +15,9 @@ from traceback import format_exc
 
 from pyrogram import ContinuePropagation, StopPropagation, filters
 from pyrogram.handlers import MessageHandler
-from sedenbot import (
-    BLACKLIST,
-    BOT_VERSION,
-    BRAIN,
-    SUPPORT_GROUP,
-    TEMP_SETTINGS,
-    app,
-    get_translation,
-)
-from sedenbot.modules.admin import is_admin
+from sedenbot import BLACKLIST, BOT_VERSION, BRAIN, TEMP_SETTINGS, app, get_translation
 
-from .misc import _parsed_prefix, edit, get_cmd
+from .misc import _parsed_prefix, edit, get_cmd, is_admin
 from .sedenlog import send_log_doc
 
 
