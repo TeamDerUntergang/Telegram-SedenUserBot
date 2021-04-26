@@ -16,7 +16,6 @@ from urllib.error import HTTPError
 from urllib.parse import quote_plus
 
 from bs4 import BeautifulSoup
-from currency_converter import CurrencyConverter
 from emoji import get_emoji_regexp
 from googletrans import LANGUAGES, Translator
 from gtts import gTTS
@@ -521,16 +520,19 @@ def doviz(message):
 def currency(message):
     input_str = extract_args(message)
     input_sgra = input_str.split(' ')
-    currency = CurrencyConverter()
-
     if len(input_sgra) == 3:
         try:
             number = float(input_sgra[0])
             currency_from = input_sgra[1].upper()
             currency_to = input_sgra[2].upper()
-            convert = currency.convert(number, currency_from, currency_to)
-            out = round(number * convert, 2)
-            edit(message, f'**{number} {currency_from} = {out} {currency_to}**')
+            request_url = f'https://api.ratesapi.io/api/latest?base={currency_from}'
+            current_response = get(request_url).json()
+            if currency_to in current_response['rates']:
+                current_rate = float(current_response['rates'][currency_to])
+                rebmun = round(number * current_rate, 2)
+                edit(message, f'**{number} {currency_from} = {rebmun} {currency_to}**')
+            else:
+                edit(message, f'`{get_translation("currencyError")}`')
         except Exception as e:
             edit(message, str(e))
     else:
