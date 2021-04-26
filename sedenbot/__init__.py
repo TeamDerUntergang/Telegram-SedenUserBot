@@ -132,9 +132,6 @@ WEATHER = environ.get('WEATHER', None)
 # Genius module
 GENIUS_TOKEN = environ.get('GENIUS_TOKEN', None) or environ.get('GENIUS', None)
 
-# Lydia API
-LYDIA_APIKEY = environ.get('LYDIA_APIKEY', None)
-
 # Change Alive Message
 ALIVE_MSG = environ.get('ALIVE_MSG', None)
 

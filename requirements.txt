@@ -1,5 +1,4 @@
 bs4
-coffeehouse
 cowpy
 deethon
 emoji
@@ -14,7 +13,7 @@ pillow
 psycopg2-binary
 pybase64
 pylast
-pyrogram==1.2.6
+pyrogram==1.2.9
 python-barcode
 python-dotenv
 qrcode
