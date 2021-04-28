@@ -35,6 +35,8 @@ mv sample_config.env config.env
 # Run bot
 python3 seden.py
 ```
+### Nix/NixOS
+Just type `nix-shell` command in bot folder.
 
 ## Heroku Deploy
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/TeamDerUntergang/Telegram-SedenUserBot/tree/seden)
