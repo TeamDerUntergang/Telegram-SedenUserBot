@@ -21,10 +21,10 @@ stdenv.mkDerivation {
 
     # update bot
     $GIT pull && $GIT checkout seden
-    
+    echo "Fetching dependencies..."
     $PIP install -r requirements.txt
     
-    if [ -f "config.env" ]; then
+    if [ -f "config.env" -a -f "sedenuserbot.session" ]; then
       $PYTHON seden.py
     else
       # first run
@@ -33,7 +33,7 @@ stdenv.mkDerivation {
       echo "Edit config.env file for your own purpose..."
       sleep 0.5
       nano config.env
-      $PYTHON seden.py
+      echo "Type "nix-shell" to start SedenUserBot!"
     fi
     '';
 }
