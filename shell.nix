@@ -3,6 +3,7 @@ with import <nixpkgs> {};
 stdenv.mkDerivation {
   name = "sedenbot-environment";
   buildInputs = [
+      pkgs.git
       pkgs.python3
       pkgs.python3.pkgs.setuptools
       pkgs.python3.pkgs.pip
@@ -11,9 +12,14 @@ stdenv.mkDerivation {
     export PIP_PREFIX="$(pwd)/_build/pip_packages"
     export PYTHONPATH="$PIP_PREFIX/${pkgs.python3.sitePackages}:$PYTHONPATH"
     export PATH="$PIP_PREFIX/bin:$PATH"
+    # use nix binaries because we don't want to invoke host configs
+    export GIT="${pkgs.git.outPath}/bin/git"
     export PIP="${pkgs.python3.pkgs.pip.outPath}/bin/pip"
     export PYTHON="${pkgs.python3.outPath}/bin/python"
     unset SOURCE_DATE_EPOCH
+
+    # update bot
+    $GIT pull && $GIT checkout seden
     
     $PIP install -r requirements.txt
     
