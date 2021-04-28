@@ -4,6 +4,7 @@ stdenv.mkDerivation {
   name = "sedenbot-environment";
   buildInputs = [
       pkgs.git
+      pkgs.nano
       pkgs.python3
       pkgs.python3.pkgs.setuptools
       pkgs.python3.pkgs.pip
@@ -24,6 +25,14 @@ stdenv.mkDerivation {
     $PIP install -r requirements.txt
     
     if [ -f "config.env" ]; then
+      $PYTHON seden.py
+    else
+      # first run
+      $PYTHON session.py
+      mv sample_config.env config.env
+      echo "Edit config.env file for your own purpose..."
+      sleep 0.5
+      nano config.env
       $PYTHON seden.py
     fi
     '';
