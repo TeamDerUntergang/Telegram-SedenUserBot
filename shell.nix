@@ -30,8 +30,7 @@ stdenv.mkDerivation {
       # first run
       $PYTHON session.py
       mv sample_config.env config.env
-      echo "Edit config.env file for your own purpose..."
-      sleep 0.5
+      echo "Press enter to edit config.env file..." && read >> /dev/null
       nano config.env
       echo "Type "nix-shell" to start SedenUserBot!"
     fi
