@@ -93,7 +93,8 @@ def pip3(message):
                 file.close()
                 reply_doc(message, 'pip3.txt', delete_after_send=True)
                 return
-            edit(message, get_translation('sedenQuery', ['**', '`', pipsorgu, sonuc]))
+            edit(message, get_translation(
+                'sedenQuery', ['**', '`', pipsorgu, sonuc]))
         else:
             edit(
                 message,
@@ -186,7 +187,8 @@ def terminal(message):
         )
         return
 
-    edit(message, f'`{curruser}:~{"#" if uid == 0 else "$"} {command}\n{sonuc}`')
+    edit(
+        message, f'`{curruser}:~{"#" if uid == 0 else "$"} {command}\n{sonuc}`')
 
     send_log(get_translation('termLog', [command]))
 
@@ -215,17 +217,20 @@ def eval(message):
                     return
                 edit(
                     message,
-                    get_translation('sedenQuery', ['**', '`', args, evaluation]),
+                    get_translation(
+                        'sedenQuery', ['**', '`', args, evaluation]),
                 )
         else:
             edit(
                 message,
                 get_translation(
-                    'sedenQuery', ['**', '`', args, get_translation('sedenErrorResult')]
+                    'sedenQuery', ['**', '`', args,
+                                   get_translation('sedenErrorResult')]
                 ),
             )
     except Exception as err:
-        edit(message, get_translation('sedenQuery', ['**', '`', args, str(err)]))
+        edit(message, get_translation(
+            'sedenQuery', ['**', '`', args, str(err)]))
 
     send_log(get_translation('evalLog', [args]))
 

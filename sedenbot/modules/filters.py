@@ -129,6 +129,20 @@ def stop_filter(message):
         edit(message, get_translation('filterRemoved', ['**', '`', filt]))
 
 
+@sedenify(pattern='^.stopall$')
+def stop_filter_all(message):
+    try:
+        from sedenecem.sql.filters_sql import get_filters, remove_filter
+    except BaseException:
+        edit(message, f'`{get_translation("nonSqlMode")}`')
+        return
+    filters = get_filters(message.chat.id)
+    for filt in filters:
+        remove_filter(message.chat.id, filt.keyword)
+    filtwords = [i.keyword for i in filters]
+    edit(message, get_translation('filterRemoved', ['**', '`', ', '.join(filtwords)]))
+
+
 @sedenify(pattern='^.filters$')
 def filters(message):
     try:

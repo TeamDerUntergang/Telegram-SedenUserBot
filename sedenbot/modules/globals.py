@@ -10,7 +10,7 @@
 from time import sleep
 
 from pyrogram.types import ChatPermissions
-from sedenbot import BRAIN, HELP, LOGS
+from sedenbot import BRAIN, HELP, LOGS, TEMP_SETTINGS
 from sedenecem.core import edit, extract_args, get_translation, sedenify, send_log
 
 
@@ -59,7 +59,8 @@ def gban_user(client, message):
     if user.id in BRAIN:
         return edit(
             message,
-            get_translation('brainError', ['`', '**', user.first_name, user.id]),
+            get_translation(
+                'brainError', ['`', '**', user.first_name, user.id]),
         )
 
     try:
@@ -68,8 +69,15 @@ def gban_user(client, message):
         sql.gban(user.id)
         edit(
             message,
-            get_translation('gbanResult', ['**', user.first_name, user.id, '`']),
+            get_translation(
+                'gbanResult', ['**', user.first_name, user.id, '`']),
         )
+        try:
+            common_chats = client.get_common_chats(user.id)
+            for i in common_chats:
+                i.kick_member(user.id)
+        except BaseException:
+            pass
         sleep(1)
         send_log(get_translation('gbanLog', [user.first_name, user.id]))
     except Exception as e:
@@ -77,7 +85,7 @@ def gban_user(client, message):
         return
 
 
-@sedenify(pattern='^.ungban', compat=False)
+@sedenify(pattern='^.(ung|gun)ban', compat=False)
 def ungban_user(client, message):
     args = extract_args(message)
     reply = message.reply_to_message
@@ -105,12 +113,42 @@ def ungban_user(client, message):
     try:
         if not sql.is_gbanned(user.id):
             return edit(message, f'`{get_translation("alreadyUnbanned")}`')
-        chat_id = message.chat.id
         sql.ungban(user.id)
-        client.unban_chat_member(chat_id, user.id)
+
+        def find_me():
+            try:
+                return dialog.chat.get_member(me_id).can_restrict_members
+            except BaseException:
+                return False
+
+        def find_member():
+            try:
+                return (dialog.chat.get_member(user.id)
+                    and dialog.chat.get_member(user.id).restricted_by
+                    and dialog.chat.get_member(user.id).restricted_by.id == me_id)
+            except BaseException:
+                return False
+
+        try:
+            dialogs = client.iter_dialogs()
+            me_id = TEMP_SETTINGS['ME'].id
+            chats = [
+                dialog.chat
+                for dialog in dialogs
+                if (
+                    'group' in dialog.chat.type
+                    and find_me()
+                    and find_member()
+                )
+            ]
+            for chat in chats:
+                chat.unban_member(user.id)
+        except BaseException:
+            pass
         edit(
             message,
-            get_translation('unbanResult', ['**', user.first_name, user.id, '`']),
+            get_translation(
+                'unbanResult', ['**', user.first_name, user.id, '`']),
         )
     except Exception as e:
         edit(message, get_translation('banError', ['`', '**', e]))
@@ -137,8 +175,8 @@ def gban_check(client, message):
             user_id = message.from_user.id
             chat_id = message.chat.id
             client.kick_chat_member(chat_id, user_id)
-        except BaseException as e:
-            send_log(get_translation('banError', ['`', '**', e]))
+        except BaseException:
+            pass
 
     message.continue_propagation()
 
@@ -171,7 +209,8 @@ def gmute_user(client, message):
     if user.id in BRAIN:
         return edit(
             message,
-            get_translation('brainError', ['`', '**', user.first_name, user.id]),
+            get_translation(
+                'brainError', ['`', '**', user.first_name, user.id]),
         )
 
     try:
@@ -180,8 +219,15 @@ def gmute_user(client, message):
         sql2.gmute(user.id)
         edit(
             message,
-            get_translation('gmuteResult', ['**', user.first_name, user.id, '`']),
+            get_translation(
+                'gmuteResult', ['**', user.first_name, user.id, '`']),
         )
+        try:
+            common_chats = client.get_common_chats(user.id)
+            for i in common_chats:
+                i.restrict_member(user.id, ChatPermissions())
+        except BaseException:
+            pass
         sleep(1)
         send_log(get_translation('gmuteLog', [user.first_name, user.id]))
     except Exception as e:
@@ -218,9 +264,16 @@ def ungmute_user(client, message):
         if not sql2.is_gmuted(user.id):
             return edit(message, f'`{get_translation("alreadyUnmuted")}`')
         sql2.ungmute(user.id)
+        try:
+            common_chats = client.get_common_chats(user.id)
+            for i in common_chats:
+                i.unban_member(user.id)
+        except BaseException:
+            pass
         edit(
             message,
-            get_translation('unmuteResult', ['**', user.first_name, user.id, '`']),
+            get_translation('unmuteResult', [
+                            '**', user.first_name, user.id, '`']),
         )
     except Exception as e:
         edit(message, get_translation('banError', ['`', '**', e]))
