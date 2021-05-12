@@ -87,7 +87,7 @@ def set_local_env(key: str, value: str):
 def unset_local_env(key: str):
     if key in environ:
         del environ[key]
-    return unset_key('config.env', key)
+    return unset_key(PurePath('config.env'), key)
 
 
 def set_logger():

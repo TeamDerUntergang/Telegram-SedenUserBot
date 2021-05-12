@@ -96,7 +96,7 @@ def download_media(client, data, file_name=None, progress=None, sticker_orig=Tru
         elif data.video_note:
             file_name = f'{data.video_note.file_id}.mp4'
         elif data.sticker:
-            file_name = f'sticker.{("tgs" if sticker_orig else "TGS") if data.sticker.is_animated else ("webp" if sticker_orig else "png")}'
+            file_name = f'sticker.{("tgs" if sticker_orig else "json.gz") if data.sticker.is_animated else ("webp" if sticker_orig else "png")}'
         else:
             return None
 

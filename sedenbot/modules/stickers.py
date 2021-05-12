@@ -23,6 +23,7 @@ from sedenecem.core import (
     sedenify,
 )
 from sedenecem.core import sticker_resize as resizer
+from time import time
 
 # ================= CONSTANT =================
 DIZCILIK = [get_translation(f'kangstr{i+1}') for i in range(0, 12)]
@@ -67,35 +68,47 @@ def kang(client, message):
             emoji = item.replace('e=', '')
             args = args.replace(item, '').strip()
 
-    pname = (
+    ptime = time()
+    pname = f'PNAME_{ptime}'
+    pnick = f'PNICK_{ptime}'
+
+    if anim:
+        pname += '_anim'
+        pnick += ' (Animated)'
+
+    TEMP_SETTINGS[pname] = (
         PACKNAME.replace(' ', '')
         if PACKNAME
         else f'a{myacc.id}_by_{myacc.username}_{pack}'
     )
-    pnick = PACKNICK or f"{kanger}'s UserBot pack {pack}"
+    TEMP_SETTINGS[f'{pname}_TEMPLATE'] = f'a{myacc.id}_by_{myacc.username}_'
+    TEMP_SETTINGS[pnick] = PACKNICK or f'{kanger}\'s UserBot pack {pack}'
+    TEMP_SETTINGS[f'{pnick}_TEMPLATE'] = f'{kanger}\'s UserBot pack '
 
     limit = '50' if anim else '120'
 
     def pack_created(name):
         try:
-            set_name = InputStickerSetShortName(short_name=name)
+            set_name = InputStickerSetShortName(short_name=TEMP_SETTINGS[pname])
             set = GetStickerSet(stickerset=set_name)
             client.send(data=set)
             return True
         except BaseException as e:
             return False
 
-    def create_new(conv, pname, pnick):
+    def create_new(conv, pack, pname, pnick):
         cmd = f'/new{"animated" if anim else "pack"}'
 
         try:
             send_recv(conv, cmd)
         except Exception as e:
             raise e
-        msg = send_recv(conv, pnick)
+        msg = send_recv(conv, TEMP_SETTINGS[pnick])
         if msg.text == 'Invalid pack selected.':
             pack += 1
-            return create_new(conv)
+            TEMP_SETTINGS[pname] = f"{TEMP_SETTINGS[f'{pname}_TEMPLATE']}{pack}"
+            TEMP_SETTINGS[pnick] = f"{TEMP_SETTINGS[f'{pnick}_TEMPLATE']}{pack}"
+            return create_new(conv, pack, pname, pnick)
         msg = send_recv(conv, media, doc=True)
         if 'Sorry, the file type is invalid.' in msg.text:
             edit(message, f'`{get_translation("stickerError")}`')
@@ -103,9 +116,15 @@ def kang(client, message):
         send_recv(conv, emoji)
         send_recv(conv, '/publish')
         if anim:
-            send_recv(conv, f'<{pnick}>')
+            send_recv(conv, f'<{TEMP_SETTINGS[pnick]}>')
         send_recv(conv, '/skip')
-        send_recv(conv, pname)
+        ret = send_recv(conv, TEMP_SETTINGS[pname])
+        while "already taken" in ret.text:
+            pack += 1
+            TEMP_SETTINGS[pname] = f"{TEMP_SETTINGS[f'{pname}_TEMPLATE']}{pack}"
+            TEMP_SETTINGS[pnick] = f"{TEMP_SETTINGS[f'{pnick}_TEMPLATE']}{pack}"
+            ret = send_recv(conv, TEMP_SETTINGS[pname])
+        return True
 
     def add_exist(conv, pack, pname, pnick):
         try:
@@ -113,33 +132,25 @@ def kang(client, message):
         except Exception as e:
             raise e
 
-        status = send_recv(conv, pname)
+        status = send_recv(conv, TEMP_SETTINGS[pname])
 
         if limit in status.text:
             pack += 1
-            pname = (
-                PACKNAME.replace(' ', '')
-                if PACKNAME
-                else f'a{myacc.id}_by_{myacc.username}_{pack}'
-            )
-            pnick = PACKNICK or f"{kanger}'s UserBot pack {pack}"
+            TEMP_SETTINGS[pname] = f"{TEMP_SETTINGS[f'{pname}_TEMPLATE']}{pack}"
+            TEMP_SETTINGS[pnick] = f"{TEMP_SETTINGS[f'{pnick}_TEMPLATE']}{pack}"
             edit(message, get_translation('packFull', ['`', '**', str(pack)]))
             if pack_created(pname):
                 return add_exist(conv, pack, pname, pnick)
             else:
-                return create_new(conv, pname, pnick)
+                return create_new(conv, pack, pname, pnick)
 
         send_recv(conv, media, doc=True)
         send_recv(conv, emoji)
         send_recv(conv, '/done')
         return True
 
-    if anim:
-        pname += '_anim'
-        pnick += ' (Animated)'
-    else:
-        if not reply.sticker:
-            media = resizer(media)
+    if not (anim and reply.sticker):
+        media = resizer(media)
 
     with PyroConversation(client, 'Stickers') as conv:
         send_recv(conv, '/cancel')
@@ -148,9 +159,13 @@ def kang(client, message):
             if not ret:
                 return
         else:
-            create_new(conv, pname, pnick)
+            create_new(conv, pack, pname, pnick)
 
-    edit(message, get_translation('stickerAdded', ['`', pname]))
+    edit(message, get_translation('stickerAdded', ['`', TEMP_SETTINGS[pname]]))
+    del TEMP_SETTINGS[pname]
+    del TEMP_SETTINGS[pnick]
+    del TEMP_SETTINGS[f'{pname}_TEMPLATE']
+    del TEMP_SETTINGS[f'{pnick}_TEMPLATE']
 
 
 def send_recv(conv, msg, doc=False):
@@ -171,13 +186,14 @@ def getsticker(message):
     photo = download_media_wc(reply)
 
     reply_doc(
-        message,
+        reply,
         photo,
         caption=f'**Sticker ID:** `{reply.sticker.file_id}'
         f'`\n**Emoji**: `{reply.sticker.emoji}`',
         delete_after_send=True,
-        delete_orig=True,
+        delete_orig=False,
     )
+    message.delete()
 
 
 @sedenify(pattern='.packinfo$', compat=False)
