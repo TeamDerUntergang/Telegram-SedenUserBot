@@ -16,7 +16,7 @@ from sedenecem.core import (
     extract_args,
     get_translation,
     reply_audio,
-    reply_doc,
+    reply_video,
     sedenify,
 )
 from youtube_dl import YoutubeDL
@@ -50,13 +50,13 @@ def youtubedl(message):
         }
         with YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
-        edit(message, f'{get_translation("uploadMedia")}')
-        reply_doc(
+        edit(message, f'`{get_translation("uploadMedia")}`')
+        reply_video(
             message,
             f'{title}.mp4',
-            caption=f"{get_translation('title', ['**' , ':'])} {title}`\n`{get_translation('uploader',['**',':'])} {uploader}",
-            delete_after_send=True,
+            caption=f"**{get_translation('videoTitle')}** `{title}`\n**{get_translation('videoUploader')}** `{uploader}`",
             delete_orig=True,
+            delete_file=True,
         )
 
     elif util == 'mp3':
@@ -78,7 +78,7 @@ def youtubedl(message):
         reply_audio(
             message,
             f'{title}.mp3',
-            caption=f"{get_translation('uploader',['**',':'])} {uploader}",
+            caption=f"**{get_translation('videoUploader')}** `{uploader}`",
             delete_orig=True,
         )
         remove(f'{title}.mp3')

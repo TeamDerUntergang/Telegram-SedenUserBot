@@ -45,6 +45,21 @@ def reply_audio(message, audio, caption='', fix_markdown=False, delete_orig=Fals
         pass
 
 
+def reply_video(
+    message, video, caption='', fix_markdown=False, delete_orig=False, delete_file=False
+):
+    try:
+        if len(caption) > 0 and fix_markdown:
+            caption += MARKDOWN_FIX_CHAR
+        message.reply_video(video, caption=caption.strip())
+        if delete_orig:
+            message.delete()
+        if delete_file:
+            remove(video)
+    except BaseException:
+        pass
+
+
 def reply_voice(message, voice, caption='', fix_markdown=False, delete_orig=False):
     try:
         if len(caption) > 0 and fix_markdown:

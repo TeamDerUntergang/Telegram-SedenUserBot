@@ -191,7 +191,6 @@ def getsticker(message):
         caption=f'**Sticker ID:** `{reply.sticker.file_id}'
         f'`\n**Emoji**: `{reply.sticker.emoji}`',
         delete_after_send=True,
-        delete_orig=False,
     )
     message.delete()
 
