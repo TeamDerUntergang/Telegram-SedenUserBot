@@ -214,7 +214,6 @@ def shutdown(message):
         std_off()
         return
 
-    std_off()
     heroku_app.scale_formation_process('seden', 0)
 
 
