@@ -15,14 +15,13 @@ from sedenecem.core import edit, extract_args, get_translation, reply_doc, seden
 @sedenify(pattern='^.lyrics')
 def lyrics(message):
     args = extract_args(message)
-    if r"-" in args:
+    if r'-' in args:
         pass
     else:
-        edit(message, f'`{get_translation("lyricsError")}`')
-        return
+        return edit(message, f'`{get_translation("lyricsError")}`')
 
     if not GENIUS_TOKEN:
-        edit(message, f'`{get_translation("geniusToken")}`')
+        return edit(message, f'`{get_translation("geniusToken")}`')
     else:
         genius = Genius(GENIUS_TOKEN)
         try:
