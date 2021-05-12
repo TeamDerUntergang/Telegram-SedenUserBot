@@ -7,14 +7,24 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
+from io import BytesIO
 from random import choice, getrandbits, randint
 from re import sub
+from textwrap import wrap
 from time import sleep
 
 from cowpy import cow
+from PIL import Image, ImageDraw, ImageFont
 from requests import get
 from sedenbot import HELP
-from sedenecem.core import edit, extract_args, get_translation, parse_cmd, sedenify
+from sedenecem.core import (
+    edit,
+    extract_args,
+    get_translation,
+    parse_cmd,
+    sedenify,
+    send_sticker,
+)
 
 # ================= CONSTANT =================
 ZALGS = [
@@ -775,6 +785,46 @@ def h(message):
         '⠀⠀⠀⠀⠀⠀⠀⠊⠠⠂⠉⢤⣀⠀⠀⠀⠀⢠⠀⠐⠣⠠⢤⠀⠀⠀⠀⠀⠀⠀\n'
         '⠀⠀⠀⠀⠀⠀⠀⠁⠂⠤⠼⠓⠓⠒⠀⠀⠀⠈⠂⠀⠀⠀⠂⠚⠁⠀⠀⠀⠀⠀',
     )
+
+
+@sedenify(pattern='^.(amogu|su)s', compat=False)
+def amogus(client, message):
+    args = extract_args(message)
+    if len(args) < 1:
+        edit(message, f'`{get_translation("wrongCommand")}`')
+        return
+
+    edit(message, f"`{get_translation('processing')}`")
+
+    arr = randint(1, 12)
+    fontsize = 100
+    FONT_FILE = 'sedenecem/fonts/OpenSans.ttf'
+    url = 'https://raw.githubusercontent.com/KeyZenD/AmongUs/master/'  # Thanks
+    font = ImageFont.truetype(FONT_FILE, size=int(fontsize))
+
+    imposter = Image.open(BytesIO(get(f'{url}{arr}.png').content))
+    text_ = '\n'.join(['\n'.join(wrap(part, 30)) for part in args.split('\n')])
+    w, h = ImageDraw.Draw(Image.new('RGB', (1, 1))).multiline_textsize(
+        text_, font, stroke_width=2
+    )
+    text = Image.new('RGBA', (w + 40, h + 40))
+    ImageDraw.Draw(text).multiline_text(
+        (15, 15), text_, '#FFF', font, stroke_width=2, stroke_fill='#000'
+    )
+    w = imposter.width + text.width + 30
+    h = max(imposter.height, text.height)
+    image = Image.new('RGBA', (w, h))
+    image.paste(imposter, (0, h - imposter.height), imposter)
+    image.paste(text, (w - text.width, 0), text)
+    image.thumbnail((512, 512))
+
+    output = BytesIO()
+    output.name = 'sus.webp'
+    image.save(output, 'WebP')
+    output.seek(0)
+
+    send_sticker(client, message.chat, output)
+    message.delete()
 
 
 @sedenify(pattern='^.gay')
