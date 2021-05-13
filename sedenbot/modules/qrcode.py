@@ -19,6 +19,7 @@ from sedenecem.core import (
     extract_args,
     get_translation,
     reply_doc,
+    reply_sticker,
     sedenify,
 )
 from urllib3 import PoolManager
@@ -26,7 +27,7 @@ from urllib3 import PoolManager
 from qrcode import QRCode, constants
 
 
-@sedenify(pattern=r'^.decode$')
+@sedenify(pattern='^.decode$')
 def parseqr(message):
     reply = message.reply_to_message
     if not reply:
@@ -67,78 +68,45 @@ def parseqr(message):
         edit(message, f'`{get_translation("decodeFail")}`')
 
 
-@sedenify(pattern=r'^.barcode')
+@sedenify(pattern='^.barcode')
 def barcode(message):
     input_str = extract_args(message)
-    usage = get_translation('barcodeUsage', ['**', '`'])
     reply = message.reply_to_message
-    if len(input_str) < 1 and not reply:
-        edit(message, usage)
+    if len(input_str) < 1:
+        edit(message, get_translation('barcodeUsage', ['**', '`']))
         return
     edit(message, f'`{get_translation("processing")}`')
-    if reply:
-        if reply.media:
-            downloaded_file_name = download_media_wc(reply)
-            media_list = None
-            with open(downloaded_file_name, 'rb') as file:
-                media_list = file.readlines()
-            qrmsg = ''
-            for media in media_list:
-                qrmsg += media.decode('UTF-8') + '\r\n'
-            remove(downloaded_file_name)
-        else:
-            qrmsg = reply
-    else:
-        qrmsg = input_str
-
-    bar_code_type = 'code128'
     try:
-        bar_code_mode_f = get(bar_code_type, qrmsg, writer=ImageWriter())
-        filename = bar_code_mode_f.save(bar_code_type)
-        reply_doc(message, filename, delete_after_send=True)
+        bar_code_mode_f = get('code128', input_str, writer=ImageWriter())
+        filename = bar_code_mode_f.save('code128')
+        reply_doc(reply if reply else message, filename, delete_after_send=True)
+        message.delete()
     except Exception as e:
         edit(message, str(e))
         return
-    message.delete()
 
 
-@sedenify(pattern=r'^.makeqr')
+@sedenify(pattern='^.makeqr')
 def makeqr(message):
     input_str = extract_args(message)
-    usage = get_translation('makeqrUsage', ['**', '`'])
     reply = message.reply_to_message
-    if len(input_str) < 1 and not reply:
-        edit(message, usage)
+    if len(input_str) < 1:
+        edit(message, get_translation('makeqrUsage', ['**', '`']))
         return
     edit(message, f'`{get_translation("processing")}`')
-    if reply:
-        if reply.media:
-            downloaded_file_name = download_media_wc(reply)
-            media_list = None
-            with open(downloaded_file_name, 'rb') as file:
-                media_list = file.readlines()
-            qrmsg = ''
-            for media in media_list:
-                qrmsg += media.decode('UTF-8') + '\r\n'
-            remove(downloaded_file_name)
-        else:
-            qrmsg = reply
-    else:
-        qrmsg = input_str
-
     try:
         qr = QRCode(
             version=1, error_correction=constants.ERROR_CORRECT_L, box_size=10, border=4
         )
-        qr.add_data(qrmsg)
+        qr.add_data(input_str)
         qr.make(fit=True)
         img = qr.make_image(fill_color='black', back_color='white')
         img.save('img_file.webp', 'PNG')
-        reply_doc(message, 'img_file.webp', delete_after_send=True)
+        reply_sticker(reply if reply else message, 'img_file.webp', delete_file=True)
+        message.delete()
     except Exception as e:
         edit(message, str(e))
         return
-    message.delete()
 
 
 HELP.update({'qrcode': get_translation('makeqrInfo')})

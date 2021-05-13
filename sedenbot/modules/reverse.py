@@ -26,11 +26,11 @@ from sedenecem.core import (
 )
 
 opener = request.build_opener()
-useragent = 'Mozilla/5.0 (Linux; Android 9; SM-G960F Build/PPR1.180610.011; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/78.0.3904.70 Mobile Safari/537.36'
+useragent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4464.5 Safari/537.36'
 opener.addheaders = [('User-agent', useragent)]
 
 
-@sedenify(pattern=r'^.reverse$')
+@sedenify(pattern='^.reverse$')
 def reverse(message):
     photo = 'reverse.png'
     if path.isfile(photo):

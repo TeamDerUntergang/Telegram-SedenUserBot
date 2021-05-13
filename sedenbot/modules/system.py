@@ -27,7 +27,7 @@ from sedenecem.core import (
 )
 
 # ================= CONSTANT =================
-KULLANICIMESAJI = ALIVE_MSG or f"`{get_translation('sedenAlive')}`"
+CUSTOM_MSG = ALIVE_MSG or f"`{get_translation('sedenAlive')}`"
 # ============================================
 
 
@@ -36,35 +36,35 @@ def neofetch(message):
     try:
         from subprocess import PIPE, Popen
 
-        islem = Popen(
+        process = Popen(
             ['neofetch', f'HOSTNAME={HOSTNAME}', f'USER={USER}', '--stdout'],
             stdout=PIPE,
             stderr=PIPE,
         )
-        sonuc, _ = islem.communicate()
-        edit(message, f'`{sonuc.decode()}`')
+        result, _ = process.communicate()
+        edit(message, f'`{result.decode()}`')
     except BaseException:
         edit(message, f'`{get_translation("neofetchNotFound")}`')
 
 
 @sedenify(pattern='^.botver$')
-def botver(message):
+def bot_version(message):
     if which('git'):
         from subprocess import PIPE, Popen
 
-        degisiklik = Popen(
+        changes = Popen(
             ['git', 'rev-list', '--all', '--count'],
             stdout=PIPE,
             stderr=PIPE,
             universal_newlines=True,
         )
-        sonuc, _ = degisiklik.communicate()
+        result, _ = changes.communicate()
 
         edit(
             message,
             get_translation(
                 'sedenShowBotVersion',
-                ['**', '`', 'Seden UserBot', CHANNEL, BOT_VERSION, sonuc],
+                ['**', '`', CHANNEL, BOT_VERSION, result],
             ),
             preview=False,
         )
@@ -72,60 +72,25 @@ def botver(message):
         edit(message, f'`{get_translation("sedenGitNotFound")}`')
 
 
-@sedenify(pattern='^.pip')
-def pip3(message):
-    pipmodule = extract_args(message)
-    if len(pipmodule) > 0:
-        edit(message, f'`{get_translation("pipSearch")}`')
-        pipsorgu = f"pip3 search {pipmodule}"
-        from subprocess import PIPE, Popen
-
-        islem = Popen(
-            pipsorgu.split(), stdout=PIPE, stderr=PIPE, universal_newlines=True
-        )
-        sonuc, _ = islem.communicate()
-
-        if sonuc:
-            if len(sonuc) > 4096:
-                edit(message, f'`{get_translation("outputTooLarge")}`')
-                file = open('pip3.txt', 'w+')
-                file.write(sonuc)
-                file.close()
-                reply_doc(message, 'pip3.txt', delete_after_send=True)
-                return
-            edit(message, get_translation(
-                'sedenQuery', ['**', '`', pipsorgu, sonuc]))
-        else:
-            edit(
-                message,
-                get_translation(
-                    'sedenQuery',
-                    ['**', '`', pipsorgu, get_translation('sedenZeroResults')],
-                ),
-            )
-    else:
-        edit(message, f'`{get_translation("pipHelp")}`')
-
-
 @sedenify(pattern='^.ping$')
 def ping(message):
-    basla = datetime.now()
-    edit(message, '`Pong!`')
-    bitir = datetime.now()
-    sure = (bitir - basla).microseconds / 1000
-    edit(message, f'`Pong!\n{sure}ms`')
+    start = datetime.now()
+    edit(message, '**Pong!**')
+    finish = datetime.now()
+    time = (finish - start).microseconds / 1000
+    edit(message, f'**Pong!**\n`{time}ms`')
 
 
 @sedenify(pattern='^.alive$')
 def alive(message):
-    if KULLANICIMESAJI.lower() == 'ecem':
+    if CUSTOM_MSG.lower() == 'ecem':
         ecem(message)
         return
-    edit(message, f'{KULLANICIMESAJI}')
+    edit(message, f'{CUSTOM_MSG}')
 
 
 @sedenify(pattern='^.echo')
-def echo(message):
+def test_echo(message):
     args = extract_args(message)
     if len(args) > 0:
         message.delete()
@@ -135,14 +100,14 @@ def echo(message):
 
 
 @sedenify(pattern='^.dc$', compat=False)
-def dc(client, message):
-    sonuc = client.send(GetNearestDc())
+def data_center(client, message):
+    result = client.send(GetNearestDc())
 
     edit(
         message,
         get_translation(
             'sedenNearestDC',
-            ['**', '`', sonuc.country, sonuc.nearest_dc, sonuc.this_dc],
+            ['**', '`', result.country, result.nearest_dc, result.this_dc],
         ),
     )
 
@@ -167,17 +132,17 @@ def terminal(message):
         edit(message, f'`{get_translation("termHelp")}`')
         return
 
-    sonuc = f'`{get_translation("termNoResult")}`'
+    result = f'`{get_translation("termNoResult")}`'
     try:
         from subprocess import getoutput
 
-        sonuc = getoutput(command)
+        result = getoutput(command)
     except BaseException:
         pass
 
-    if len(sonuc) > 4096:
+    if len(result) > 4096:
         output = open('output.txt', 'w+')
-        output.write(sonuc)
+        output.write(result)
         output.close()
         reply_doc(
             message,
@@ -187,8 +152,7 @@ def terminal(message):
         )
         return
 
-    edit(
-        message, f'`{curruser}:~{"#" if uid == 0 else "$"} {command}\n{sonuc}`')
+    edit(message, f'`{curruser}:~{"#" if uid == 0 else "$"} {command}\n{result}`')
 
     send_log(get_translation('termLog', [command]))
 
@@ -217,20 +181,17 @@ def eval(message):
                     return
                 edit(
                     message,
-                    get_translation(
-                        'sedenQuery', ['**', '`', args, evaluation]),
+                    get_translation('sedenQuery', ['**', '`', args, evaluation]),
                 )
         else:
             edit(
                 message,
                 get_translation(
-                    'sedenQuery', ['**', '`', args,
-                                   get_translation('sedenErrorResult')]
+                    'sedenQuery', ['**', '`', args, get_translation('sedenErrorResult')]
                 ),
             )
     except Exception as err:
-        edit(message, get_translation(
-            'sedenQuery', ['**', '`', args, str(err)]))
+        edit(message, get_translation('sedenQuery', ['**', '`', args, str(err)]))
 
     send_log(get_translation('evalLog', [args]))
 

@@ -22,8 +22,8 @@ from sedenecem.core import (
     extract_args,
     get_translation,
     parse_cmd,
+    reply_sticker,
     sedenify,
-    send_sticker,
 )
 
 # ================= CONSTANT =================
@@ -787,10 +787,17 @@ def h(message):
     )
 
 
-@sedenify(pattern='^.(amogu|su)s', compat=False)
-def amogus(client, message):
+@sedenify(pattern='^.(amogu|su)s')
+def amogus(message):
     args = extract_args(message)
-    if len(args) < 1:
+    reply = message.reply_to_message
+    if args:
+        pass
+    elif reply:
+        if not reply.text:
+            return edit(message, f'`{get_translation("wrongCommand")}`')
+        args = reply.text
+    else:
         edit(message, f'`{get_translation("wrongCommand")}`')
         return
 
@@ -823,7 +830,7 @@ def amogus(client, message):
     image.save(output, 'WebP')
     output.seek(0)
 
-    send_sticker(client, message.chat, output)
+    reply_sticker(reply if reply else message, output)
     message.delete()
 
 

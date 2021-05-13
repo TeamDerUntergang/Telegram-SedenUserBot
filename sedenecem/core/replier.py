@@ -27,20 +27,23 @@ def reply_img(
         message.reply_photo(photo, caption=caption.strip(), parse_mode=parse)
         if delete_orig:
             message.delete()
-
         if delete_file:
             remove(photo)
     except BaseException:
         pass
 
 
-def reply_audio(message, audio, caption='', fix_markdown=False, delete_orig=False):
+def reply_audio(
+    message, audio, caption='', fix_markdown=False, delete_orig=False, delete_file=False
+):
     try:
         if len(caption) > 0 and fix_markdown:
             caption += MARKDOWN_FIX_CHAR
         message.reply_audio(audio, caption=caption.strip())
         if delete_orig:
             message.delete()
+        if delete_file:
+            remove(audio)
     except BaseException:
         pass
 
@@ -60,13 +63,17 @@ def reply_video(
         pass
 
 
-def reply_voice(message, voice, caption='', fix_markdown=False, delete_orig=False):
+def reply_voice(
+    message, voice, caption='', fix_markdown=False, delete_orig=False, delete_file=False
+):
     try:
         if len(caption) > 0 and fix_markdown:
             caption += MARKDOWN_FIX_CHAR
         message.reply_voice(voice, caption=caption.strip())
         if delete_orig:
             message.delete()
+        if delete_file:
+            remove(voice)
     except BaseException:
         pass
 
@@ -98,11 +105,13 @@ def reply_doc(
         raise e
 
 
-def reply_sticker(message, sticker, delete_orig=False):
+def reply_sticker(message, sticker, delete_orig=False, delete_file=False):
     try:
         message.reply_sticker(sticker)
         if delete_orig:
             message.delete()
+        if delete_file:
+            remove(sticker)
     except BaseException:
         pass
 

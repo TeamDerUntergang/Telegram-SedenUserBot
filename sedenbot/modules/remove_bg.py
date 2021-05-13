@@ -39,10 +39,12 @@ def rbg(message):
     download_media_wc(reply, IMG_PATH)
     edit(message, f'`{get_translation("rbgProcessing")}`')
     try:
-        remove_bg = RemoveBg(RBG_APIKEY, f'{get_translation("rbgLog")}')
+        remove_bg = RemoveBg(RBG_APIKEY, get_translation('rbgLog'))
         remove_bg.remove_background_from_img_file(IMG_PATH)
-        rbg_img = IMG_PATH + '_no_bg.png'
-        reply_doc(reply, rbg_img, caption=get_translation('rbgResult'))
+        rbg_img = f'{IMG_PATH}_no_bg.png'
+        reply_doc(
+            reply, rbg_img, caption=get_translation('rbgResult'), delete_after_send=True
+        )
         message.delete()
     except Exception as e:
         return edit(message, get_translation('banError', ['`', '**', e]))

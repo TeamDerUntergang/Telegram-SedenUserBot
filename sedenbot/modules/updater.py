@@ -105,7 +105,7 @@ def upstream(ups):
             file = open('changelog.txt', 'w+')
             file.write(changelog)
             file.close()
-            reply_doc(ups, ups.chat.id, 'changelog.txt', delete_after_send=True)
+            reply_doc(ups, 'changelog.txt', delete_after_send=True)
         else:
             edit(
                 ups, get_translation('updaterHasUpdate', ['**', '`', ac_br, changelog])

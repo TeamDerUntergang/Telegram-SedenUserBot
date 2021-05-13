@@ -8,22 +8,22 @@
 #
 
 from io import BytesIO
-from os import remove
 from random import randint
 from textwrap import wrap
 
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 from sedenbot import HELP
-from sedenecem.core import edit, extract_args, get_translation, sedenify, send_sticker
+from sedenecem.core import edit, extract_args, get_translation, reply_sticker, sedenify
 
 
-@sedenify(pattern='^.rgb', compat=False)
-def sticklet(client, message):
+@sedenify(pattern='^.rgb')
+def sticklet(message):
     R = randint(0, 256)
     G = randint(0, 256)
     B = randint(0, 256)
 
     sticktext = extract_args(message)
+    reply = message.reply_to_message
 
     if len(sticktext) < 1:
         edit(message, f'`{get_translation("wrongCommand")}`')
@@ -68,12 +68,8 @@ def sticklet(client, message):
     image.save(image_stream, 'WebP')
     image_stream.seek(0)
 
-    send_sticker(client, message.chat, image_stream)
+    reply_sticker(reply if reply else message, image_stream, delete_file=True)
     message.delete()
-    try:
-        remove(image_stream.name)
-    except BaseException:
-        pass
 
 
 HELP.update({'rgb': get_translation('rgbInfo')})

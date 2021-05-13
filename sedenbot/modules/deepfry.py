@@ -72,7 +72,8 @@ def deepfry(message):
     image.save(fried_io, 'JPEG')
     fried_io.close()
 
-    reply_img(message, 'image.jpeg', delete_file=True, delete_orig=True)
+    reply_img(reply if reply else message, 'image.jpeg', delete_file=True)
+    message.delete()
 
 
 def deepfry_media(img: Image, fry: bool) -> Image:

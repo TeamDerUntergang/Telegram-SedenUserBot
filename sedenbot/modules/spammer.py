@@ -35,8 +35,8 @@ def tspam(message):
     if not spam_allowed():
         return
 
-    for metin in tspam.replace(' ', ''):
-        reply(message, metin)
+    for text in tspam.replace(' ', ''):
+        reply(message, text)
         count = increment_spam_count()
         if not count:
             break
@@ -60,12 +60,12 @@ def spam(message):
     if not spam_allowed():
         return
 
-    miktar = int(arr[0])
-    metin = spam.replace(arr[0], '', 1).strip()
-    for i in range(0, miktar):
-        reply(message, metin)
-        count = increment_spam_count()
-        if not count:
+    count = int(arr[0])
+    text = spam.replace(arr[0], '', 1).strip()
+    for i in range(0, count):
+        reply(message, text)
+        limit = increment_spam_count()
+        if not limit:
             break
 
     send_log(get_translation('spamLog'))
@@ -82,12 +82,12 @@ def picspam(message):
     if not spam_allowed():
         return
 
-    miktar = int(arr[0])
-    link = arr[1]
-    for i in range(0, miktar):
-        reply_img(message, link)
-        count = increment_spam_count()
-        if not count:
+    count = int(arr[0])
+    url = arr[1]
+    for i in range(0, count):
+        reply_img(message, url)
+        limit = increment_spam_count()
+        if not limit:
             break
 
     send_log(get_translation('picspamLog'))
@@ -95,14 +95,14 @@ def picspam(message):
 
 @sedenify(pattern='^.delayspam')
 def delayspam(message):
-    # Copyright (c) @ReversedPosix | 2020
+    # Copyright (c) @ReversedPosix | 2020-2021
     delayspam = extract_args(message)
     arr = delayspam.split()
     if len(arr) < 3 or not arr[0].isdigit() or not arr[1].isdigit():
         edit(message, f'`{get_translation("spamWrong")}`')
         return
-    gecikme = int(arr[0])
-    miktar = int(arr[1])
+    delay = int(arr[0])
+    count = int(arr[1])
     spam_message = delayspam.replace(arr[0], '', 1)
     spam_message = spam_message.replace(arr[1], '', 1).strip()
     message.delete()
@@ -111,12 +111,12 @@ def delayspam(message):
         return
 
     delaySpamEvent = Event()
-    for i in range(0, miktar):
+    for i in range(0, count):
         if i != 0:
-            delaySpamEvent.wait(gecikme)
+            delaySpamEvent.wait(delay)
         reply(message, spam_message)
-        count = increment_spam_count()
-        if not count:
+        limit = increment_spam_count()
+        if not limit:
             break
 
     send_log(get_translation('delayspamLog'))

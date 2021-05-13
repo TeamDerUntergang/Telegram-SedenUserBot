@@ -56,12 +56,12 @@ def carbon(message):
         edit(message, f'`{get_translation("wrongCommand")}`')
         return
     edit(message, f'`{get_translation("processing")}`')
-    textx = message.reply_to_message
+    reply = message.reply_to_message
     pcode = message.text
     if pcode[8:]:
         pcode = str(pcode[8:])
-    elif textx:
-        pcode = str(textx.message)
+    elif reply:
+        pcode = str(reply.message)
     code = quote_plus(pcode)
     global CARBONLANG
     CARBON = f'https://carbon.now.sh/?l={CARBONLANG}&code={code}'
@@ -83,12 +83,12 @@ def carbon(message):
     file = './carbon.png'
     edit(message, f'`{get_translation("carbonUpload")}`')
     reply_doc(
-        message,
+        reply if reply else message,
         file,
         caption=get_translation('carbonResult'),
-        delete_orig=True,
         delete_after_send=True,
     )
+    message.delete()
     driver.quit()
 
 
@@ -318,12 +318,11 @@ def do_ddsearch(res1):
 
 @sedenify(pattern='^.ud')
 def urbandictionary(message):
-    match = extract_args(message)
-    if len(match) < 1:
+    query = extract_args(message)
+    if len(query) < 1:
         edit(message, f'`{get_translation("wrongCommand")}`')
         return
     edit(message, f'`{get_translation("processing")}`')
-    query = extract_args(message)
     try:
         define(query)
     except HTTPError:
@@ -366,50 +365,53 @@ def urbandictionary(message):
         edit(message, get_translation('udNoResult', ['**', query]))
 
 
-@sedenify(pattern=r'^.wiki')
+@sedenify(pattern='^.wiki')
 def wiki(message):
-    match = extract_args(message)
-    if len(match) < 1:
+    args = extract_args(message)
+    if len(args) < 1:
         edit(message, f'`{get_translation("wrongCommand")}`')
         return
     set_lang(SEDEN_LANG)
-    match = extract_args(message)
     try:
-        summary(match)
+        summary(args)
     except DisambiguationError as error:
         edit(message, get_translation('wikiError', [error]))
         return
     except PageError as pageerror:
         edit(message, get_translation('wikiError2', [pageerror]))
         return
-    result = summary(match)
+    result = summary(args)
     if len(result) >= 4096:
         file = open('wiki.txt', 'w+')
         file.write(result)
         file.close()
-        reply_doc(message, 'wiki.txt', caption=f'`{get_translation("outputTooLarge")}`')
-        if path.exists('wiki.txt'):
-            remove('wiki.txt')
-        return
-    edit(message, get_translation('sedenQuery', ['**', '`', match, result]))
+        reply_doc(
+            message,
+            'wiki.txt',
+            caption=f'`{get_translation("outputTooLarge")}`',
+            delete_after_send=True,
+        )
+    edit(message, get_translation('sedenQuery', ['**', '`', args, result]))
 
-    send_log(get_translation('wikiLog', ['`', match]))
+    send_log(get_translation('wikiLog', ['`', args]))
 
 
-@sedenify(pattern=r'^.tts')
-def tts(message):
-    textx = message.reply_to_message
-    ttsx = extract_args(message)
-    if ttsx:
+@sedenify(pattern='^.tts')
+def text_to_speech(message):
+    reply = message.reply_to_message
+    args = extract_args(message)
+    if args:
         pass
-    elif textx:
-        ttsx = textx.text
+    elif reply:
+        if not reply.text:
+            return edit(message, f'`{get_translation("ttsUsage")}`')
+        args = reply.text
     else:
         edit(message, f'`{get_translation("ttsUsage")}`')
         return
 
     try:
-        gTTS(ttsx, lang=TTS_LANG)
+        gTTS(args, lang=TTS_LANG)
     except AssertionError:
         edit(message, f'`{get_translation("ttsBlank")}`')
         return
@@ -417,45 +419,47 @@ def tts(message):
         edit(message, f'`{get_translation("ttsNoSupport")}`')
         return
     except RuntimeError:
-        edit(message, f'{get_translation("ttsError")}')
+        edit(message, f'`{get_translation("ttsError")}`')
         return
-    tts = gTTS(ttsx, lang=TTS_LANG)
+    tts = gTTS(args, lang=TTS_LANG)
     tts.save('h.mp3')
     with open('h.mp3', 'rb') as audio:
         linelist = list(audio)
         linecount = len(linelist)
     if linecount == 1:
-        tts = gTTS(ttsx, lang=TTS_LANG)
+        tts = gTTS(args, lang=TTS_LANG)
         tts.save('h.mp3')
     with open('h.mp3', 'r'):
-        reply_voice(message, 'h.mp3', delete_orig=True)
-        remove('h.mp3')
+        reply_voice(reply if reply else message, 'h.mp3', delete_file=True)
 
+    message.delete()
     send_log(get_translation('ttsLog'))
 
 
-@sedenify(pattern=r'^.trt')
-def trt(message):
+@sedenify(pattern='^.trt')
+def translate(message):
     translator = Translator()
-    textx = message.reply_to_message
-    trt = extract_args(message)
-    if trt:
+    reply = message.reply_to_message
+    args = extract_args(message)
+    if args:
         pass
-    elif textx:
-        trt = textx.text
+    elif reply:
+        if not reply.text:
+            return edit(message, f'`{get_translation("trtUsage")}`')
+        args = reply.text
     else:
-        edit(message, f'{get_translation("trtUsage")}')
+        edit(message, f'`{get_translation("trtUsage")}`')
         return
 
     try:
-        reply_text = translator.translate(deEmojify(trt), dest=TRT_LANG)
+        reply_text = translator.translate(deEmojify(args), dest=TRT_LANG)
     except ValueError:
-        edit(message, f'{get_translation("trtError")}')
+        edit(message, f'`{get_translation("trtError")}`')
         return
 
-    source_lan = LANGUAGES[f'{reply_text.src.lower()}']
-    transl_lan = LANGUAGES[f'{reply_text.dest.lower()}']
-    reply_text = '{}\n\n{}'.format(
+    source_lan = LANGUAGES[reply_text.src.lower()]
+    transl_lan = LANGUAGES[reply_text.dest.lower()]
+    reply_text = '{}\n{}'.format(
         get_translation(
             'transHeader', ['**', '`', source_lan.title(), transl_lan.title()]
         ),
@@ -547,5 +551,4 @@ HELP.update({'goolag': get_translation('googleInfo')})
 HELP.update({'duckduckgo': get_translation('ddgoInfo')})
 HELP.update({'wiki': get_translation('wikiInfo')})
 HELP.update({'ud': get_translation('udInfo')})
-HELP.update({'tts': get_translation('ttsInfo')})
-HELP.update({'trt': get_translation('trtInfo')})
+HELP.update({'translator': get_translation('translatorInfo')})

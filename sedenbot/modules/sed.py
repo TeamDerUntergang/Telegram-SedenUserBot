@@ -95,7 +95,7 @@ def sed(message):
             else:
                 text = sub(repl, repl_with, to_fix, count=1).strip()
         except sre_err:
-            edit(message, f'{get_translation("sedLearn")}')
+            edit(message, f'`{get_translation("sedLearn")}`')
             return
         if text:
             edit(message, get_translation('sedResult', [text]))

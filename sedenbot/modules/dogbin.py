@@ -7,51 +7,36 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from os import remove
-
 from requests import exceptions, get, post
-from sedenbot import DOWNLOAD_DIRECTORY, HELP
+from sedenbot import HELP
 from sedenecem.core import edit, extract_args, get_translation, sedenify
 
 DOGBIN_URL = 'https://del.dog/'
 
 
-@sedenify(pattern=r'^.paste', compat=False)
-def paste(client, message):
-    dogbin_final_url = ''
+@sedenify(pattern='^.paste')
+def paste(message):
     match = extract_args(message)
-    reply_id = message.reply_to_message
+    reply = message.reply_to_message
 
-    if not match and not reply_id:
+    if match:
+        pass
+    elif reply:
+        if not reply.text:
+            return edit(message, f'`{get_translation("dogbinUsage")}`')
+        match = reply.text
+    else:
         edit(message, f'`{get_translation("dogbinUsage")}`')
         return
 
-    if match:
-        dogbin = match
-    elif reply_id:
-        dogbin = message.reply_to_message
-        if dogbin.media:
-            downloaded_file_name = client.download_media(
-                dogbin,
-                DOWNLOAD_DIRECTORY,
-            )
-            m_list = None
-            with open(downloaded_file_name, 'rb') as fd:
-                m_list = fd.readlines()
-            dogbin = ''
-            for m in m_list:
-                dogbin += m.decode('UTF-8') + '\r'
-            remove(downloaded_file_name)
-        else:
-            dogbin = dogbin.dogbin
-
     edit(message, f'`{get_translation("dogbinPasting")}`')
-    resp = post(DOGBIN_URL + 'documents', data=dogbin.encode('utf-8'))
+    resp = post(f'{DOGBIN_URL}documents', data=match.encode('utf-8'))
 
+    dogbin_final_url = ''
     if resp.status_code == 200:
         response = resp.json()
         key = response['key']
-        dogbin_final_url = DOGBIN_URL + key
+        dogbin_final_url = f'{DOGBIN_URL}{key}'
 
         if response['isUrl']:
             reply_text = get_translation(
@@ -67,22 +52,22 @@ def paste(client, message):
 
 @sedenify(outgoing=True, pattern="^.getpaste")
 def getpaste(message):
-    textx = message.reply_to_message
-    dogbin = extract_args(message)
+    reply = message.reply_to_message
+    match = extract_args(message)
     edit(message, f'`{get_translation("dogbinContent")}`')
 
-    if textx:
-        dogbin = str(textx.dogbin)
+    if reply:
+        match = str(reply.text)
 
     format_normal = f'{DOGBIN_URL}'
     format_view = f'{DOGBIN_URL}v/'
 
-    if dogbin.startswith(format_view):
-        dogbin = dogbin[len(format_view) :]
-    elif dogbin.startswith(format_normal):
-        dogbin = dogbin[len(format_normal) :]
-    elif dogbin.startswith('del.dog/'):
-        dogbin = dogbin[len('del.dog/') :]
+    if match.startswith(format_view):
+        dogbin = match[len(format_view) :]
+    elif match.startswith(format_normal):
+        dogbin = match[len(format_normal) :]
+    elif match.startswith('del.dog/'):
+        dogbin = match[len('del.dog/') :]
     else:
         edit(message, f'`{get_translation("dogbinUrlError")}`')
         return
@@ -103,7 +88,7 @@ def getpaste(message):
 
     reply_text = get_translation('dogbinResult', ['`', resp.text])
 
-    edit(message, reply_text)
+    edit(message, reply_text, preview=False)
 
 
 HELP.update({'dogbin': get_translation('dogbinInfo')})

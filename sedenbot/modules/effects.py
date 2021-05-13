@@ -7,7 +7,7 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from os import path, remove
+from os import remove
 from subprocess import Popen
 
 from sedenbot import HELP
@@ -16,7 +16,7 @@ from sedenecem.core import (
     edit,
     extract_args,
     get_translation,
-    reply_doc,
+    reply_video,
     reply_voice,
     sedenify,
 )
@@ -26,9 +26,6 @@ from sedenecem.core import (
 def earrape(message):
     args = extract_args(message).split(' ', 1)
     reply = message.reply_to_message
-    earrape = 'earrape'
-    if path.isfile(earrape):
-        remove(earrape)
 
     util = args[0].lower()
     if util == 'mp4':
@@ -40,7 +37,7 @@ def earrape(message):
             edit(message, f'`{get_translation("wrongMedia")}`')
         else:
             edit(message, f'`{get_translation("applyEarrape")}`')
-            media = download_media_wc(reply, earrape)
+            media = download_media_wc(reply)
             process = Popen(
                 [
                     'ffmpeg',
@@ -53,8 +50,13 @@ def earrape(message):
             )
             process.communicate()
             edit(message, f'`{get_translation("uploadMedia")}`')
-            reply_doc(message, f'{media}.mp4', delete_after_send=True, delete_orig=True)
+            reply_video(
+                reply if reply else message,
+                f'{media}.mp4',
+                delete_file=True,
+            )
             remove(media)
+            message.delete()
     elif util == 'mp3':
         if not (
             reply.video
@@ -68,7 +70,7 @@ def earrape(message):
             edit(message, f'`{get_translation("wrongMedia")}`')
         else:
             edit(message, f'`{get_translation("applyEarrape")}`')
-            media = download_media_wc(reply, earrape)
+            media = download_media_wc(reply)
             process = Popen(
                 [
                     'ffmpeg',
@@ -81,9 +83,13 @@ def earrape(message):
             )
             process.communicate()
             edit(message, f'`{get_translation("uploadMedia")}`')
-            reply_voice(message, f'{media}.mp3', delete_orig=True)
+            reply_voice(
+                reply if reply else message,
+                f'{media}.mp3',
+                delete_file=True,
+            )
             remove(media)
-            remove(f'{media}.mp3')
+            message.delete()
     else:
         edit(message, f'`{get_translation("wrongCommand")}`')
         return
@@ -93,9 +99,6 @@ def earrape(message):
 def nightcore(message):
     # Copyright (c) @kisekinopureya | 2021
     reply = message.reply_to_message
-    nightcore = 'nightcore'
-    if path.isfile(nightcore):
-        remove(nightcore)
 
     if not (
         reply.audio
@@ -105,12 +108,12 @@ def nightcore(message):
         edit(message, f'`{get_translation("wrongMedia")}`')
     else:
         edit(message, f'`{get_translation("applyNightcore")}`')
-        media = download_media_wc(reply, file_name=nightcore)
+        media = download_media_wc(reply)
         process = Popen(
             [
                 'ffmpeg',
                 '-i',
-                f'{media}',
+                media,
                 '-af',
                 'asetrate=44100*1.16,aresample=44100,atempo=1',
                 f'{media}.mp3',
@@ -118,9 +121,12 @@ def nightcore(message):
         )
         process.communicate()
         edit(message, f'`{get_translation("uploadMedia")}`')
-        reply_voice(message, f'{media}.mp3')
+        reply_voice(
+            reply if reply else message,
+            f'{media}.mp3',
+            delete_file=True,
+        )
         remove(media)
-        remove(f'{media}.mp3')
         message.delete()
 
 
@@ -128,9 +134,6 @@ def nightcore(message):
 def slowedtoperfection(message):
     # Copyright (c) @kisekinopureya | 2021
     reply = message.reply_to_message
-    slowedtoperfection = 'slowedtoperfection'
-    if path.isfile(slowedtoperfection):
-        remove(slowedtoperfection)
 
     if not (
         reply.audio
@@ -140,12 +143,12 @@ def slowedtoperfection(message):
         edit(message, f'`{get_translation("wrongMedia")}`')
     else:
         edit(message, f'`{get_translation("applySlowedtoperfection")}`')
-        media = download_media_wc(reply, file_name=slowedtoperfection)
+        media = download_media_wc(reply)
         process = Popen(
             [
                 'ffmpeg',
                 '-i',
-                f'{media}',
+                media,
                 '-af',
                 'aecho=1.0:0.7:20:0.5,asetrate=44100*0.84,aresample=44100,atempo=1',
                 f'{media}.mp3',
@@ -153,9 +156,12 @@ def slowedtoperfection(message):
         )
         process.communicate()
         edit(message, f'`{get_translation("uploadMedia")}`')
-        reply_voice(message, f'{media}.mp3')
+        reply_voice(
+            reply if reply else message,
+            f'{media}.mp3',
+            delete_file=True,
+        )
         remove(media)
-        remove(f'{media}.mp3')
         message.delete()
 
 

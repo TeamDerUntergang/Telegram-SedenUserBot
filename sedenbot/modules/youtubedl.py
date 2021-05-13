@@ -46,7 +46,7 @@ def youtubedl(message):
         edit(message, get_translation('downloadYTVideo', ['**', title, '`']))
         ydl_opts = {
             'outtmpl': f'{title}.%(ext)s',
-            'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
+            'format': 'bestvideo[ext=mp4][height<=?1080]+bestaudio[ext=mp3]/best',
         }
         with YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
@@ -80,8 +80,8 @@ def youtubedl(message):
             f'{title}.mp3',
             caption=f"**{get_translation('videoUploader')}** `{uploader}`",
             delete_orig=True,
+            delete_file=True,
         )
-        remove(f'{title}.mp3')
 
 
 HELP.update({'youtubedl': get_translation('youtubedlInfo')})

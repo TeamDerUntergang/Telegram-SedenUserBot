@@ -22,9 +22,10 @@ from sedenecem.core import (
 )
 
 
-@sedenify(pattern=r'^.ss')
-def ss(message):
+@sedenify(pattern='^.ss')
+def screenshot(message):
     input_str = extract_args(message)
+    reply = message.reply_to_message
     link_match = match(r'\bhttp(.*)?://.*\.\S+', input_str)
     if link_match:
         link = link_match.group()
@@ -59,8 +60,9 @@ def ss(message):
         out.write(b64decode(im_png))
     edit(message, f'`{get_translation("ssUpload")}`')
     reply_doc(
-        message, name, caption=input_str, delete_after_send=True, delete_orig=True
+        reply if reply else message, name, caption=input_str, delete_after_send=True
     )
+    message.delete()
 
 
 HELP.update({'ss': get_translation('ssInfo')})
