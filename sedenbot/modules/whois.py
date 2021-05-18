@@ -92,9 +92,7 @@ def who_is(client, message):
         )
 
         if photo and media_perm:
-            reply_img(
-                reply if reply else message, photo, caption=caption, delete_file=True
-            )
+            reply_img(reply or message, photo, caption=caption, delete_file=True)
         else:
             return edit(message, caption)
 

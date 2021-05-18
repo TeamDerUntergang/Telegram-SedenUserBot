@@ -19,7 +19,7 @@ from sedenecem.core import (
     reply_doc,
     sedenify,
     send_log,
-    is_admin
+    is_admin,
 )
 from sedenecem.sql import mute_sql as sql
 
@@ -68,6 +68,8 @@ def ban_user(client, message):
                 [user.first_name, user.id, message.chat.title, '`', chat_id],
             )
         )
+    except UserAdminInvalid:
+        edit(message, f'`{get_translation("banAdminError")}`')
     except Exception as e:
         edit(message, get_translation('banError', ['`', '**', e]))
         return

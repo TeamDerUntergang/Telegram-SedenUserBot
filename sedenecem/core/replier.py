@@ -49,12 +49,18 @@ def reply_audio(
 
 
 def reply_video(
-    message, video, caption='', fix_markdown=False, delete_orig=False, delete_file=False
+    message,
+    video,
+    caption='',
+    fix_markdown=False,
+    delete_orig=False,
+    delete_file=False,
+    parse='md',
 ):
     try:
         if len(caption) > 0 and fix_markdown:
             caption += MARKDOWN_FIX_CHAR
-        message.reply_video(video, caption=caption.strip())
+        message.reply_video(video, caption=caption.strip(), parse_mode=parse)
         if delete_orig:
             message.delete()
         if delete_file:

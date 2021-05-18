@@ -79,7 +79,7 @@ def barcode(message):
     try:
         bar_code_mode_f = get('code128', input_str, writer=ImageWriter())
         filename = bar_code_mode_f.save('code128')
-        reply_doc(reply if reply else message, filename, delete_after_send=True)
+        reply_doc(reply or message, filename, delete_after_send=True)
         message.delete()
     except Exception as e:
         edit(message, str(e))
@@ -102,7 +102,7 @@ def makeqr(message):
         qr.make(fit=True)
         img = qr.make_image(fill_color='black', back_color='white')
         img.save('img_file.webp', 'PNG')
-        reply_sticker(reply if reply else message, 'img_file.webp', delete_file=True)
+        reply_sticker(reply or message, 'img_file.webp', delete_file=True)
         message.delete()
     except Exception as e:
         edit(message, str(e))

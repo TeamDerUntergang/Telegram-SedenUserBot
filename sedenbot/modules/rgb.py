@@ -68,7 +68,7 @@ def sticklet(message):
     image.save(image_stream, 'WebP')
     image_stream.seek(0)
 
-    reply_sticker(reply if reply else message, image_stream, delete_file=True)
+    reply_sticker(reply or message, image_stream, delete_file=True)
     message.delete()
 
 

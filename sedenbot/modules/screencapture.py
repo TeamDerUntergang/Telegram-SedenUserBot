@@ -59,9 +59,7 @@ def screenshot(message):
     with open(name, 'wb') as out:
         out.write(b64decode(im_png))
     edit(message, f'`{get_translation("ssUpload")}`')
-    reply_doc(
-        reply if reply else message, name, caption=input_str, delete_after_send=True
-    )
+    reply_doc(reply or message, name, caption=input_str, delete_after_send=True)
     message.delete()
 
 

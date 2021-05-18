@@ -830,7 +830,7 @@ def amogus(message):
     image.save(output, 'WebP')
     output.seek(0)
 
-    reply_sticker(reply if reply else message, output)
+    reply_sticker(reply or message, output)
     message.delete()
 
 

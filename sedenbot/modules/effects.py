@@ -50,11 +50,7 @@ def earrape(message):
             )
             process.communicate()
             edit(message, f'`{get_translation("uploadMedia")}`')
-            reply_video(
-                reply if reply else message,
-                f'{media}.mp4',
-                delete_file=True,
-            )
+            reply_video(reply or message, f'{media}.mp4', delete_file=True)
             remove(media)
             message.delete()
     elif util == 'mp3':
@@ -83,11 +79,7 @@ def earrape(message):
             )
             process.communicate()
             edit(message, f'`{get_translation("uploadMedia")}`')
-            reply_voice(
-                reply if reply else message,
-                f'{media}.mp3',
-                delete_file=True,
-            )
+            reply_voice(reply or message, f'{media}.mp3', delete_file=True)
             remove(media)
             message.delete()
     else:
@@ -121,11 +113,7 @@ def nightcore(message):
         )
         process.communicate()
         edit(message, f'`{get_translation("uploadMedia")}`')
-        reply_voice(
-            reply if reply else message,
-            f'{media}.mp3',
-            delete_file=True,
-        )
+        reply_voice(reply or message, f'{media}.mp3', delete_file=True)
         remove(media)
         message.delete()
 
@@ -156,11 +144,7 @@ def slowedtoperfection(message):
         )
         process.communicate()
         edit(message, f'`{get_translation("uploadMedia")}`')
-        reply_voice(
-            reply if reply else message,
-            f'{media}.mp3',
-            delete_file=True,
-        )
+        reply_voice(reply or message, f'{media}.mp3', delete_file=True)
         remove(media)
         message.delete()
 
