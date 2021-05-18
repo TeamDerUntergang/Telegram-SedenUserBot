@@ -10,6 +10,7 @@
 from .conv import *
 from .image import *
 from .misc import *
+from .proxy import *
 from .replier import *
 from .sedenify import *
 from .sedenlog import *

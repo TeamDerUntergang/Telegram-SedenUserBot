@@ -9,6 +9,7 @@
 
 from mimetypes import guess_type
 from os import path, remove
+from random import choice
 from re import findall, sub
 from time import sleep
 from traceback import format_exc
@@ -28,6 +29,7 @@ from sedenecem.core import (
     extract_args,
     get_translation,
     get_webdriver,
+    google_domains,
     reply_doc,
     reply_voice,
     sedenify,
@@ -111,9 +113,7 @@ def img(message):
         return
     edit(message, f'`{get_translation("processing")}`')
 
-    url = (
-        f'https://www.google.com/search?tbm=isch&q={query}&gbv=2&sa=X&biw=1920&bih=1080'
-    )
+    url = f'https://{choice(google_domains)}/search?tbm=isch&q={query}&gbv=2&sa=X&biw=1920&bih=1080'
     driver = get_webdriver()
     driver.get(url)
     count = 1
@@ -208,11 +208,18 @@ def do_gsearch(query, page):
         return link
 
     def get_result(res):
-        link = res.findAll('a', {'class': ['fuLhoc', 'ZWRArf']})[0]
-        href = f"https://google.com{link_replacer(link['href'])}"
-        title = link.findAll('span', {'class': ['CVA68e', 'qXLe6d']})[0].text
+        link = res.findAll('a')
+        for a in link:
+            if a.find('h3', {'class': ['zBAuLc']}):
+                link = a
+                break
+        href = f"https://{choice(google_domains)}{link_replacer(link['href'])}"
+        title = link.find('h3', {'class': ['zBAuLc']}).text
         title = replacer(title)
-        desc = res.findAll('span', {'class': ['qXLe6d', 'FrIlee']})[-1].text
+        desc = res.contents[-1].findAll(
+            'div', {'class': ['BNeawe', 's3v9rd', 'AP7Wnd']}
+        )
+        desc = [d.text for d in desc if len(d.text)][0]
         desc = replacer(desc)
         if len(desc.strip()) < 1:
             desc = get_translation('googleDesc')
@@ -220,25 +227,38 @@ def do_gsearch(query, page):
 
     query = parse_key(query)
     page = find_page(page)
+    temp = f'/search?q={query}&gbv=1&sei=o9ybYJmOFojssAfep7rADQ&start={find_page(page)}'
+
     req = get(
-        f'https://www.google.com/search?q={query}&gbv=1&sei=2oR3X4nhGY611fAP_5-EkAw&start={find_page(page)}',
+        f'https://{choice(google_domains)}{temp}',
         headers={
-            'User-Agent': 'Mozilla/5.0 (compatible; Konqueror/2.2-12; Linux)',
+            'User-Agent': 'User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0',
             'Content-Type': 'text/html',
         },
     )
+    retries = 0
+    while req.status_code != 200 and retries < 10:
+        retries += 1
+        req = get(
+            f'https://{choice(google_domains)}{temp}',
+            headers={
+                'User-Agent': 'User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0',
+                'Content-Type': 'text/html',
+            },
+        )
+
     soup = BeautifulSoup(req.text, 'html.parser')
-    res1 = soup.findAll('div', {'class': ['ezO2md']})
+    res1 = soup.findAll('div', {'class': ['ZINbbc', 'xpd', 'O9g5cc', 'uUPGi']})
 
     def is_right_class(res):
-        ret = res.find('span', {'class': ['qXLe6d', 'dXDvrc']})
+        ret = res.find('h3', {'class': ['zBAuLc']})
 
         if not ret:
             return False
 
         ret = ret.parent
 
-        return ret.name == 'a' and 'fuLhoc' in ret['class']
+        return ret.name == 'a'
 
     res1 = [res for res in res1 if is_right_class(res)]
 
