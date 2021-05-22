@@ -8,8 +8,8 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-
 from io import BytesIO
+from os import remove
 
 from PIL import Image
 from requests import get
@@ -70,8 +70,8 @@ def youtubedl(message):
                     temp.seek(0)
                 im = Image.open(temp)
                 imc = im.convert('RGB')
-                imc.save(thumb_path := f'downloads/{video_info["id"]}.jpg')
-            except BaseException as e:
+                imc.save(thumb_path := f'{video_info["id"]}.jpg')
+            except BaseException:
                 thumb_path = None
 
             ydl.download([url])
@@ -86,6 +86,7 @@ def youtubedl(message):
             delete_orig=True,
             delete_file=True,
         )
+        remove(f'{video_info["id"]}.jpg')
 
     elif util == 'mp3':
         ydl_opts = {

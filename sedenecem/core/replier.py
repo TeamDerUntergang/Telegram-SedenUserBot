@@ -87,7 +87,7 @@ def reply_video(
             message.delete()
         if delete_file:
             remove(video)
-    except BaseException as e:
+    except BaseException:
         pass
 
 
