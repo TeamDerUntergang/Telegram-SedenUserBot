@@ -34,12 +34,21 @@ def reply_img(
 
 
 def reply_audio(
-    message, audio, caption='', fix_markdown=False, delete_orig=False, delete_file=False
+    message,
+    audio,
+    caption='',
+    duration='',
+    fix_markdown=False,
+    delete_orig=False,
+    delete_file=False,
 ):
     try:
         if len(caption) > 0 and fix_markdown:
             caption += MARKDOWN_FIX_CHAR
-        message.reply_audio(audio, caption=caption.strip())
+        if not duration:
+            message.reply_audio(audio, caption=caption.strip())
+        else:
+            message.reply_audio(audio, caption=caption.strip(), duration=int(duration))
         if delete_orig:
             message.delete()
         if delete_file:
@@ -52,6 +61,8 @@ def reply_video(
     message,
     video,
     caption='',
+    duration='',
+    thumb=None,
     fix_markdown=False,
     delete_orig=False,
     delete_file=False,
@@ -60,12 +71,23 @@ def reply_video(
     try:
         if len(caption) > 0 and fix_markdown:
             caption += MARKDOWN_FIX_CHAR
-        message.reply_video(video, caption=caption.strip(), parse_mode=parse)
+        if not duration:
+            message.reply_video(
+                video, caption=caption.strip(), parse_mode=parse, thumb=thumb
+            )
+        else:
+            message.reply_video(
+                video,
+                caption=caption.strip(),
+                duration=int(duration),
+                parse_mode=parse,
+                thumb=thumb,
+            )
         if delete_orig:
             message.delete()
         if delete_file:
             remove(video)
-    except BaseException:
+    except BaseException as e:
         pass
 
 
