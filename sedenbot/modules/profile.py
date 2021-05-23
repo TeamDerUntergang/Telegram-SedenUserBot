@@ -18,6 +18,7 @@ from sedenecem.core import (
     download_media_wc,
     edit,
     extract_args,
+    get_download_dir,
     get_translation,
     sedenify,
     send_log,
@@ -80,7 +81,7 @@ def set_profilepic(client, message):
         maxSize = (640, 640)
         ratio = min(maxSize[0] / width, maxSize[1] / height)
         image = image.resize((int(width * ratio), int(height * ratio)))
-        new_photo = 'downloads/profile_photo_new.png'
+        new_photo = f'{get_download_dir()}/profile_photo_new.png'
         image.save(new_photo)
         client.set_profile_photo(photo=new_photo)
         remove(photo)
@@ -90,9 +91,9 @@ def set_profilepic(client, message):
         edit(message, f'`{PP_ERROR}`')
 
 
-@sedenify(pattern=r'^.delpfp', compat=False)
+@sedenify(pattern='^.delpfp', compat=False)
 def remove_profilepic(client, message):
-    group = message.text[8:]
+    group = extract_args(message)
     if group == 'all':
         lim = 0
     elif group.isdigit():

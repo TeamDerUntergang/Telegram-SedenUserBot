@@ -7,6 +7,7 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
+from os import makedirs
 from re import escape, sub
 
 from pyrogram.types import Message
@@ -354,3 +355,9 @@ def is_admin(message):
 
     user = app.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
     return user.status in _admin_status_list
+
+
+def get_download_dir() -> str:
+    dir = './downloads'
+    makedirs(dir, exist_ok=True)
+    return dir

@@ -152,10 +152,6 @@ def upstream(ups):
             repo.__del__()
             return
         edit(ups, f'`{get_translation("updateComplete")}`')
-        try:
-            heroku_app.scale_formation_process('seden', 1)
-        except BaseException:
-            pass
     else:
         try:
             ups_rem.pull(ac_br)

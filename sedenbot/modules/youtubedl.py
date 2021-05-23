@@ -17,6 +17,7 @@ from sedenbot import HELP
 from sedenecem.core import (
     edit,
     extract_args,
+    get_download_dir,
     get_translation,
     reply_audio,
     reply_video,
@@ -70,7 +71,7 @@ def youtubedl(message):
                     temp.seek(0)
                 im = Image.open(temp)
                 imc = im.convert('RGB')
-                imc.save(thumb_path := f'{video_info["id"]}.jpg')
+                imc.save(thumb_path := f'{get_download_dir()}/{video_info["id"]}.jpg')
             except BaseException:
                 thumb_path = None
 
@@ -86,7 +87,7 @@ def youtubedl(message):
             delete_orig=True,
             delete_file=True,
         )
-        remove(f'{video_info["id"]}.jpg')
+        remove(thumb_path)
 
     elif util == 'mp3':
         ydl_opts = {

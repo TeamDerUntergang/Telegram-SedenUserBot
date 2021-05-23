@@ -10,8 +10,15 @@
 from os import path, remove
 
 from removebg import RemoveBg
-from sedenbot import DOWNLOAD_DIRECTORY, HELP, RBG_APIKEY
-from sedenecem.core import download_media_wc, edit, get_translation, reply_doc, sedenify
+from sedenbot import HELP, RBG_APIKEY
+from sedenecem.core import (
+    download_media_wc,
+    edit,
+    get_download_dir,
+    get_translation,
+    reply_doc,
+    sedenify,
+)
 
 
 @sedenify(pattern='^.rbg$')
@@ -32,7 +39,7 @@ def rbg(message):
         edit(message, f'`{get_translation("rbgUsage")}`')
         return
 
-    IMG_PATH = f'{DOWNLOAD_DIRECTORY}/image.png'
+    IMG_PATH = f'{get_download_dir()}/image.png'
 
     if path.exists(IMG_PATH):
         remove(IMG_PATH)
