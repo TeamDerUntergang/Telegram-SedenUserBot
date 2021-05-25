@@ -314,6 +314,7 @@
     "noNote": "No notes found in this chat",
     "noSnip": "No snip is currently available.",
     "nonSqlMode": "Running on Non-SQL mode!",
+    "notFound": "Not Found",
     "notHeroku": "Bot is not running on Heroku",
     "notSet": "Not set!",
     "noteError": "Message couldn't be forwarded and note couldn't be added.",

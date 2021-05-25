@@ -58,6 +58,10 @@ def youtubedl(message):
                 video_info = ydl.extract_info(url, False)
                 title = video_info['title']
                 uploader = video_info['uploader']
+                duration = int(video_info['duration'])
+            except KeyError:
+                uploader = get_translation('notFound')
+                duration = None
             except BaseException as e:
                 return edit(message, get_translation('banError', ['`', '**', e]))
 
@@ -83,11 +87,14 @@ def youtubedl(message):
             f'{video_info["id"]}.mp4',
             thumb=thumb_path,
             caption=f"**{get_translation('videoTitle')}** `{title}`\n**{get_translation('videoUploader')}** `{uploader}`",
-            duration=int(video_info['duration']),
+            duration=duration,
             delete_orig=True,
             delete_file=True,
         )
-        remove(thumb_path)
+        try:
+            remove(thumb_path)
+        except BaseException:
+            pass
 
     elif util == 'mp3':
         ydl_opts = {
@@ -116,6 +123,10 @@ def youtubedl(message):
                 video_info = ydl.extract_info(url, False)
                 title = video_info['title']
                 uploader = video_info['uploader']
+                duration = int(video_info['duration'])
+            except KeyError:
+                uploader = get_translation('notFound')
+                duration = None
             except BaseException as e:
                 return edit(message, get_translation('banError', ['`', '**', e]))
 
@@ -127,7 +138,7 @@ def youtubedl(message):
             message,
             f'{title}.mp3',
             caption=f"**{get_translation('videoUploader')}** `{uploader}`",
-            duration=int(video_info['duration']),
+            duration=duration,
             delete_orig=True,
             delete_file=True,
         )

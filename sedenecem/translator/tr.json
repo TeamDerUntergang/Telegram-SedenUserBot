@@ -316,6 +316,7 @@
     "noNote": "Bu sohbette kaydedilmi\u015f not bulunamad\u0131",
     "noSnip": "No snip is currently available.",
     "nonSqlMode": "SQL d\u0131\u015f\u0131 modda \u00e7al\u0131\u015f\u0131yorum, bunu ger\u00e7ekle\u015ftiremem",
+    "notFound": "Bulunamad\u0131",
     "notHeroku": "Bot \u015fu an Heroku'da \u00e7al\u0131\u015fm\u0131yor",
     "notSet": "Ayarlanmam\u0131\u015f!",
     "noteError": "Mesaj y\u00f6nlendirilemedi ve not eklenemedi.",
