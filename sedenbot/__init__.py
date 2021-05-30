@@ -300,7 +300,6 @@ def __import_modules():
     LOGS.info(get_translation('loadedModules', [modules]))
     for module in modules:
         try:
-            LOGS.info(get_translation('loadedModules2', [module]))
             import_module(f'sedenbot.modules.{module}')
         except Exception:
             if LOG_VERBOSE:

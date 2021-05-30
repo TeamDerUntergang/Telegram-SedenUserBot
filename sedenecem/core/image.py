@@ -11,6 +11,8 @@ from math import floor
 
 from PIL import Image
 
+from .misc import get_download_dir
+
 
 def sticker_resize(photo):
     image = Image.open(photo)
@@ -33,6 +35,6 @@ def sticker_resize(photo):
         maxsize = (512, 512)
         image.thumbnail(maxsize)
 
-    temp = 'temp.png'
+    temp = f'{get_download_dir()}/temp.png'
     image.save(temp, 'PNG')
     return temp

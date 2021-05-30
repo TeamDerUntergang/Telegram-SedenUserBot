@@ -11,7 +11,6 @@ from random import choice
 
 from pyrogram.raw.functions.messages import GetStickerSet
 from pyrogram.raw.types import InputStickerSetShortName
-from requests import get
 from sedenbot import HELP, PACKNAME, PACKNICK, TEMP_SETTINGS
 from sedenecem.core import (
     PyroConversation,
@@ -57,43 +56,42 @@ def kang(client, message):
     if len(args) < 1:
         args = '1'
 
-    emoji = '🤤'
+    emoji = reply.sticker.emoji if reply.sticker and reply.sticker.emoji else '🤤'
     pack = 1
 
     for item in args.split():
         if item.isdigit():
             pack = int(item)
             args = args.replace(item, '').strip()
-        elif 'e=' in item.lower():
-            emoji = item.replace('e=', '')
-            args = args.replace(item, '').strip()
+        else:
+            emoji = args.strip()
 
     ptime = time()
     pname = f'PNAME_{ptime}'
     pnick = f'PNICK_{ptime}'
 
-    if anim:
-        pname += '_anim'
-        pnick += ' (Animated)'
+    name_suffix = ('_anim', ' (Animated)') if anim else ('', '')
 
     TEMP_SETTINGS[pname] = (
         PACKNAME.replace(' ', '')
         if PACKNAME
-        else f'a{myacc.id}_by_{myacc.username}_{pack}'
+        else f'a{myacc.id}_by_{myacc.username}_{pack}{name_suffix[0]}'
     )
     TEMP_SETTINGS[f'{pname}_TEMPLATE'] = f'a{myacc.id}_by_{myacc.username}_'
-    TEMP_SETTINGS[pnick] = PACKNICK or f'{kanger}\'s UserBot pack {pack}'
+    TEMP_SETTINGS[pnick] = (
+        PACKNICK or f'{kanger}\'s UserBot pack {pack}{name_suffix[1]}'
+    )
     TEMP_SETTINGS[f'{pnick}_TEMPLATE'] = f'{kanger}\'s UserBot pack '
 
     limit = '50' if anim else '120'
 
-    def pack_created(name):
+    def pack_created(pname):
         try:
             set_name = InputStickerSetShortName(short_name=TEMP_SETTINGS[pname])
             set = GetStickerSet(stickerset=set_name)
             client.send(data=set)
             return True
-        except BaseException as e:
+        except BaseException:
             return False
 
     def create_new(conv, pack, pname, pnick):
@@ -106,8 +104,12 @@ def kang(client, message):
         msg = send_recv(conv, TEMP_SETTINGS[pnick])
         if msg.text == 'Invalid pack selected.':
             pack += 1
-            TEMP_SETTINGS[pname] = f"{TEMP_SETTINGS[f'{pname}_TEMPLATE']}{pack}"
-            TEMP_SETTINGS[pnick] = f"{TEMP_SETTINGS[f'{pnick}_TEMPLATE']}{pack}"
+            TEMP_SETTINGS[
+                pname
+            ] = f"{TEMP_SETTINGS[f'{pname}_TEMPLATE']}{pack}{name_suffix[0]}"
+            TEMP_SETTINGS[
+                pnick
+            ] = f"{TEMP_SETTINGS[f'{pnick}_TEMPLATE']}{pack}{name_suffix[1]}"
             return create_new(conv, pack, pname, pnick)
         msg = send_recv(conv, media, doc=True)
         if 'Sorry, the file type is invalid.' in msg.text:
@@ -119,10 +121,14 @@ def kang(client, message):
             send_recv(conv, f'<{TEMP_SETTINGS[pnick]}>')
         send_recv(conv, '/skip')
         ret = send_recv(conv, TEMP_SETTINGS[pname])
-        while "already taken" in ret.text:
+        while 'already taken' in ret.text:
             pack += 1
-            TEMP_SETTINGS[pname] = f"{TEMP_SETTINGS[f'{pname}_TEMPLATE']}{pack}"
-            TEMP_SETTINGS[pnick] = f"{TEMP_SETTINGS[f'{pnick}_TEMPLATE']}{pack}"
+            TEMP_SETTINGS[
+                pname
+            ] = f"{TEMP_SETTINGS[f'{pname}_TEMPLATE']}{pack}{name_suffix[0]}"
+            TEMP_SETTINGS[
+                pnick
+            ] = f"{TEMP_SETTINGS[f'{pnick}_TEMPLATE']}{pack}{name_suffix[1]}"
             ret = send_recv(conv, TEMP_SETTINGS[pname])
         return True
 
@@ -136,8 +142,12 @@ def kang(client, message):
 
         if limit in status.text:
             pack += 1
-            TEMP_SETTINGS[pname] = f"{TEMP_SETTINGS[f'{pname}_TEMPLATE']}{pack}"
-            TEMP_SETTINGS[pnick] = f"{TEMP_SETTINGS[f'{pnick}_TEMPLATE']}{pack}"
+            TEMP_SETTINGS[
+                pname
+            ] = f"{TEMP_SETTINGS[f'{pname}_TEMPLATE']}{pack}{name_suffix[0]}"
+            TEMP_SETTINGS[
+                pnick
+            ] = f"{TEMP_SETTINGS[f'{pnick}_TEMPLATE']}{pack}{name_suffix[1]}"
             edit(message, get_translation('packFull', ['`', '**', str(pack)]))
             if pack_created(pname):
                 return add_exist(conv, pack, pname, pnick)
@@ -149,7 +159,7 @@ def kang(client, message):
         send_recv(conv, '/done')
         return True
 
-    if not (anim and reply.sticker):
+    if not reply.sticker:
         media = resizer(media)
 
     with PyroConversation(client, 'Stickers') as conv:
