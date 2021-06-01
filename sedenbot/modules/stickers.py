@@ -10,6 +10,7 @@
 from random import choice
 
 from pyrogram.raw.functions.messages import GetStickerSet
+from pyrogram.errors import YouBlockedUser
 from pyrogram.raw.types import InputStickerSetShortName
 from sedenbot import HELP, PACKNAME, PACKNICK, TEMP_SETTINGS
 from sedenecem.core import (
@@ -44,6 +45,7 @@ def kang(client, message):
 
     anim = False
     media = None
+    chat = 'Stickers'
 
     if reply.photo or reply.document or reply.sticker:
         edit(message, f'`{choice(DIZCILIK)}`')
@@ -162,8 +164,11 @@ def kang(client, message):
     if not reply.sticker:
         media = resizer(media)
 
-    with PyroConversation(client, 'Stickers') as conv:
-        send_recv(conv, '/cancel')
+    with PyroConversation(client, chat) as conv:
+        try:
+            send_recv(conv, '/cancel')
+        except YouBlockedUser:
+            return edit(message, get_translation('unblockChat', ['**', '`', chat]))
         if pack_created(pname):
             ret = add_exist(conv, pack, pname, pnick)
             if not ret:
