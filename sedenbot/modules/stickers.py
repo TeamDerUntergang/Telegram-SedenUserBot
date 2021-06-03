@@ -104,7 +104,7 @@ def kang(client, message):
         except Exception as e:
             raise e
         msg = send_recv(conv, TEMP_SETTINGS[pnick])
-        if msg.text == 'Invalid pack selected.':
+        if 'Invalid pack selected.' in msg.text:
             pack += 1
             TEMP_SETTINGS[
                 pname
@@ -114,7 +114,7 @@ def kang(client, message):
             ] = f"{TEMP_SETTINGS[f'{pnick}_TEMPLATE']}{pack}{name_suffix[1]}"
             return create_new(conv, pack, pname, pnick)
         msg = send_recv(conv, media, doc=True)
-        if 'Sorry, the file type is invalid.' in msg.text:
+        if 'Sorry' in msg.text:
             edit(message, f'`{get_translation("stickerError")}`')
             return
         send_recv(conv, emoji)
@@ -156,7 +156,10 @@ def kang(client, message):
             else:
                 return create_new(conv, pack, pname, pnick)
 
-        send_recv(conv, media, doc=True)
+        status = send_recv(conv, media, doc=True)
+        if 'Sorry' in status.text:
+            edit(message, f'`{get_translation("stickerError")}`')
+            return
         send_recv(conv, emoji)
         send_recv(conv, '/done')
         return True
@@ -204,7 +207,7 @@ def getsticker(message):
         reply,
         photo,
         caption=f'**Sticker ID:** `{reply.sticker.file_id}'
-        f'`\n**Emoji**: `{reply.sticker.emoji}`',
+        f'`\n**Emoji**: `{reply.sticker.emoji or get_translation("notSet")}`',
         delete_after_send=True,
     )
     message.delete()
