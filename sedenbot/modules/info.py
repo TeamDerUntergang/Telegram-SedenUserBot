@@ -7,6 +7,8 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
+from pyrogram.errors import PeerIdInvalid
+from pyrogram.raw.functions.messages import GetOnlines
 from sedenbot import BLACKLIST, BRAIN, HELP
 from sedenecem.core import (
     download_media_wc,
@@ -93,6 +95,7 @@ def who_is(client, message):
 
         if photo and media_perm:
             reply_img(reply or message, photo, caption=caption, delete_file=True)
+            message.delete()
         else:
             return edit(message, caption)
 
@@ -122,4 +125,81 @@ def BlacklistCheck(user_id):
         return get_translation('blacklistCheck')
 
 
-HELP.update({'whois': get_translation('whoisInfo')})
+@sedenify(pattern='^.ginfo', compat=False)
+def get_chat_info(client, message):
+    args = extract_args(message)
+    reply = message.reply_to_message
+    group_id = message.chat.id
+    edit(message, f'`{get_translation("processing")}`')
+
+    try:
+        reply_chat = client.get_chat(args or group_id)
+        peer = client.resolve_peer(args or group_id)
+    except PeerIdInvalid:
+        edit(message, f'`{get_translation("groupNotFound")}`')
+        return
+
+    media_perm = True
+    if 'group' in message.chat.type:
+        perm = message.chat.permissions
+        media_perm = perm.can_send_media_messages
+
+    try:
+        online_users = client.send(GetOnlines(peer=peer))
+        online = online_users.onlines
+    except PeerIdInvalid:
+        edit(message, f'`{get_translation("groupNotFound")}`')
+        return
+
+    try:
+        group_photo = reply_chat.photo.big_file_id
+        photo = download_media_wc(group_photo, 'photo.png')
+    except BaseException:
+        photo = None
+        pass
+
+    title = reply_chat.title or get_translation('notSet')
+    username = (
+        f'**@{reply_chat.username}**'
+        if reply_chat.username
+        else f'`{get_translation("notFound")}`'
+    )
+    chat_id = reply_chat.id
+    dc_id = reply_chat.dc_id or get_translation('notFound')
+    group_type = reply_chat.type
+    sticker_pack = (
+        f'**[Pack](https://t.me/addstickers/{reply_chat.sticker_set_name})**'
+        if reply_chat.sticker_set_name
+        else f'`{get_translation("notSet")}`'
+    )
+    members = reply_chat.members_count
+    description = (
+        f'\n{reply_chat.description}'
+        if reply_chat.description
+        else get_translation('notSet')
+    )
+
+    caption = get_translation(
+        'groupinfoResult',
+        [
+            '**',
+            '`',
+            title,
+            chat_id,
+            dc_id,
+            group_type,
+            members,
+            online,
+            sticker_pack,
+            username,
+            description,
+        ],
+    )
+    if photo and media_perm:
+        reply_img(reply or message, photo, caption=caption, delete_file=True)
+        message.delete()
+    else:
+        edit(message, caption, preview=False)
+
+
+HELP.update({'info': get_translation('groupInfo')})

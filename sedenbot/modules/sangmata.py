@@ -36,7 +36,7 @@ def sangmata(client, message):
 
         if not response:
             edit(message, f'`{get_translation("answerFromBot")}`')
-        elif response.text and response.text.startswith('Forward'):
+        elif 'Forward' in response.text:
             edit(message, f'`{get_translation("privacySettings")}`')
         else:
             edit(message, response.text)

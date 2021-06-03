@@ -14,7 +14,6 @@ from subprocess import run as runapp
 
 from image_to_ascii import ImageToAscii
 from pybase64 import b64decode, b64encode
-from requests import post
 from sedenbot import HELP, SUPPORT_GROUP
 from sedenecem.core import (
     download_media_wc,
@@ -41,6 +40,16 @@ def random(message):
 @sedenify(pattern='^.chatid$', private=False)
 def chatid(message):
     edit(message, get_translation('chatidResult', ['`', str(message.chat.id)]))
+
+
+@sedenify(pattern='^.invitelink$', compat=False, admin=True, private=False)
+def get_invite_link(client, message):
+    chat = client.get_chat(message.chat.id)
+    try:
+        url = chat.invite_link
+        edit(message, url, preview=False)
+    except BaseException:
+        pass
 
 
 @sedenify(pattern='^.id$')

@@ -12,7 +12,8 @@ from time import sleep
 
 from PIL import Image
 from pyrogram.errors import UsernameOccupied
-from pyrogram.raw.functions import account, channels
+from pyrogram.raw.functions.account import UpdateProfile, UpdateStatus, UpdateUsername
+from pyrogram.raw.functions.channels import GetAdminedPublicChannels
 from sedenbot import HELP, TEMP_SETTINGS
 from sedenecem.core import (
     download_media_wc,
@@ -25,22 +26,13 @@ from sedenecem.core import (
 )
 
 # ====================== CONSTANT ===============================
-INVALID_MEDIA = get_translation('mediaInvalid')
-PP_CHANGED = get_translation('ppChanged')
-PP_ERROR = get_translation('ppError')
-
-BIO_SUCCESS = get_translation('bioSuccess')
-NAME_OK = get_translation('nameOk')
-
-USERNAME_SUCCESS = get_translation('usernameSuccess')
-USERNAME_TAKEN = get_translation('usernameTaken')
 ALWAYS_ONLINE = 'offline'
 # ===============================================================
 
 
 @sedenify(pattern='^.reserved$', compat=False)
 def reserved(client, message):
-    sonuc = client.send(channels.GetAdminedPublicChannels())
+    sonuc = client.send(GetAdminedPublicChannels())
     mesaj = ''
     for channel_obj in sonuc.chats:
         mesaj += f'{channel_obj.title}\n@{channel_obj.username}\n\n'
@@ -58,8 +50,8 @@ def name(client, message):
         firstname = namesplit[0]
         lastname = namesplit[1]
 
-    client.send(account.UpdateProfile(first_name=firstname, last_name=lastname))
-    edit(message, f'`{NAME_OK}`')
+    client.send(UpdateProfile(first_name=firstname, last_name=lastname))
+    edit(message, f'`{get_translation("nameOk")}`')
 
 
 @sedenify(pattern='^.setpfp$', compat=False)
@@ -69,11 +61,15 @@ def set_profilepic(client, message):
     if (
         reply
         and reply.media
-        and (reply.photo or (reply.document and 'image' in reply.document.mime_type))
+        and (
+            reply.photo
+            or (reply.sticker and not reply.sticker.is_animated)
+            or (reply.document and 'image' in reply.document.mime_type)
+        )
     ):
         photo = download_media_wc(reply, 'profile_photo.jpg')
     else:
-        edit(message, f'`{INVALID_MEDIA}`')
+        edit(message, f'`{get_translation("mediaInvalid")}`')
 
     if photo:
         image = Image.open(photo)
@@ -86,9 +82,9 @@ def set_profilepic(client, message):
         client.set_profile_photo(photo=new_photo)
         remove(photo)
         remove(new_photo)
-        edit(message, f'`{PP_CHANGED}`')
+        edit(message, f'`{get_translation("ppChanged")}`')
     else:
-        edit(message, f'`{PP_ERROR}`')
+        edit(message, f'`{get_translation("ppError")}`')
 
 
 @sedenify(pattern='^.delpfp', compat=False)
@@ -111,18 +107,18 @@ def remove_profilepic(client, message):
 @sedenify(pattern='^.setbio', compat=False)
 def setbio(client, message):
     newbio = extract_args(message)
-    client.send(account.UpdateProfile(about=newbio))
-    edit(message, BIO_SUCCESS)
+    client.send(UpdateProfile(about=newbio))
+    edit(message, f'`{get_translation("bioSuccess")}`')
 
 
 @sedenify(pattern='^.username', compat=False)
 def username(client, message):
     newusername = extract_args(message)
     try:
-        client.send(account.UpdateUsername(username=newusername))
-        edit(message, f'`{USERNAME_SUCCESS}`')
+        client.send(UpdateUsername(username=newusername))
+        edit(message, f'`{get_translation("usernameSuccess")}`')
     except UsernameOccupied:
-        edit(message, f'`{USERNAME_TAKEN}`')
+        edit(message, f'`{get_translation("usernameTaken")}`')
 
 
 @sedenify(pattern='^.block$', compat=False)
@@ -198,7 +194,7 @@ def online(client, message):
 
     while ALWAYS_ONLINE in TEMP_SETTINGS:
         try:
-            client.send(account.UpdateStatus(offline=False))
+            client.send(UpdateStatus(offline=False))
             sleep(5)
         except BaseException:
             return

@@ -7,19 +7,28 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
+from os import remove
 from time import sleep
 
-from pyrogram.errors import MessageTooLong, UserAdminInvalid
+from PIL import Image
+from pyrogram.errors import (
+    ImageProcessFailed,
+    MessageTooLong,
+    PhotoCropSizeSmall,
+    UserAdminInvalid,
+)
 from pyrogram.types import ChatPermissions
 from sedenbot import BRAIN, HELP
 from sedenecem.core import (
+    download_media_wc,
     edit,
     extract_args,
+    get_download_dir,
     get_translation,
+    is_admin,
     reply_doc,
     sedenify,
     send_log,
-    is_admin,
 )
 from sedenecem.sql import mute_sql as sql
 
@@ -516,6 +525,48 @@ def zombie_accounts(client, message):
     send_log(
         get_translation('zombiesLog', ['**', '`', count, message.chat.title, chat_id])
     )
+
+
+@sedenify(pattern='^.setgpic$', compat=False, admin=True, private=False)
+def set_group_photo(client, message):
+    reply = message.reply_to_message
+    photo = None
+    if (
+        reply
+        and reply.media
+        and (
+            reply.photo
+            or (reply.sticker and not reply.sticker.is_animated)
+            or (reply.document and 'image' in reply.document.mime_type)
+        )
+    ):
+        photo = download_media_wc(reply, 'group_photo.jpg')
+    else:
+        edit(message, f'{get_translation("mediaInvalid")}`')
+        return
+
+    if photo:
+        image = Image.open(photo)
+        width, height = image.size
+        maxSize = (640, 640)
+        ratio = min(maxSize[0] / width, maxSize[1] / height)
+        image = image.resize((int(width * ratio), int(height * ratio)))
+        new_photo = f'{get_download_dir()}/group_photo_new.png'
+        image.save(new_photo)
+        try:
+            client.set_chat_photo(chat_id=message.chat.id, photo=new_photo)
+            remove(photo)
+            remove(new_photo)
+            edit(message, f'`{get_translation("groupPicChanged")}`')
+        except PhotoCropSizeSmall:
+            edit(message, f'`{get_translation("ppSmall")}`')
+        except ImageProcessFailed:
+            edit(message, f'`{get_translation("ppError")}`')
+        except BaseException as e:
+            edit(message, get_translation('banError', ['`', '**', e]))
+            return
+    else:
+        edit(message, f'`{get_translation("ppError")}`')
 
 
 @sedenify(incoming=True, outgoing=False, compat=False)
