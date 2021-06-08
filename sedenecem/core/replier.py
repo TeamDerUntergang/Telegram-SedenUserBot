@@ -64,6 +64,7 @@ def reply_video(
     duration='',
     thumb=None,
     fix_markdown=False,
+    progress=None,
     delete_orig=False,
     delete_file=False,
     parse='md',
@@ -73,7 +74,11 @@ def reply_video(
             caption += MARKDOWN_FIX_CHAR
         if not duration:
             message.reply_video(
-                video, caption=caption.strip(), parse_mode=parse, thumb=thumb
+                video,
+                caption=caption.strip(),
+                parse_mode=parse,
+                thumb=thumb,
+                progress=progress,
             )
         else:
             message.reply_video(
@@ -82,6 +87,7 @@ def reply_video(
                 duration=int(duration),
                 parse_mode=parse,
                 thumb=thumb,
+                progress=progress,
             )
         if delete_orig:
             message.delete()

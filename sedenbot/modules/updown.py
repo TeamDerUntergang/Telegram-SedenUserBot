@@ -16,6 +16,7 @@ from sedenecem.core import (
     edit,
     extract_args,
     get_translation,
+    reply_video,
     reply_doc,
     sedenify,
 )
@@ -77,7 +78,10 @@ def upload(message):
     if isfile(args):
         try:
             edit(message, get_translation('updownUpload', ['`', '', args]))
-            reply_doc(message, args, progress=progress)
+            if args.endswith('.mp4'):
+                reply_video(message, args, progress=progress)
+            else:
+                reply_doc(message, args, progress=progress)
             edit(message, f'`{get_translation("uploadFinish")}`')
         except Exception as e:
             edit(message, f'`{get_translation("uploadError")}`')

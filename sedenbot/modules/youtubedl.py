@@ -1,4 +1,4 @@
-# Copyright (C) 2020 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
 # Copyright (C) 2021 kisekinopureya <https://github.com/kisekinopureya>
 #
 # This file is part of TeamDerUntergang project,
@@ -58,7 +58,7 @@ def youtubedl(message):
                 video_info = ydl.extract_info(url, False)
                 title = video_info['title']
                 uploader = video_info['uploader']
-                duration = int(video_info['duration'])
+                duration = video_info['duration']
             except KeyError:
                 uploader = get_translation('notFound')
                 duration = None
