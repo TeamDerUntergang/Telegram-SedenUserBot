@@ -8,9 +8,11 @@
 #
 
 from random import choice
+from time import time
 
-from pyrogram.raw.functions.messages import GetStickerSet
+from PIL import Image
 from pyrogram.errors import YouBlockedUser
+from pyrogram.raw.functions.messages import GetStickerSet
 from pyrogram.raw.types import InputStickerSetShortName
 from sedenbot import HELP, PACKNAME, PACKNICK, TEMP_SETTINGS
 from sedenecem.core import (
@@ -18,12 +20,12 @@ from sedenecem.core import (
     download_media_wc,
     edit,
     extract_args,
+    get_download_dir,
     get_translation,
     reply_doc,
     sedenify,
 )
 from sedenecem.core import sticker_resize as resizer
-from time import time
 
 # ================= CONSTANT =================
 DIZCILIK = [get_translation(f'kangstr{i+1}') for i in range(0, 12)]
@@ -201,7 +203,10 @@ def getsticker(message):
         edit(message, f'`{get_translation("replySticker")}`')
         return
 
-    photo = download_media_wc(reply)
+    photo = download_media_wc(reply, f'{get_download_dir()}/sticker.png')
+    image = Image.open(photo)
+    photo = f'{get_download_dir()}/sticker.png'
+    image.save(photo)
 
     reply_doc(
         reply,
