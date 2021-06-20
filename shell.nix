@@ -2,13 +2,12 @@ with import <nixpkgs> {};
 
 stdenv.mkDerivation {
   name = "sedenbot-environment";
-  buildInputs = [
-      pkgs.git
-      pkgs.nano
-      pkgs.python3
-      pkgs.python3.pkgs.setuptools
-      pkgs.python3.pkgs.pip
-    ];
+  buildInputs = with pkgs; [
+    git nano python3 chromedriver gnused
+    python3.pkgs.setuptools
+    python3.pkgs.pip
+  ];
+  
   shellHook = ''
     export PIP_PREFIX="$(pwd)/_build/pip_packages"
     export PYTHONPATH="$PIP_PREFIX/${pkgs.python3.sitePackages}:$PYTHONPATH"
@@ -25,6 +24,9 @@ stdenv.mkDerivation {
     $PIP install -r requirements.txt
     
     if [ -f "config.env" -a -f "sedenuserbot.session" ]; then
+      # update chromedriver path
+      sed '/CHROME_DRIVER/d' config.env
+      echo "CHROME_DRIVER='${pkgs.chromedriver.outPath}/bin/chromedriver'" >> config.env
       $PYTHON seden.py
     else
       # first run
@@ -32,7 +34,7 @@ stdenv.mkDerivation {
       mv sample_config.env config.env
       echo "Press enter to edit config.env file..." && read >> /dev/null
       nano config.env
-      echo "Type "nix-shell" to start SedenUserBot!"
+      echo "Type 'nix-shell' to start SedenUserBot!"
     fi
     '';
 }
