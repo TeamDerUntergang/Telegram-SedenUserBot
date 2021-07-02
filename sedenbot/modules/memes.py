@@ -806,7 +806,8 @@ def amogus(message):
     arr = randint(1, 12)
     fontsize = 100
     FONT_FILE = 'sedenecem/fonts/OpenSans.ttf'
-    url = 'https://raw.githubusercontent.com/KeyZenD/AmongUs/master/'  # Thanks
+    # https://github.com/KeyZenD/AmongUs
+    url = 'https://raw.githubusercontent.com/KeyZenD/AmongUs/master/'
     font = ImageFont.truetype(FONT_FILE, size=int(fontsize))
 
     imposter = Image.open(BytesIO(get(f'{url}{arr}.png').content))

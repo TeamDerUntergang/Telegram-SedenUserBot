@@ -201,15 +201,13 @@ def approvepm(client, message):
 
     try:
         approve(uid)
+        edit(message, get_translation('pmApproveSuccess', [name0, uid, '`']))
+        send_log(get_translation('pmApproveLog', [name0, uid]))
         for message in _find_unapproved_msg(client, message.chat.id):
             message.delete()
     except IntegrityError:
         edit(message, f'`{get_translation("pmApproveError2")}`')
         return
-
-    edit(message, get_translation('pmApproveSuccess', [name0, uid, '`']))
-
-    send_log(get_translation('pmApproveLog', [name0, uid]))
 
 
 @sedenify(outgoing=True, pattern="^.disapprove$")

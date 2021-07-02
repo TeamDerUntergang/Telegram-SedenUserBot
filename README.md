@@ -53,6 +53,7 @@ Please go to our [GitHub.io](https://teamderuntergang.github.io/pyrogram.html) p
 *   [@Delivrance](https://github.com/pyrogram/pyrogram) - Pyrogram Library
 *   [@Skittles9823](https://github.com/skittles9823) - Memes
 *   [@RaphielGang](https://github.com/raphielgang) - Other Modules
+*   [All Contributors](https://github.com/TeamDerUntergang/Telegram-SedenUserBot/graphs/contributors)
 
 ## License
 

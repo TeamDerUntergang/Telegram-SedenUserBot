@@ -30,7 +30,6 @@ from sedenecem.core import (
     sedenify,
     send_log,
 )
-from sedenecem.sql import mute_sql as sql
 
 
 @sedenify(pattern='^.ban', compat=False, private=False, admin=True)
@@ -180,6 +179,12 @@ def kick_user(client, message):
 
 @sedenify(pattern='^.mute', compat=False, private=False, admin=True)
 def mute_user(client, message):
+    try:
+        from sedenecem.sql import mute_sql as sql
+    except BaseException:
+        edit(message,f'`{get_translation("nonSqlMode")}`')
+        return
+
     args = extract_args(message)
     reply = message.reply_to_message
     edit(message, f'`{get_translation("muteProcess")}`')
@@ -232,6 +237,12 @@ def mute_user(client, message):
 
 @sedenify(pattern='^.unmute', compat=False, private=False, admin=True)
 def unmute_user(client, message):
+    try:
+        from sedenecem.sql import mute_sql as sql
+    except BaseException:
+        edit(message,f'`{get_translation("nonSqlMode")}`')
+        return
+
     args = extract_args(message)
     reply = message.reply_to_message
     edit(message, f'`{get_translation("unmuteProcess")}`')
@@ -571,6 +582,11 @@ def set_group_photo(client, message):
 
 @sedenify(incoming=True, outgoing=False, compat=False)
 def mute_check(client, message):
+    try:
+        from sedenecem.sql import mute_sql as sql
+    except BaseException:
+        return
+
     muted = sql.is_muted(message.chat.id, message.from_user.id)
 
     if muted:

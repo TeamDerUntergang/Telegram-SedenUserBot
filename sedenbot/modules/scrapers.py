@@ -201,72 +201,53 @@ def do_gsearch(query, page):
             .strip()
         )
 
-    def link_replacer(link):
-        rep = {'(': '%28', ')': '%29', '[': '%5B', ']': '%5D', '%': '½'}
-        for i in rep.keys():
-            link = link.replace(i, rep[i])
-        return link
-
     def get_result(res):
-        link = res.findAll('a')
-        for a in link:
-            if a.find('h3', {'class': ['zBAuLc']}):
-                link = a
-                break
-        href = f"https://{choice(google_domains)}{link_replacer(link['href'])}"
-        title = link.find('h3', {'class': ['zBAuLc']}).text
-        title = replacer(title)
-        desc = res.contents[-1].findAll(
-            'div', {'class': ['BNeawe', 's3v9rd', 'AP7Wnd']}
-        )
-        desc = [d.text for d in desc if len(d.text)][0]
-        desc = replacer(desc)
-        if len(desc.strip()) < 1:
-            desc = get_translation('googleDesc')
-        return f'[{title}]({href})\n{desc}'
+        link = res.find('a', href=True)
+        title = res.find('h3')
+        if title:
+            title = title.text
+        desc = res.find('div', attrs= {'class': ['VwiC3b', 'yXK7lf', 'MUxGbd', 'yDYNvb', 'lyLwlc']})
+        if desc:
+            desc = desc.text
+                
+        if link and title and desc:
+            return f'[{replacer(title)}]({link["href"]})\n{desc or ""}'
 
     query = parse_key(query)
     page = find_page(page)
-    temp = f'/search?q={query}&gbv=1&sei=o9ybYJmOFojssAfep7rADQ&start={find_page(page)}'
+    temp = f'/search?q={query}&start={find_page(page)}&hl={SEDEN_LANG}'
 
     req = get(
         f'https://{choice(google_domains)}{temp}',
         headers={
-            'User-Agent': 'User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0',
             'Content-Type': 'text/html',
         },
     )
+
     retries = 0
     while req.status_code != 200 and retries < 10:
         retries += 1
         req = get(
             f'https://{choice(google_domains)}{temp}',
             headers={
-                'User-Agent': 'User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0',
                 'Content-Type': 'text/html',
             },
         )
 
     soup = BeautifulSoup(req.text, 'html.parser')
-    res1 = soup.findAll('div', {'class': ['ZINbbc', 'xpd', 'O9g5cc', 'uUPGi']})
-
-    def is_right_class(res):
-        ret = res.find('h3', {'class': ['zBAuLc']})
-
-        if not ret:
-            return False
-
-        ret = ret.parent
-
-        return ret.name == 'a'
-
-    res1 = [res for res in res1 if is_right_class(res)]
+    
+    res1 = soup.find_all('div', attrs={'class': 'g'})
 
     out = ''
-    for i in range(0, len(res1)):
-        res = res1[i]
+    count = 0
+    for res in res1:
         try:
-            out += f'{i+1} - {get_result(res)}\n\n'
+            result = get_result(res)
+            if result:
+                count += 1
+                out += f'{count} - {result}\n\n'
         except Exception:
             print(format_exc())
             print(res)

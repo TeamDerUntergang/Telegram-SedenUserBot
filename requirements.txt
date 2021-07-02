@@ -10,7 +10,7 @@ humanize
 image_to_ascii
 lyricsgenius
 pillow
-psycopg2-binary
+git+https://github.com/frknkrc44/psycopg2@try-switch-pkg-config
 pybase64
 pylast
 pyrogram==1.2.9

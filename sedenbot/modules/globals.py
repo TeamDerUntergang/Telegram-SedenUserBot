@@ -115,13 +115,13 @@ def ungban_user(client, message):
             return edit(message, f'`{get_translation("alreadyUnbanned")}`')
         sql.ungban(user.id)
 
-        def find_me():
+        def find_me(dialog):
             try:
                 return dialog.chat.get_member(me_id).can_restrict_members
             except BaseException:
                 return False
 
-        def find_member():
+        def find_member(dialog):
             try:
                 return (dialog.chat.get_member(user.id)
                     and dialog.chat.get_member(user.id).restricted_by
@@ -137,8 +137,8 @@ def ungban_user(client, message):
                 for dialog in dialogs
                 if (
                     'group' in dialog.chat.type
-                    and find_me()
-                    and find_member()
+                    and find_me(dialog)
+                    and find_member(dialog)
                 )
             ]
             for chat in chats:
