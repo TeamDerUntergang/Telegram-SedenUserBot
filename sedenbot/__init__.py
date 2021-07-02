@@ -61,9 +61,9 @@ HELP: Dict[str, str] = {}
 BRAIN = []
 BLACKLIST = []
 CONVERSATION: Dict[Any, Any] = {}
-PM_COUNT: Dict[Any, int] = {}
-PM_LAST_MSG: Dict[Any, Any] = {}
 TEMP_SETTINGS: Dict[Any, Any] = {}
+TEMP_SETTINGS['PM_COUNT'] = {}
+TEMP_SETTINGS['PM_LAST_MSG'] = {}
 
 # Console verbose logging
 LOG_VERBOSE = sb(environ.get('LOG_VERBOSE', 'False'))

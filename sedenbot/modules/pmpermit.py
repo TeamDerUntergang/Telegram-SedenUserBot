@@ -7,12 +7,11 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
+from re import VERBOSE
 from sedenbot import (
     HELP,
     LOGS,
     PM_AUTO_BAN,
-    PM_COUNT,
-    PM_LAST_MSG,
     PM_MSG_COUNT,
     PM_UNAPPROVED,
     TEMP_SETTINGS,
@@ -43,7 +42,7 @@ pmpermit_init()
 
 @sedenify(
     incoming=True,
-    outgoing=False,
+    outgoing=True,
     disable_edited=True,
     disable_notify=True,
     group=False,
@@ -51,17 +50,13 @@ pmpermit_init()
     bot=False,
 )
 def permitpm(client, message):
-    if message.from_user and message.from_user.is_self:
-        message.continue_propagation()
-
     if not PM_AUTO_BAN:
         message.continue_propagation()
     else:
-        if auto_accept(client, message):
-            return
+        if auto_accept(client, message) or message.from_user.is_self:
+            message.continue_propagation()
 
-        self_user = TEMP_SETTINGS['ME']
-        if message.chat.id not in [self_user.id, 777000]:
+        if message.chat.id != 777000:
             try:
                 from sedenecem.sql.pm_permit_sql import is_approved
             except BaseException:
@@ -71,33 +66,33 @@ def permitpm(client, message):
             notifsoff = is_muted(-1)
 
             if not apprv and message.text != UNAPPROVED_MSG:
-                if message.chat.id in PM_LAST_MSG:
-                    prevmsg = PM_LAST_MSG[message.chat.id]
+                if message.chat.id in TEMP_SETTINGS['PM_LAST_MSG']:
+                    prevmsg = TEMP_SETTINGS['PM_LAST_MSG'][message.chat.id]
                     if message.text != prevmsg:
                         for message in _find_unapproved_msg(client, message.chat.id):
                             message.delete()
-                        if PM_COUNT[message.chat.id] < (PM_MSG_COUNT - 1):
+                        if TEMP_SETTINGS['PM_COUNT'][message.chat.id] < (PM_MSG_COUNT - 1):
                             ret = reply(message, UNAPPROVED_MSG)
-                            PM_LAST_MSG[message.chat.id] = ret.text
+                            TEMP_SETTINGS['PM_LAST_MSG'][message.chat.id] = ret.text
                 else:
                     ret = reply(message, UNAPPROVED_MSG)
                     if ret.text:
-                        PM_LAST_MSG[message.chat.id] = ret.text
+                        TEMP_SETTINGS['PM_LAST_MSG'][message.chat.id] = ret.text
 
                 if notifsoff:
                     client.read_history(message.chat.id)
 
-                if message.chat.id not in PM_COUNT:
-                    PM_COUNT[message.chat.id] = 1
+                if message.chat.id not in TEMP_SETTINGS['PM_COUNT']:
+                    TEMP_SETTINGS['PM_COUNT'][message.chat.id] = 1
                 else:
-                    PM_COUNT[message.chat.id] = PM_COUNT[message.chat.id] + 1
+                    TEMP_SETTINGS['PM_COUNT'][message.chat.id] = TEMP_SETTINGS['PM_COUNT'][message.chat.id] + 1
 
-                if PM_COUNT[message.chat.id] > (PM_MSG_COUNT - 1):
+                if TEMP_SETTINGS['PM_COUNT'][message.chat.id] > (PM_MSG_COUNT - 1):
                     reply(message, f'`{get_translation("pmpermitBlock")}`')
 
                     try:
-                        del PM_COUNT[message.chat.id]
-                        del PM_LAST_MSG[message.chat.id]
+                        del TEMP_SETTINGS['PM_COUNT'][message.chat.id]
+                        del TEMP_SETTINGS['PM_LAST_MSG'][message.chat.id]
                     except BaseException:
                         pass
 
@@ -124,15 +119,17 @@ def auto_accept(client, message):
         if is_approved(chat.id):
             return True
 
-        for msg in client.get_history(chat.id, limit=3):
+        for msg in client.get_history(chat.id, limit=1, reverse=True):
+            # chat.id in TEMP_SETTINGS['PM_LAST_MSG']
+            #    and msg.text != UNAPPROVED_MSG
+            #    and
+
             if (
-                chat.id in PM_LAST_MSG
-                and msg.text != PM_LAST_MSG[chat.id]
-                and msg.from_user.is_self
+                 msg.from_user.id == self_user.id
             ):
                 try:
-                    del PM_COUNT[chat.id]
-                    del PM_LAST_MSG[chat.id]
+                    del TEMP_SETTINGS['PM_COUNT'][chat.id]
+                    del TEMP_SETTINGS['PM_LAST_MSG'][chat.id]
                 except BaseException:
                     pass
 
