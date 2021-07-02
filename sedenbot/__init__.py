@@ -27,7 +27,7 @@ from typing import Any, Dict
 
 import sedenecem.translator as _tr
 from dotenv import load_dotenv, set_key, unset_key
-from pyrogram import Client, filters
+from pyrogram import Client, filters, idle
 from pyrogram.handlers import MessageHandler
 from requests import get
 
@@ -306,8 +306,6 @@ def __import_modules():
                 LOGS.warn(format_exc())
             LOGS.warn(get_translation('loadedModulesError', [module]))
 
-
-__import_modules()
 
 LOGS.info(get_translation('runningBot', [SUPPORT_GROUP]))
 LOGS.info(get_translation('sedenVersion', [BOT_VERSION]))
