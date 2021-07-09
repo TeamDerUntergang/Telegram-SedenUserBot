@@ -1,7 +1,6 @@
-with import <nixpkgs> {};
+{ pkgs ? import <nixpkgs> {} }:
 
-stdenv.mkDerivation {
-  name = "sedenbot-environment";
+pkgs.mkShell {
   buildInputs = with pkgs; [
     git nano python3 chromedriver gnused
     python3.pkgs.setuptools
@@ -13,9 +12,9 @@ stdenv.mkDerivation {
     export PYTHONPATH="$PIP_PREFIX/${pkgs.python3.sitePackages}:$PYTHONPATH"
     export PATH="$PIP_PREFIX/bin:$PATH"
     # use nix binaries because we don't want to invoke host configs
-    export GIT="${pkgs.git.outPath}/bin/git"
-    export PIP="${pkgs.python3.pkgs.pip.outPath}/bin/pip"
-    export PYTHON="${pkgs.python3.outPath}/bin/python"
+    export GIT="${pkgs.git}/bin/git"
+    export PIP="${pkgs.python3.pkgs.pip}/bin/pip"
+    export PYTHON="${pkgs.python3}/bin/python"
     unset SOURCE_DATE_EPOCH
 
     # update bot
@@ -25,9 +24,10 @@ stdenv.mkDerivation {
     
     if [ -f "config.env" -a -f "sedenuserbot.session" ]; then
       # update chromedriver path
-      sed '/CHROME_DRIVER/d' config.env
-      echo "CHROME_DRIVER='${pkgs.chromedriver.outPath}/bin/chromedriver'" >> config.env
+      sed -i -E '/CHROME_DRIVER/d' config.env
+      echo "CHROME_DRIVER='${pkgs.chromedriver}/bin/chromedriver'" >> config.env
       $PYTHON seden.py
+      exit
     else
       # first run
       $PYTHON session.py
@@ -35,6 +35,7 @@ stdenv.mkDerivation {
       echo "Press enter to edit config.env file..." && read >> /dev/null
       nano config.env
       echo "Type 'nix-shell' to start SedenUserBot!"
+      exit
     fi
     '';
 }
