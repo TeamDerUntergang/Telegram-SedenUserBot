@@ -70,6 +70,7 @@ LOG_VERBOSE = sb(environ.get('LOG_VERBOSE', 'False'))
 
 basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
     level=DEBUG if LOG_VERBOSE else INFO,
 )
 
