@@ -10,7 +10,9 @@
 from os import remove, path
 from subprocess import getstatusoutput
 
-from .misc import MARKDOWN_FIX_CHAR, download_media_wc
+from pyrogram.types.messages_and_media.message import Message
+
+from .misc import MARKDOWN_FIX_CHAR, get_duration
 from sedenbot import LOG_VERBOSE
 
 
@@ -39,7 +41,7 @@ def reply_audio(
     message,
     audio,
     caption='',
-    duration='',
+    duration=None,
     fix_markdown=False,
     delete_orig=False,
     delete_file=False,
@@ -47,10 +49,11 @@ def reply_audio(
     try:
         if len(caption) > 0 and fix_markdown:
             caption += MARKDOWN_FIX_CHAR
+
         if not duration:
-            message.reply_audio(audio, caption=caption.strip())
-        else:
-            message.reply_audio(audio, caption=caption.strip(), duration=int(duration))
+            duration = get_duration(audio)
+
+        message.reply_audio(audio, caption=caption.strip(), duration=int(duration))
         if delete_orig:
             message.delete()
         if delete_file:
@@ -76,18 +79,16 @@ def reply_video(
             thumb = 'downloads/thumb.png'
             if path.exists(thumb):
                 remove(thumb)
-            out = getstatusoutput(f'ffmpeg -i {video} -ss 00:00:01.000 -vframes 1 {thumb}')
+            out = getstatusoutput(
+                f'ffmpeg -i {video} -ss 00:00:01.000 -vframes 1 {thumb}'
+            )
             if LOG_VERBOSE:
                 print(out)
             if out[0] != 0:
                 thumb = None
-        
+
         if not duration:
-            out = getstatusoutput(f'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 {video}')
-            if LOG_VERBOSE:
-                print(out)
-            if out[0] == 0:
-                duration = int(float(out[1]))
+            duration = get_duration(video)
 
         if len(caption) > 0 and fix_markdown:
             caption += MARKDOWN_FIX_CHAR
@@ -118,12 +119,22 @@ def reply_video(
 
 
 def reply_voice(
-    message, voice, caption='', fix_markdown=False, delete_orig=False, delete_file=False
+    message,
+    voice,
+    caption='',
+    duration=None,
+    fix_markdown=False,
+    delete_orig=False,
+    delete_file=False,
 ):
     try:
         if len(caption) > 0 and fix_markdown:
             caption += MARKDOWN_FIX_CHAR
-        message.reply_voice(voice, caption=caption.strip())
+
+        if not duration:
+            duration = get_duration(voice)
+
+        message.reply_voice(voice, caption=caption.strip(), duration=duration)
         if delete_orig:
             message.delete()
         if delete_file:
@@ -170,35 +181,9 @@ def reply_sticker(message, sticker, delete_orig=False, delete_file=False):
         pass
 
 
-def reply_msg(message, message2, delete_orig=False):
+def reply_msg(message: Message, message2: Message, delete_orig=False):
     try:
-        filename = None
-        if message2.media:
-            filename = download_media_wc(message2, sticker_orig=True)
-            if message2.audio:
-                message.reply_audio(filename)
-            elif message2.animation:
-                message.reply_animation(filename)
-            elif message2.sticker:
-                message.reply_sticker(filename)
-            elif message2.photo:
-                message.reply_photo(filename)
-            elif message2.video:
-                message.reply_video(filename)
-            elif message2.voice:
-                message.reply_voice(filename)
-            elif message2.video_note:
-                message.reply_video_note(filename)
-            elif message2.document:
-                message.reply_document(filename)
-            else:
-                filename = None
-                message2.forward(message.chat.id)
-
-            if filename:
-                remove(filename)
-        else:
-            message.reply_text(message2.text)
+        message2.copy(chat_id=message.chat.id, reply_to_message_id=message.message_id)
 
         if delete_orig:
             message.delete()

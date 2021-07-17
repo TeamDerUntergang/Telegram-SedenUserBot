@@ -47,7 +47,7 @@ def sedenify(**args):
                 return
 
             try:
-                if 'ME' not in TEMP_SETTINGS:
+                if not TEMP_SETTINGS.get('ME'):
                     me = app.get_me()
                     TEMP_SETTINGS['ME'] = me
 

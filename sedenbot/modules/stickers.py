@@ -56,6 +56,13 @@ def kang(client, message):
     else:
         edit(message, f'`{get_translation("stickerError")}`')
         return
+    
+    if not reply.sticker:
+        try:
+            media = resizer(media)
+        except BaseException:
+            edit(message, f'`{get_translation("stickerError")}`')
+            return
 
     if len(args) < 1:
         args = '1'
@@ -165,9 +172,6 @@ def kang(client, message):
         send_recv(conv, emoji)
         send_recv(conv, '/done')
         return True
-
-    if not reply.sticker:
-        media = resizer(media)
 
     with PyroConversation(client, chat) as conv:
         try:

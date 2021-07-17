@@ -9,9 +9,10 @@
 
 from os import makedirs
 from re import escape, sub
+from subprocess import getstatusoutput
 
 from pyrogram.types import Message
-from sedenbot import BOT_PREFIX, BRAIN, TEMP_SETTINGS, app
+from sedenbot import BOT_PREFIX, BRAIN, LOG_VERBOSE, TEMP_SETTINGS, app
 
 MARKDOWN_FIX_CHAR = '\u2064'
 SPAM_COUNT = [0]
@@ -228,7 +229,7 @@ def reply(
 
 def extract_args(message, markdown=True):
     if not (message.text or message.caption):
-        return
+        return ''
 
     text = message.text or message.caption
 
@@ -361,3 +362,14 @@ def get_download_dir() -> str:
     dir = './downloads'
     makedirs(dir, exist_ok=True)
     return dir
+
+
+def get_duration(media):
+    out = getstatusoutput(
+        f'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "{media}"'
+    )
+    if LOG_VERBOSE:
+        print(out)
+    if out[0] == 0:
+        return int(float(out[1]))
+    return None

@@ -7,7 +7,7 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from os import remove
+from os import path, remove
 from subprocess import Popen
 
 from sedenbot import HELP
@@ -16,8 +16,8 @@ from sedenecem.core import (
     edit,
     extract_args,
     get_translation,
+    reply_audio,
     reply_video,
-    reply_voice,
     sedenify,
 )
 
@@ -79,7 +79,7 @@ def earrape(message):
             )
             process.communicate()
             edit(message, f'`{get_translation("uploadMedia")}`')
-            reply_voice(reply or message, f'{media}.mp3', delete_file=True)
+            reply_audio(reply or message, f'{media}.mp3', delete_file=True)
             remove(media)
             message.delete()
     else:
@@ -101,6 +101,11 @@ def nightcore(message):
     else:
         edit(message, f'`{get_translation("applyNightcore")}`')
         media = download_media_wc(reply)
+
+        filename = f'{media}.mp3'
+        if path.exists(filename):
+            remove(filename)
+
         process = Popen(
             [
                 'ffmpeg',
@@ -108,12 +113,12 @@ def nightcore(message):
                 media,
                 '-af',
                 'asetrate=44100*1.16,aresample=44100,atempo=1',
-                f'{media}.mp3',
+                filename,
             ]
         )
         process.communicate()
         edit(message, f'`{get_translation("uploadMedia")}`')
-        reply_voice(reply or message, f'{media}.mp3', delete_file=True)
+        reply_audio(reply or message, f'{media}.mp3', delete_file=True)
         remove(media)
         message.delete()
 
@@ -132,6 +137,11 @@ def slowedtoperfection(message):
     else:
         edit(message, f'`{get_translation("applySlowedtoperfection")}`')
         media = download_media_wc(reply)
+
+        filename = f'{media}.mp3'
+        if path.exists(filename):
+            remove(filename)
+
         process = Popen(
             [
                 'ffmpeg',
@@ -139,12 +149,12 @@ def slowedtoperfection(message):
                 media,
                 '-af',
                 'aecho=1.0:0.7:20:0.5,asetrate=44100*0.84,aresample=44100,atempo=1',
-                f'{media}.mp3',
+                filename,
             ]
         )
         process.communicate()
         edit(message, f'`{get_translation("uploadMedia")}`')
-        reply_voice(reply or message, f'{media}.mp3', delete_file=True)
+        reply_audio(reply or message, f'{media}.mp3', delete_file=True)
         remove(media)
         message.delete()
 

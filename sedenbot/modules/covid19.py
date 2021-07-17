@@ -18,7 +18,6 @@ from sedenecem.core import edit, get_translation, sedenify
 
 @sedenify(pattern='^.covid(|19)$')
 def covid(message):
-    '''Copyright (c) @frknkrc44 | 2020'''
     try:
         req = get(
             'https://covid19.saglik.gov.tr/',
@@ -54,7 +53,10 @@ def covid(message):
         result = result[0]
 
     def del_dots(res):
-        return res.replace('.', '')
+        return empty_check(res.replace('.', ''))
+
+    def empty_check(res):
+        return res if len(res.strip()) else 'N/A'
 
     sonuclar = (
         f'**{get_translation("covidData")}**\n'
@@ -64,7 +66,7 @@ def covid(message):
         + f'**{get_translation("covidCases")}** `{del_dots(result["toplam_hasta"])}`\n'
         + f'**{get_translation("covidDeaths")}** `{del_dots(result["toplam_vefat"])}`\n'
         + f'**{get_translation("covidSeriouslyill")}** `{del_dots(result["agir_hasta_sayisi"])}`\n'
-        + f'**{get_translation("covidPneumonia")}** `%{result["hastalarda_zaturre_oran"]}`\n'
+        + f'**{get_translation("covidPneumonia")}** `%{empty_check(result["hastalarda_zaturre_oran"])}`\n'
         + f'**{get_translation("covidHealed")}** `{del_dots(result["toplam_iyilesen"])}`\n'
         + f'\n**{get_translation("covidToday")}**\n'
         + f'**{get_translation("covidTests")}** `{del_dots(result["gunluk_test"])}`\n'

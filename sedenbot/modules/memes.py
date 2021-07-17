@@ -574,7 +574,7 @@ def mock(message):
     reply_text = []
     textx = message.reply_to_message
     mock = extract_args(message)
-    if mock:
+    if len(mock):
         pass
     elif textx:
         mock = textx.text
