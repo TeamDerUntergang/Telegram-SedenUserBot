@@ -509,6 +509,8 @@
     "snipsUpdated": "%1Genel not ba\u015far\u0131yla g\u00fcncellendi. Notu .call $%2 yazarak \u00e7a\u011f\u0131rabilirsiniz%1",
     "spamInfo": ".tspam <metin>\nKullan\u0131m: Verilen mesaj\u0131 tek tek g\u00f6ndererek spam yapar\n\n.spam <miktar> <metin>\nKullan\u0131m: Verilen miktarda spam g\u00f6nderir\n\n.picspam <miktar> <link>\nKullan\u0131m: Verilen miktarda resimli spam g\u00f6nderir\n\n.delayspam <gecikme> <miktar> <metin>\nKullan\u0131m: Verilen miktar ve verilen gecikme ile gecikmeli spam yapar\n\n\nNOT: Sorumluluk size aittir !",
     "spamLog": "#SPAM\nSpam ba\u015far\u0131yla ger\u00e7ekle\u015ftirildi",
+    "spamWatchBan": "#SPAMWATCH\nRaporlanm\u0131\u015f kullan\u0131c\u0131 [%1](tg://user?id=%2) ba\u015far\u0131yla engellendi",
+    "spamWatchInfo": "Bir SpamWatch anahtar\u0131 ekledi\u011finizde kendili\u011finden \u00e7al\u0131\u015fmaya ba\u015flar",
     "spamWrong": "Bir \u015feyler eksik/yanl\u0131\u015f gibi g\u00f6r\u00fcn\u00fcyor.",
     "specsError": "Bu cihaza dair bir bilgi bulunamad\u0131 veya \u00e7ok fazla istek att\u0131n\u0131z.",
     "specsError2": "Bilgi al\u0131namad\u0131",

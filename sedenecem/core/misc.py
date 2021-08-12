@@ -9,7 +9,7 @@
 
 from os import makedirs
 from re import escape, sub
-from subprocess import getstatusoutput
+from subprocess import CalledProcessError, check_output, STDOUT
 
 from pyrogram.types import Message
 from sedenbot import BOT_PREFIX, BRAIN, LOG_VERBOSE, TEMP_SETTINGS, app
@@ -357,6 +357,13 @@ def is_admin(message):
     user = app.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
     return user.status in _admin_status_list
 
+def is_admin_myself(chat):
+    if not 'group' in chat.type:
+        return True
+
+    user = app.get_chat_member(chat_id=chat.id, user_id='me')
+    return user.status in _admin_status_list
+
 
 def get_download_dir() -> str:
     dir = './downloads'
@@ -365,7 +372,7 @@ def get_download_dir() -> str:
 
 
 def get_duration(media):
-    out = getstatusoutput(
+    out = __status_out__(
         f'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "{media}"'
     )
     if LOG_VERBOSE:
@@ -373,3 +380,14 @@ def get_duration(media):
     if out[0] == 0:
         return int(float(out[1]))
     return None
+
+def __status_out__(cmd, encoding='utf-8'):
+    try:
+        output = check_output(cmd, shell=True, text=True, stderr=STDOUT, encoding=encoding)
+        return (0, output)
+    except CalledProcessError as ex:
+        return (ex.returncode, ex.output)
+    except BaseException as e:
+        if encoding != 'latin-1':
+            return __status_out__(cmd, 'latin-1')
+        raise e

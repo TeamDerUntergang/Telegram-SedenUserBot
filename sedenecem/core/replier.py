@@ -8,11 +8,10 @@
 #
 
 from os import remove, path
-from subprocess import getstatusoutput
 
-from pyrogram.types.messages_and_media.message import Message
+from pyrogram.types import Message
 
-from .misc import MARKDOWN_FIX_CHAR, get_duration
+from .misc import MARKDOWN_FIX_CHAR, get_duration, __status_out__
 from sedenbot import LOG_VERBOSE
 
 
@@ -79,7 +78,7 @@ def reply_video(
             thumb = 'downloads/thumb.png'
             if path.exists(thumb):
                 remove(thumb)
-            out = getstatusoutput(
+            out = __status_out__(
                 f'ffmpeg -i {video} -ss 00:00:01.000 -vframes 1 {thumb}'
             )
             if LOG_VERBOSE:

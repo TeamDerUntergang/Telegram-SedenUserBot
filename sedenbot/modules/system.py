@@ -132,12 +132,11 @@ def terminal(message):
         edit(message, f'`{get_translation("termHelp")}`')
         return
 
-    result = f'`{get_translation("termNoResult")}`'
+    result = get_translation("termNoResult")
     try:
-        from subprocess import getoutput
-
-        result = getoutput(command)
-    except BaseException:
+        from sedenecem.core.misc import __status_out__
+        _, result = __status_out__(command)
+    except BaseException as e:
         pass
 
     if len(result) > 4096:

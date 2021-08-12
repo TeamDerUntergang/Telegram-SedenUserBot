@@ -509,6 +509,8 @@
     "snipsUpdated": "%1Snip successfully updated. You can call the snip with .call $%2%1",
     "spamInfo": ".tspam <text>\nUsage: Spam the text letter by letter\n\n.spam <count> <text>\nUsage: Floods text in the chat\n\n.picspam <count> <url>\nUsage: As if text spam was not enough\n\n.delayspam <delay> <count> <text>\nUsage: .spam but with custom delay\n\n\nNOTE: Spam at your own risk ! !",
     "spamLog": "#SPAM\nSpam was executed successfully",
+    "spamWatchBan": "#SPAMWATCH\nReported user [%1](tg://user?id=%2) banned successfully",
+    "spamWatchInfo": "Works automatically when you entered a SpamWatch key",
     "spamWrong": "Something seems missing / wrong.",
     "specsError": "There is no information about this device or You made too many requests.",
     "specsError2": "Couldn't get information",

@@ -180,9 +180,8 @@ def shutdown(message):
 
     def std_off():
         try:
-            from subprocess import getoutput
-
-            getoutput(f'kill -7 {getpid()}')
+            from sedenecem.core.misc import __status_out__
+            __status_out__(f'kill -7 {getpid()}')
         except Exception:
             pass
 

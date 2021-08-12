@@ -123,7 +123,7 @@ if not API_HASH:
     LOGS.warn(get_translation('apiHashError'))
     quit(1)
 
-BOT_VERSION = '1.5.0s'
+BOT_VERSION = '1.5.1s'
 SUPPORT_GROUP = 'SedenUserBotSupport'
 CHANNEL = 'SedenUserBot'
 
@@ -171,6 +171,9 @@ REPO_URL = environ.get('REPO_URL', 'https://github.com/TeamDerUntergang/SedenUse
 # Heroku Credentials for updater
 HEROKU_KEY = environ.get('HEROKU_KEY', None)
 HEROKU_APPNAME = environ.get('HEROKU_APPNAME', None)
+
+# SpamWatch API key
+SPAMWATCH_KEY = environ.get('SPAMWATCH_KEY', None)
 
 # Chat ID for Bot Logs
 _LOG_ID = environ.get('LOG_ID', None)
