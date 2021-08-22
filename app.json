@@ -12,7 +12,7 @@
             "url": "https://github.com/heroku/heroku-buildpack-chromedriver"
         }
     ],
-    "description": "A modular Telegram userbot running on Python 3.8 with an sqlalchemy database,",
+    "description": "A modular Telegram userbot running on Python 3.9 with an sqlalchemy database,",
     "env": {
         "ALIVE_MSG": {
             "description": "Custom message for .alive command. We have our own alive message by default.",
@@ -97,7 +97,7 @@
         "pyrogram",
         "postgresql"
     ],
-    "logo": "https://i.resimyukle.xyz/7eaU8d.png",
+    "logo": "https://i.imgur.com/GL1yJpN.png",
     "name": "Telegram SedenBot",
     "repository": "https://github.com/TeamDerUntergang/Telegram-SedenUserBot",
     "stack": "container",
