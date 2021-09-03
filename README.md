@@ -39,8 +39,9 @@ python3 seden.py
 ### Nix/NixOS
 Just type `nix-shell` command in bot folder.
 
-## Heroku Deploy
+## Heroku / Railway Deploy
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/TeamDerUntergang/Telegram-SedenUserBot/tree/seden)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https%3A%2F%2Fgithub.com%2FTeamDerUntergang%2FTelegram-SedenUserBot&plugins=postgresql&envs=API_ID%2CAPI_HASH%2CSESSION%2CALIVE_MSG%2CBOT_PREFIX%2CCHROME_DRIVER%2CLOG_ID%2CLOG_VERBOSE%2CPM_AUTO_BAN%2CPM_MSG_COUNT%2CPM_UNAPPROVED%2CSEDEN_LANG&optionalEnvs=ALIVE_MSG%2CBOT_PREFIX%2CCHROME_DRIVER%2CLOG_ID%2CLOG_VERBOSE%2CPM_AUTO_BAN%2CPM_MSG_COUNT%2CPM_UNAPPROVED%2CSEDEN_LANG)
 
 If you have any requests & complaints & suggestions, you can join our [support group](https://t.me/SedenUserBotSupport) or please contact us through a [GitHub issue](https://github.com/TeamDerUntergang/Telegram-SedenUserBot/issues).
 

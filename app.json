@@ -28,7 +28,7 @@
             "required": true
         },
         "BOT_PREFIX": {
-            "description": "It changes your bot pattern (default pattern is '.' (dot).",
+            "description": "It changes your bot pattern (default pattern is '.' (dot)).",
             "required": false
         },
         "CHROME_DRIVER": {
