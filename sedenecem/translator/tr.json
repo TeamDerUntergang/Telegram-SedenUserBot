@@ -576,6 +576,7 @@
     "updateForceSync": "G\u00fcncel depo kodu zorla e\u015fitleniyor\u2026",
     "updateGitError": "%1\n%2Git hatas\u0131! %3%2",
     "updateGitNotFound": "%1 klas\u00f6r\u00fc bir git deposu gibi g\u00f6r\u00fcnm\u00fcyor.\nFakat bu sorunu .update now komutuyla botu zorla g\u00fcncelleyerek \u00e7\u00f6zebilirsin.",
+    "updateHerokuApiKey": "Heroku API anahtar\u0131 hatal\u0131 oldu\u011fundan bu i\u015flemi ger\u00e7ekle\u015ftiremiyorum. L\u00fctfen HEROKU_KEY de\u011fi\u015fkenini d\u00fczenleyerek API anahtar\u0131n\u0131 de\u011fi\u015ftirin",
     "updateHerokuAppName": "G\u00fcncelleme yapabilmek i\u00e7in HEROKU_APPNAME de\u011fi\u015fkenini tan\u0131mlamal\u0131s\u0131n.",
     "updateHerokuVariables": "%1\nHeroku de\u011fi\u015fkenleri yanl\u0131\u015f veya eksik tan\u0131mlanm\u0131\u015f.",
     "updateInfo": ".update\nKullan\u0131m: Botunuza siz kurduktan sonra herhangi bir g\u00fcncelleme gelip gelmedi\u011fini kontrol eder.\n\n.update now\nKullan\u0131m: Botunuzu g\u00fcnceller.",

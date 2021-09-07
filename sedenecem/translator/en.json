@@ -576,6 +576,7 @@
     "updateForceSync": "Force syncing to latest repo, please wait\u2026",
     "updateGitError": "%1\n%2Git error! %3%2",
     "updateGitNotFound": "%1 folder doesn't look like a git repo.\nHowever, you can solve this problem by force updating the bot with the .update now command.",
+    "updateHerokuApiKey": "I can't do this because Heroku API key is wrong. Please change the API key by editing HEROKU_KEY variable",
     "updateHerokuAppName": "Please set up the HEROKU_APPNAME variable to be able to update bot.",
     "updateHerokuVariables": "%1\nHeroku variables are incorrectly or under defined.",
     "updateInfo": ".update\nUsage: Checks if seden userbot repository has any updates and shows a changelog if so.\n\n.update now\nUsage: Updates your userbot, if there are any updates in seden userbot repository.",

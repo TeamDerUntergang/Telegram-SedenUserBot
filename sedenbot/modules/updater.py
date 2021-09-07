@@ -119,9 +119,12 @@ def upstream(ups):
         edit(ups, f'`{get_translation("updateSedenBot")}`')
 
     if HEROKU_KEY:
-        heroku = from_key(HEROKU_KEY)
-        heroku_app = None
-        heroku_applications = heroku.apps()
+        try:
+            heroku = from_key(HEROKU_KEY)
+            heroku_app = None
+            heroku_applications = heroku.apps()
+        except BaseException:
+            return edit(ups, f'`{get_translation("updateHerokuApiKey")}`')
         if not HEROKU_APPNAME:
             edit(ups, f'`{get_translation("updateHerokuAppName")}`')
             repo.__del__()
