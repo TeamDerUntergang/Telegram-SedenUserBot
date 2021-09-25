@@ -180,17 +180,6 @@ _LOG_ID = environ.get('LOG_ID', None)
 LOG_ID = int(_LOG_ID) if _LOG_ID and resr(r'^-?\d+$', _LOG_ID) else None
 del _LOG_ID
 
-# Connect to the test server
-#
-# You'll have a separate account,
-# but you won't be able to access contacts
-# or messages on the regular server
-#
-# Also known as Deep Telegram
-#
-# For more information: https://docs.pyrogram.org/topics/test-servers
-DEEPGRAM = sb(environ.get('DEEPGRAM', 'False'))
-
 # PmPermit PM Auto Ban Stuffs
 PM_AUTO_BAN = sb(environ.get('PM_AUTO_BAN', 'False'))
 _PM_MSG_COUNT = environ.get('PM_MSG_COUNT', 'default')
@@ -275,11 +264,9 @@ app = PyroClient(
     SESSION,
     api_id=API_ID,
     api_hash=API_HASH,
-    app_version='Seden UserBot',
-    device_model='DerUntergang',
+    app_version='SedenEcem',
+    device_model='Firefox 91.0.2',
     system_version=f'v{BOT_VERSION}',
-    lang_code='tr',
-    test_mode=DEEPGRAM,
 )
 
 

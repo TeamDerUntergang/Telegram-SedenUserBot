@@ -39,7 +39,7 @@ def covid(message):
             if 'var sondurumjson' in turejq:
                 result = loads(
                     sub(
-                        '(<(/|)script(.*)>|\/\/|<!\[CDATA\[|\]\]>|;|var sondurumjson =|\n|\s)',
+                        '(<(/|)script(.*)>|\/\/|<!\[CDATA\[|\]\]>|;|var sondurumjson =|\n|\s|var haftalikdurumjson(.*))',
                         '',
                         turejq,
                     )

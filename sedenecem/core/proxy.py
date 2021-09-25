@@ -1,3 +1,12 @@
+# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
+#
+# This file is part of TeamDerUntergang project,
+# and licensed under GNU Affero General Public License v3.
+# See the GNU Affero General Public License for more details.
+#
+# All rights reserved. See COPYING, AUTHORS.
+#
+
 from bs4 import BeautifulSoup
 from requests import get
 from sedenbot import TEMP_SETTINGS, get_translation
@@ -37,7 +46,7 @@ def _xget_random_proxy():
 
     req = get('https://sslproxies.org/', headers=head)
     soup = BeautifulSoup(req.text, 'html.parser')
-    res = soup.find('table', {'id': 'proxylisttable'}).find('tbody')
+    res = soup.find('div', {'class': 'fpl-list'}).find('tbody')
     res = res.findAll('tr')
     for item in res:
         infos = item.findAll('td')
