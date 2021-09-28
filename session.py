@@ -32,8 +32,8 @@ Create a new application, by entering the required details\n''')
         'sedenuserbot',
         api_id=API_ID,
         api_hash=API_HASH,
-        app_version='Seden UserBot',
-        device_model='DerUntergang',
+        app_version='SedenEcem',
+        device_model='Firefox 91.0.2',
         system_version='Session',
         lang_code='en',
     )
@@ -76,8 +76,8 @@ Gerekli ayrıntıları girerek yeni bir uygulama oluşturun\n''')
         'sedenuserbot',
         api_id=API_ID,
         api_hash=API_HASH,
-        app_version='Seden UserBot',
-        device_model='DerUntergang',
+        app_version='SedenEcem',
+        device_model='Firefox 91.0.2',
         system_version='Session',
         lang_code='tr',
     )
