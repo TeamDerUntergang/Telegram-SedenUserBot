@@ -88,7 +88,7 @@ def exif_data(message):
         else:
             data_str += "{0} : {1}\n".format(i, str(data[i]))
     if len(google_coordinate) == 5:
-        google_coordinate.insert(0, "Google Maps Link: ")
+        google_coordinate.insert(0, get_translation("exifMaps"))
         data_str += "".join(google_coordinate)
         google_coordinate.insert(-1, "\n")
 
@@ -96,35 +96,41 @@ def exif_data(message):
 
 
 def calculate_aperture(string):
+    division = string.split("/")
     return "f/%.1f" % (
-        math.sqrt(2.0) ** (int(string.split("/")[0]) / int(string.split("/")[1]))
+        math.sqrt(2.0) ** (int(division[0]) / int(division[1]))
     )
 
 
 def calculate_brightness(string):
-    return "%.2f EV" % (int(string.split("/")[0]) / int(string.split("/")[1]))
+    division = string.split("/")
+    return "%.2f EV" % (int(division[0]) / int(division[1]))
 
 
 def calculate_fnumber(string):
-    return "f/%.1f" % (int(string.split("/")[0]) / int(string.split("/")[1]))
+    division = string.split("/")
+    return "f/%.1f" % (int(division[0]) / int(division[1]))
 
 
 def calculate_focal(string):
+    division = string.split("/")
     return "{0} mm".format(
-        str(math.floor(int(string.split("/")[0]) / int(string.split("/")[1])))
+        str(math.floor(int(division[0]) / int(division[1])))
     )
 
 
 def calculate_shutter(string):
+    division = string.split("/")
     return "1/{0} sec".format(
-        str(math.floor(2 ** (int(string.split("/")[0]) / int(string.split("/")[1]))))
+        str(math.floor(2 ** (int(division[0]) / int(division[1]))))
     )
 
 
 def calculate_altitude(string, google_coordinate):
     ret = string
+    division = string.split("/")
     if "/" in ret:
-        ret = "%.1f m" % (int(string.split("/")[0]) / int(string.split("/")[1]))
+        ret = "%.1f m" % (int(division[0]) / int(division[1]))
     return ret
 
 
@@ -141,13 +147,13 @@ def calculate_gps(coord, google_coordinate):
         seconds = int(seconds[0]) / int(seconds[1])
 
     google_coordinate.append(
-        "{0}%C2%B0{1}'{2}%22".format(hour, math.floor(minutes), "%.2f" % seconds)
+        f"{hour}%C2%B0{math.floor(minutes)}'{seconds:.2f}%22"
     )
-    return "{0}°{1}'{2}\"".format(hour, math.floor(minutes), "%.2f" % seconds)
+    return f"{hour}°{math.floor(minutes)}'{seconds:.2f}\""
 
 
 def calculate_latitude_ref(coord, google_coordinate):
-    google_coordinate.append(coord.strip() + "+")
+    google_coordinate.append(f"{coord.strip()}+")
     return coord.strip()
 
 

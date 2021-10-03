@@ -186,6 +186,7 @@
     "evalUsage": "De\u011ferlendirmek i\u00e7in bir ifade verin.",
     "exifError": "EXIF verisi bulunamad\u0131.",
     "exifLog": "EXIF verisi:\n",
+    "exifMaps": "Google Maps Linki: ",
     "exifProcess": "EXIF verisi \u00e7\u0131kart\u0131l\u0131yor.",
     "exifInfo": ".exif\nKullan\u0131m: Verilen foto\u011fraf dosyas\u0131ndan EXIF verisini \u00e7\u0131kart\u0131r.",
     "ezanvaktiErrorInfo": "%1 i\u00e7in bir bilgi bulunamad\u0131.",

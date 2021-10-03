@@ -185,6 +185,7 @@
     "evalUsage": "Give a statement to evaluate.",
     "exifError": "EXIF data not found.",
     "exifLog": "EXIF data for image:\n",
+    "exifMaps": "Google Maps Link: ",
     "exifProcess": "Extracting EXIF information.",
     "exifInfo": ".exif\nUsage: Extract EXIF information from given photo file.",
     "ezanvaktiErrorInfo": "No information was found for %1.",
