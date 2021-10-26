@@ -98,7 +98,6 @@ def youtubedl(message):
 
     elif util == 'mp3':
         ydl_opts = {
-            'age_limit': 18,
             'outtmpl': f'%(title)s.%(ext)s',
             'format': 'bestaudio/best',
             'addmetadata': True,
