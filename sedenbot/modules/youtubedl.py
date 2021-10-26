@@ -23,7 +23,7 @@ from sedenecem.core import (
     reply_video,
     sedenify,
 )
-from youtube_dl import YoutubeDL
+from yt_dlp import YoutubeDL
 
 
 @sedenify(pattern='^.(youtube|yt)dl')
@@ -98,6 +98,7 @@ def youtubedl(message):
 
     elif util == 'mp3':
         ydl_opts = {
+            'age_limit': 18,
             'outtmpl': f'%(title)s.%(ext)s',
             'format': 'bestaudio/best',
             'addmetadata': True,

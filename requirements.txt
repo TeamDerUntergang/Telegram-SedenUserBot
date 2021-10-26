@@ -27,4 +27,4 @@ sqlalchemy==1.3.23
 tgcrypto
 urbandict
 wikipedia
-youtube-dl
+yt-dlp
