@@ -30,9 +30,12 @@ def earrape(message):
     util = args[0].lower()
     if util == 'mp4':
         if not (
-            reply.video
-            or reply.video_note
-            or (reply.document and 'video' in reply.document.mime_type)
+            reply
+            and (
+                reply.video
+                or reply.video_note
+                or (reply.document and 'video' in reply.document.mime_type)
+            )
         ):
             edit(message, f'`{get_translation("wrongMedia")}`')
         else:
@@ -55,12 +58,15 @@ def earrape(message):
             message.delete()
     elif util == 'mp3':
         if not (
-            reply.video
-            or reply.video_note
-            or (
-                reply.audio
-                or reply.voice
-                or (reply.document and 'video' in reply.document.mime_type)
+            reply
+            and (
+                reply.video
+                or reply.video_note
+                or (
+                    reply.audio
+                    or reply.voice
+                    or (reply.document and 'video' in reply.document.mime_type)
+                )
             )
         ):
             edit(message, f'`{get_translation("wrongMedia")}`')
@@ -93,9 +99,12 @@ def nightcore(message):
     reply = message.reply_to_message
 
     if not (
-        reply.audio
-        or reply.voice
-        or (reply.document and 'audio' in reply.document.mime_type)
+        reply
+        and (
+            reply.audio
+            or reply.voice
+            or (reply.document and 'audio' in reply.document.mime_type)
+        )
     ):
         edit(message, f'`{get_translation("wrongMedia")}`')
     else:
@@ -129,9 +138,12 @@ def slowedtoperfection(message):
     reply = message.reply_to_message
 
     if not (
-        reply.audio
-        or reply.voice
-        or (reply.document and 'audio' in reply.document.mime_type)
+        reply
+        and (
+            reply.audio
+            or reply.voice
+            or (reply.document and 'audio' in reply.document.mime_type)
+        )
     ):
         edit(message, f'`{get_translation("wrongMedia")}`')
     else:
