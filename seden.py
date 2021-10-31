@@ -8,8 +8,6 @@
 #
 
 if __name__ == '__main__':
-    from sedenbot import app, __import_modules, idle
+    from sedenbot import app
 
-    with app:
-        __import_modules()
-        idle()
+    app.run()
