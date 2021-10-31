@@ -121,8 +121,6 @@
     "covidToday": "Today",
     "covidTotal": "Total",
     "cpUsage": "\ud83d\ude02\ud83c\udd71\ufe0fIvE\ud83d\udc50sOME\ud83d\udc45text\ud83d\udc45for\u270c\ufe0fMe\ud83d\udc4ctO\ud83d\udc50MAkE\ud83d\udc40iT\ud83d\udc9efunNy!\ud83d\udca6",
-    "currencyError": "What you're writing looks like an alien currency, so I can't convert it.",
-    "currencyInfo": ".currency <amount> <from> <to>\nUsage: Converts various currencies for you.",
     "ddgoDesc": "No description found.",
     "ddgoInfo": ".ddgo <query>\nUsage: Does a search on DuckDuckGo.",
     "ddgoLog": "DuckDuckGo Search query %1 was executed successfully",

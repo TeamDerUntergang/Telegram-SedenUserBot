@@ -206,10 +206,12 @@ def do_gsearch(query, page):
         title = res.find('h3')
         if title:
             title = title.text
-        desc = res.find('div', attrs= {'class': ['VwiC3b', 'yXK7lf', 'MUxGbd', 'yDYNvb', 'lyLwlc']})
+        desc = res.find(
+            'div', attrs={'class': ['VwiC3b', 'yXK7lf', 'MUxGbd', 'yDYNvb', 'lyLwlc']}
+        )
         if desc:
             desc = desc.text
-                
+
         if link and title and desc:
             return f'[{replacer(title)}]({link["href"]})\n{desc or ""}'
 
@@ -237,7 +239,7 @@ def do_gsearch(query, page):
         )
 
     soup = BeautifulSoup(req.text, 'html.parser')
-    
+
     res1 = soup.find_all('div', attrs={'class': 'g'})
 
     out = ''
@@ -521,32 +523,7 @@ def doviz(message):
     edit(message, out)
 
 
-@sedenify(pattern='^.currency')
-def currency(message):
-    input_str = extract_args(message)
-    input_sgra = input_str.split(' ')
-    if len(input_sgra) == 3:
-        try:
-            number = float(input_sgra[0])
-            currency_from = input_sgra[1].upper()
-            currency_to = input_sgra[2].upper()
-            request_url = f'https://api.ratesapi.io/api/latest?base={currency_from}'
-            current_response = get(request_url).json()
-            if currency_to in current_response['rates']:
-                current_rate = float(current_response['rates'][currency_to])
-                rebmun = round(number * current_rate, 2)
-                edit(message, f'**{number} {currency_from} = {rebmun} {currency_to}**')
-            else:
-                edit(message, f'`{get_translation("currencyError")}`')
-        except Exception as e:
-            edit(message, str(e))
-    else:
-        edit(message, f'`{get_translation("syntaxError")}`')
-        return
-
-
 HELP.update({'img': get_translation('imgInfo')})
-HELP.update({'currency': get_translation('currencyInfo')})
 HELP.update({'carbon': get_translation('carbonInfo')})
 HELP.update({'goolag': get_translation('googleInfo')})
 HELP.update({'duckduckgo': get_translation('ddgoInfo')})
