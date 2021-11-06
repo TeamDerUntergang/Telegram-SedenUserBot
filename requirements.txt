@@ -27,3 +27,4 @@ tgcrypto
 urbandict
 wikipedia
 yt-dlp
+spotipy
