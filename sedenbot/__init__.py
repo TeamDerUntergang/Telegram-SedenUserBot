@@ -133,6 +133,12 @@ WEATHER = environ.get('WEATHER', None)
 # Genius module
 GENIUS_TOKEN = environ.get('GENIUS_TOKEN', None) or environ.get('GENIUS', None)
 
+# Spoify Client ID
+SPOTIPY_CLIENT_ID = environ.get('SPOTIPY_CLIENT_ID')
+
+# SPotify Client SECRET
+SPOTIPY_CLIENT_SECRET = environ.get('SPOTIPY_CLIENT_SECRET')
+
 # Change Alive Message
 ALIVE_MSG = environ.get('ALIVE_MSG', None)
 

@@ -80,7 +80,14 @@
         "SESSION": {
             "description": "Get this value by running python3 session.py in terminal or bash script.",
             "required": true
+        },
+        "SPOTIPY_CLIENT_ID": {
+            "description": "Get this value from https://developer.spotify.com Required for spotify module."
+        },
+        "SPOTIPY_CLIENT_SECRET": {
+            "description": "Get this value from https://developer.spotify.com Required for spotify module."
         }
+        
     },
     "formation": {
         "seden": {
