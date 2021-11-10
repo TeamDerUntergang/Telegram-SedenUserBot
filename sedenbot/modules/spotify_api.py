@@ -6,6 +6,7 @@ from urllib.request import urlretrieve
 from zipfile import ZipFile
 
 from requests import get
+from sedenbot import HELP
 from sedenecem.core import (
     edit,
     extract_args,
@@ -223,3 +224,6 @@ def spotify_download(message):
             spotify.show_users_detail(username=username, message=message)
     else:
         edit(message, f'`{get_translation("invalidProcess")}`')
+
+
+HELP.update({'spotify': get_translation('spotifyInfo')})
