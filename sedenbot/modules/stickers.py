@@ -56,7 +56,7 @@ def kang(client, message):
     else:
         edit(message, f'`{get_translation("stickerError")}`')
         return
-    
+
     if not reply.sticker:
         try:
             media = resizer(media)
@@ -99,7 +99,7 @@ def kang(client, message):
     def pack_created(pname):
         try:
             set_name = InputStickerSetShortName(short_name=TEMP_SETTINGS[pname])
-            set = GetStickerSet(stickerset=set_name)
+            set = GetStickerSet(stickerset=set_name, hash=0)
             client.send(data=set)
             return True
         except BaseException:
@@ -237,7 +237,8 @@ def packinfo(client, message):
 
     get_stickerset = client.send(
         GetStickerSet(
-            stickerset=InputStickerSetShortName(short_name=reply.sticker.set_name)
+            stickerset=InputStickerSetShortName(short_name=reply.sticker.set_name),
+            hash=0,
         )
     )
     pack_emojis = []
