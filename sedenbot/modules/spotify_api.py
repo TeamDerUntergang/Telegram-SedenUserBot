@@ -1,5 +1,5 @@
 from glob import glob
-from os import mkdir, path, remove
+from os import environ, mkdir, path, remove
 from queue import Queue
 from threading import Thread
 from urllib.request import urlretrieve
@@ -211,7 +211,15 @@ class Spotipy:
 
 @sedenify(pattern='^.spoti(|fy)')
 def spotify_download(message):
-    spotify = Spotipy()
+    if not environ['SPOTIPY_CLIENT_ID'] and not environ['SPOTIPY_CLIENT_SECRET']:
+        return edit(message, get_translation('spotifyNotEnv', ['`']))
+    elif (
+        environ['SPOTIPY_CLIENT_ID'] != 32
+        and len(environ['SPOTIPY_CLIENT_SECRET']) != 32
+    ):
+        return edit(message, get_translation('spotifyLen', ['`', '**']))
+
+    spotify = Spotipy(message)
     args = extract_args(message).split(' ', 2)
     if args[0] == 'dl' or args[0] == 'dl zip':
         spotify.search_track(message)
