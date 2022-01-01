@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2021 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
 # Copyright (C) 2021 kisekinopureya <https://github.com/kisekinopureya>
 #
 # This file is part of TeamDerUntergang project,
