@@ -65,7 +65,7 @@ def ban_user(client, message):
 
     try:
         chat_id = message.chat.id
-        client.kick_chat_member(chat_id, user.id)
+        client.ban_chat_member(chat_id, user.id)
         edit(
             message, get_translation('banResult', ['**', user.first_name, user.id, '`'])
         )
@@ -153,7 +153,7 @@ def kick_user(client, message):
 
     try:
         chat_id = message.chat.id
-        client.kick_chat_member(chat_id, user.id)
+        client.ban_chat_member(chat_id, user.id)
         client.unban_chat_member(chat_id, user.id)
         edit(
             message,
@@ -518,7 +518,7 @@ def zombie_accounts(client, message):
     for i in client.iter_chat_members(chat_id):
         if i.user.is_deleted:
             try:
-                client.kick_chat_member(chat_id, i.user.id)
+                client.ban_chat_member(chat_id, i.user.id)
             except UserAdminInvalid:
                 count -= 1
                 users += 1

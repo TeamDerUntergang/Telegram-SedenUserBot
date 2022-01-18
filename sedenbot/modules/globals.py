@@ -79,7 +79,7 @@ def gban_user(client, message):
         except BaseException:
             pass
         sleep(1)
-        send_log(get_translation('gbanLog', [user.first_name, user.id]))
+        send_log(get_translation('gbanLog', [user.first_name, user.id, '`']))
     except Exception as e:
         edit(message, get_translation('banError', ['`', '**', e]))
         return
@@ -174,7 +174,7 @@ def gban_check(client, message):
         try:
             user_id = message.from_user.id
             chat_id = message.chat.id
-            client.kick_chat_member(chat_id, user_id)
+            client.ban_chat_member(chat_id, user_id)
         except BaseException:
             pass
 
@@ -229,7 +229,7 @@ def gmute_user(client, message):
         except BaseException:
             pass
         sleep(1)
-        send_log(get_translation('gmuteLog', [user.first_name, user.id]))
+        send_log(get_translation('gmuteLog', [user.first_name, user.id, '`']))
     except Exception as e:
         edit(message, get_translation('banError', ['`', '**', e]))
         return

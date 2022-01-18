@@ -10,10 +10,10 @@ humanize
 image_to_ascii
 lyricsgenius
 pillow
-git+https://github.com/frknkrc44/psycopg2@try-switch-pkg-config
+psycopg2
 pybase64
 pylast
-pyrogram==1.2.9
+pyrogram==1.3.5
 python-barcode
 python-dotenv
 qrcode
