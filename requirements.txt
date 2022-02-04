@@ -13,7 +13,7 @@ pillow
 psycopg2
 pybase64
 pylast
-pyrogram==1.3.5
+pyrogram==1.4.1
 python-barcode
 python-dotenv
 qrcode
