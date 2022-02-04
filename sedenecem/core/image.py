@@ -8,6 +8,7 @@
 #
 
 from math import floor
+from subprocess import Popen
 
 from PIL import Image
 
@@ -38,3 +39,31 @@ def sticker_resize(photo):
     temp = f'{get_download_dir()}/temp.png'
     image.save(temp, 'PNG')
     return temp
+
+
+def video_convert(video):
+    process = Popen(
+        [
+            'ffmpeg',
+            '-i',
+            f'{video}',
+            '-vf',
+            'scale=512:512:force_original_aspect_ratio=decrease',
+            '-c:v',
+            'libvpx-vp9',
+            '-crf',
+            '30',
+            '-pix_fmt',
+            'yuv420p',
+            '-ss',
+            '0',
+            '-to',
+            '3',
+            '-an',
+            '-y',
+            f'{get_download_dir()}/temp.webm',
+        ]
+    )
+    _ = process.communicate()
+    output = f'{get_download_dir()}/temp.webm'
+    return output

@@ -289,7 +289,7 @@ def download_media(client, data, file_name=None, progress=None, sticker_orig=Tru
         elif data.video_note:
             file_name = f'{data.video_note.file_id}.mp4'
         elif data.sticker:
-            file_name = f'sticker.{("tgs" if sticker_orig else "json.gz") if data.sticker.is_animated else ("webp" if sticker_orig else "png")}'
+            file_name = f'sticker.{("tgs" if sticker_orig else "json.gz") if data.sticker.is_animated else ("webm" if data.sticker.is_video else "mp4" ("webp" if sticker_orig else "png"))}'
         else:
             return None
 
@@ -357,6 +357,7 @@ def is_admin(message):
     user = app.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
     return user.status in _admin_status_list
 
+
 def is_admin_myself(chat):
     if not 'group' in chat.type:
         return True
@@ -381,9 +382,12 @@ def get_duration(media):
         return int(float(out[1]))
     return None
 
+
 def __status_out__(cmd, encoding='utf-8'):
     try:
-        output = check_output(cmd, shell=True, text=True, stderr=STDOUT, encoding=encoding)
+        output = check_output(
+            cmd, shell=True, text=True, stderr=STDOUT, encoding=encoding
+        )
         return (0, output)
     except CalledProcessError as ex:
         return (ex.returncode, ex.output)

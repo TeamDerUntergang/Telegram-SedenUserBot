@@ -24,8 +24,9 @@ from sedenecem.core import (
     get_translation,
     reply_doc,
     sedenify,
+    sticker_resize,
+    video_convert,
 )
-from sedenecem.core import sticker_resize as resizer
 
 # ================= CONSTANT =================
 DIZCILIK = [get_translation(f'kangstr{i+1}') for i in range(0, 12)]
@@ -46,20 +47,26 @@ def kang(client, message):
         return
 
     anim = False
+    video = False
     media = None
     chat = 'Stickers'
 
-    if reply.photo or reply.document or reply.sticker:
+    if reply.photo or reply.video or reply.document or reply.sticker:
         edit(message, f'`{choice(DIZCILIK)}`')
         anim = reply.sticker and reply.sticker.is_animated
-        media = download_media_wc(reply, sticker_orig=anim)
+        video = reply.sticker and reply.sticker.is_video
+        media = download_media_wc(reply, sticker_orig=anim or video)
     else:
         edit(message, f'`{get_translation("stickerError")}`')
         return
 
     if not reply.sticker:
         try:
-            media = resizer(media)
+            if reply.video:
+                media = video_convert(media)
+                video = True
+            else:
+                media = sticker_resize(media)
         except BaseException:
             edit(message, f'`{get_translation("stickerError")}`')
             return
@@ -81,7 +88,13 @@ def kang(client, message):
     pname = f'PNAME_{ptime}'
     pnick = f'PNICK_{ptime}'
 
-    name_suffix = ('_anim', ' (Animated)') if anim else ('', '')
+    name_suffix = (
+        ('_anim', ' (Animated)')
+        if anim
+        else ('_video', ' (Video)')
+        if video
+        else ('', '')
+    )
 
     TEMP_SETTINGS[pname] = (
         PACKNAME.replace(' ', '')
@@ -94,7 +107,7 @@ def kang(client, message):
     )
     TEMP_SETTINGS[f'{pnick}_TEMPLATE'] = f'{kanger}\'s UserBot pack '
 
-    limit = '50' if anim else '120'
+    limit = '50' if anim or video else '120'
 
     def pack_created(pname):
         try:
@@ -106,7 +119,7 @@ def kang(client, message):
             return False
 
     def create_new(conv, pack, pname, pnick):
-        cmd = f'/new{"animated" if anim else "pack"}'
+        cmd = f'/new{"animated" if anim else "video" if video else "pack"}'
 
         try:
             send_recv(conv, cmd)
@@ -128,7 +141,7 @@ def kang(client, message):
             return
         send_recv(conv, emoji)
         send_recv(conv, '/publish')
-        if anim:
+        if anim or video:
             send_recv(conv, f'<{TEMP_SETTINGS[pnick]}>')
         send_recv(conv, '/skip')
         ret = send_recv(conv, TEMP_SETTINGS[pname])
