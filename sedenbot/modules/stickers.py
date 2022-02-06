@@ -62,7 +62,12 @@ def kang(client, message):
 
     if not reply.sticker:
         try:
-            if reply.video or reply.animation:
+            if (
+                reply.video
+                or reply.animation
+                or reply.document
+                and 'webm' in reply.document.mime_type
+            ):
                 media = video_convert(media)
                 video = True
             else:
