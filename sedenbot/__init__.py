@@ -40,6 +40,12 @@ reload_env()
 
 LOGS = getLogger(__name__)
 
+#
+# Bot lang
+#
+# If missted, the default lang is English.
+SEDEN_LANG = environ.get('SEDEN_LANG', 'en')
+
 
 def get_translation(transKey, params: list = None):
     ret = _tr.get_translation(SEDEN_LANG, transKey)
@@ -74,12 +80,6 @@ basicConfig(
     level=DEBUG if LOG_VERBOSE else INFO,
 )
 
-#
-# Bot lang
-#
-# If missted, the default lang is English.
-SEDEN_LANG = environ.get('SEDEN_LANG', 'en')
-
 
 def set_local_env(key: str, value: str):
     return set_key(PurePath('config.env'), key, value)
@@ -105,12 +105,6 @@ def set_logger():
 
 
 set_logger()
-
-# Check that the config is edited using the previously used variable.
-# Basically, check for config file.
-if environ.get('___________DELETE_______THIS_____LINE__________', None):
-    LOGS.warn(get_translation("removeFirstLine"))
-    quit(1)
 
 # Telegram APP ID and HASH
 API_ID = environ.get('API_ID', None)
@@ -166,10 +160,12 @@ PACKNICK = environ.get('PACKNICK', None)
 DATABASE_URL = environ.get('DATABASE_URL', None)
 
 # SedenBot Session
-SESSION = environ.get('SESSION', 'sedenuserbot')
+SESSION = environ.get('SESSION', 'sedenify')
 
 # SedenBot repo url for updater
-REPO_URL = environ.get('REPO_URL', 'https://github.com/TeamDerUntergang/SedenUserBot')
+REPO_URL = environ.get(
+    'REPO_URL', 'https://github.com/TeamDerUntergang/Telegram-SedenUserBot'
+)
 
 # Heroku Credentials for updater
 HEROKU_KEY = environ.get('HEROKU_KEY', None)
@@ -259,6 +255,15 @@ class PyroClient(Client):
         super().__init__(session, **args)
         self.add_handler(MessageHandler(PyroClient.store_msg, filters.incoming))
 
+    def start(self):
+        super().start()
+        LOGS.info(get_translation('runningBot', [SUPPORT_GROUP]))
+        LOGS.info(get_translation('sedenVersion', [BOT_VERSION]))
+
+    def stop(self):
+        super().stop()
+        LOGS.info(get_translation('goodbyeMsg'))
+
     def export_session_string(self):
         raise NotImplementedError
 
@@ -302,6 +307,3 @@ def __import_modules():
 
 
 __import_modules()
-
-LOGS.info(get_translation('runningBot', [SUPPORT_GROUP]))
-LOGS.info(get_translation('sedenVersion', [BOT_VERSION]))
