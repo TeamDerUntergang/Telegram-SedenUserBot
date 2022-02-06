@@ -117,7 +117,7 @@ if not API_HASH:
     LOGS.warn(get_translation('apiHashError'))
     quit(1)
 
-BOT_VERSION = '1.5.2'
+BOT_VERSION = '1.5.3'
 SUPPORT_GROUP = 'SedenUserBotSupport'
 CHANNEL = 'SedenUserBot'
 
