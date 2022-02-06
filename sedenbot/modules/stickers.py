@@ -66,7 +66,8 @@ def kang(client, message):
                 reply.video
                 or reply.animation
                 or reply.document
-                and 'webm' or 'mp4' in reply.document.mime_type
+                and 'webm'
+                or 'mp4' in reply.document.mime_type
             ):
                 media = video_convert(media)
                 video = True
@@ -184,8 +185,8 @@ def kang(client, message):
                 return create_new(conv, pack, pname, pnick)
 
         status = send_recv(conv, media, doc=True)
-        if 'Sorry' in status.text:
-            edit(message, f'`{get_translation("stickerError")}`')
+        if 'Sorry' or 'duration is too long' or 'File is too big' in status.text:
+            edit(message, get_translation('botError', ['`', '**', chat]))
             return
         send_recv(conv, emoji)
         send_recv(conv, '/done')

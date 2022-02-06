@@ -76,6 +76,7 @@
     "blacklistSqlLog": "Unable to run blacklist module, no SQL connection found",
     "blacklistText": "Give me a text",
     "blankBlacklist": "There are no blacklist in current chat.",
+    "botError": "%1Something went wrong! Check%1 %2@%3%2 %1bot for detailed information.%1",
     "botlist": "%1Bots in%1 %2%3%2%1:%1",
     "brainError": "%1Error!%1\n%2[%3](tg://user?id=%4)%2 %1is Seden admin..\nSo I can't do this.%1",
     "callInfo": ".call #note or .call $snip\nUsage: Used to get notes or global notes",
