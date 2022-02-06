@@ -51,10 +51,10 @@ def kang(client, message):
     media = None
     chat = 'Stickers'
 
-    if reply.photo or reply.video or reply.document or reply.sticker:
+    if reply.photo or reply.video or reply.animation or reply.document or reply.sticker:
         edit(message, f'`{choice(DIZCILIK)}`')
         anim = reply.sticker and reply.sticker.is_animated
-        video = reply.sticker and reply.sticker.is_video
+        video = reply.animation or reply.sticker and reply.sticker.is_video
         media = download_media_wc(reply, sticker_orig=anim or video)
     else:
         edit(message, f'`{get_translation("stickerError")}`')
@@ -62,7 +62,7 @@ def kang(client, message):
 
     if not reply.sticker:
         try:
-            if reply.video:
+            if reply.video or reply.animation:
                 media = video_convert(media)
                 video = True
             else:
@@ -213,23 +213,32 @@ def send_recv(conv, msg, doc=False):
     return conv.recv_msg()
 
 
-@sedenify(pattern='^.getsticker$')
+@sedenify(pattern='^.getsticker')
 def getsticker(message):
+    args = extract_args(message)
     reply = message.reply_to_message
     if not reply or not reply.sticker:
         edit(message, f'`{get_translation("replySticker")}`')
         return
 
-    photo = download_media_wc(reply, f'{get_download_dir()}/sticker.png')
-    image = Image.open(photo)
-    photo = f'{get_download_dir()}/sticker.png'
-    image.save(photo)
+    video = False
+    photo = False
+
+    if reply.sticker and reply.sticker.is_animated or reply.sticker.is_video:
+        video = download_media_wc(reply)
+    else:
+        photo = download_media_wc(reply, f'{get_download_dir()}/sticker.png')
+        image = Image.open(photo)
+        photo = f'{get_download_dir()}/sticker.png'
+        image.save(photo)
 
     reply_doc(
         reply,
-        photo,
+        video or photo,
         caption=f'**Sticker ID:** `{reply.sticker.file_id}'
-        f'`\n**Emoji**: `{reply.sticker.emoji or get_translation("notSet")}`',
+        f'`\n**Emoji**: `{reply.sticker.emoji or get_translation("notSet")}`'
+        if args == '-v'
+        else '',
         delete_after_send=True,
     )
     message.delete()
