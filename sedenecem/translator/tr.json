@@ -527,7 +527,7 @@
     "statusWeek": "Bir hafta i\u00e7inde",
     "stickerAdded": "%1Ba\u015far\u0131yla d\u0131zland\u0131.%1\nEri\u015fmek i\u00e7in [buraya](https://t.me/addstickers/%2) dokunun.",
     "stickerError": "Bunu d\u0131zlayamam.",
-    "stickerInfo": ".d\u0131zla [\u0130ste\u011fe ba\u011fl\u0131: <Paket Numaras\u0131> <Emoji>]\nKullan\u0131m: .d\u0131zla ile bir \u00e7\u0131kartmaya ya da resme yan\u0131tlayarak kendi \u00e7\u0131kartma paketinize \u00e7\u0131kartma olarak ekleyebilirsiniz. Varsay\u0131lan emoji \ud83e\udd24 kullan\u0131l\u0131r.\n\n.getsticker\nKullan\u0131m: Yan\u0131tlanan \u00e7\u0131kartmay\u0131 dosya bi\u00e7iminde g\u00f6nderir.\n\n.packinfo\nKullan\u0131m: \u00c7\u0131kartma paketi hakk\u0131nda bilgi verir.",
+    "stickerInfo": ".d\u0131zla [\u0130ste\u011fe ba\u011fl\u0131: <Paket Numaras\u0131> <Emoji>]\nKullan\u0131m: .d\u0131zla ile bir \u00e7\u0131kartmaya ya da resme yan\u0131tlayarak kendi \u00e7\u0131kartma paketinize \u00e7\u0131kartma olarak ekleyebilirsiniz. Varsay\u0131lan emoji \ud83e\udd24 kullan\u0131l\u0131r.\n\n.getsticker [-v (ayr\u0131nt\u0131lar)]\nKullan\u0131m: Yan\u0131tlanan \u00e7\u0131kartmay\u0131 dosya bi\u00e7iminde g\u00f6nderir.\n\n.packinfo\nKullan\u0131m: \u00c7\u0131kartma paketi hakk\u0131nda bilgi verir.",
     "stickerPackFull": "%1 numaral\u0131 paket dolu.",
     "stickerUsage": "Bana d\u0131zlayabilece\u011fim bir \u015fey ver.",
     "strUsage": "Baaaaanaaaaa biiiiir meeeeetiiiiin veeeeer!",

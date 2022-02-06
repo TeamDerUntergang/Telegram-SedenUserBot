@@ -66,7 +66,7 @@ def kang(client, message):
                 reply.video
                 or reply.animation
                 or reply.document
-                and 'webm' in reply.document.mime_type
+                and 'webm' or 'mp4' in reply.document.mime_type
             ):
                 media = video_convert(media)
                 video = True

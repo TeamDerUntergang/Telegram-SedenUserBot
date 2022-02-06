@@ -527,7 +527,7 @@
     "statusWeek": "Within the last week",
     "stickerAdded": "%1Sticker kanged successfully!%1\nPack can be found [here](https://t.me/addstickers/%2)",
     "stickerError": "I can't kang that",
-    "stickerInfo": ".kang [Optional: <Pack Number> <Emoji>]\nUsage: Reply .kang to a sticker or an image to kang it to your sticker pack. Default emoji is \ud83e\udd24\n\n.getsticker\nUsage: Sends the replied sticker in file format.\n\n.packinfo\nUsage: Gets info about the sticker pack.",
+    "stickerInfo": ".kang [Optional: <Pack Number> <Emoji>]\nUsage: Reply .kang to a sticker or an image to kang it to your sticker pack. Default emoji is \ud83e\udd24\n\n.getsticker [-v (verbosity)]\nUsage: Sends the replied sticker in file format.\n\n.packinfo\nUsage: Gets info about the sticker pack.",
     "stickerPackFull": "Pack %1 is full.",
     "stickerUsage": "Give me something..",
     "strUsage": "GiiiiiiiB sooooooomeeeeeee teeeeeeext!",
