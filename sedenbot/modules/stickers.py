@@ -185,7 +185,7 @@ def kang(client, message):
                 return create_new(conv, pack, pname, pnick)
 
         status = send_recv(conv, media, doc=True)
-        if 'Sorry' or 'duration is too long' or 'File is too big' in status.text:
+        if ('Sorry' or ('duration is too long' or 'File is too big')) in status.text:
             edit(message, get_translation('botError', ['`', '**', chat]))
             return
         send_recv(conv, emoji)
