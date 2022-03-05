@@ -60,20 +60,19 @@ def kang(client, message):
         edit(message, f'`{get_translation("stickerError")}`')
         return
 
-    if not reply.sticker:
+    if not anim and reply.sticker:
         try:
             if (
                 reply.video
                 or reply.animation
                 or reply.document
-                and 'webm'
-                or 'mp4' in reply.document.mime_type
+                and 'video' in reply.document.mime_type
             ):
                 media = video_convert(media)
                 video = True
             else:
                 media = sticker_resize(media)
-        except BaseException:
+        except BaseException as e:
             edit(message, f'`{get_translation("stickerError")}`')
             return
 
