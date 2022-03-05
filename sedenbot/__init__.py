@@ -30,6 +30,7 @@ from dotenv import load_dotenv, set_key, unset_key
 from pyrogram import Client, filters
 from pyrogram.handlers import MessageHandler
 from requests import get
+from subprocess import Popen
 
 
 def reload_env():
@@ -132,6 +133,9 @@ SPOTIPY_CLIENT_ID = environ.get('SPOTIPY_CLIENT_ID')
 
 # SPotify Client SECRET
 SPOTIPY_CLIENT_SECRET = environ.get('SPOTIPY_CLIENT_SECRET')
+
+# Gdrive Folder ID
+GDRIVE_FOLDER_ID = environ.get('GDRIVE_FOLDER_ID', None)
 
 # Change Alive Message
 ALIVE_MSG = environ.get('ALIVE_MSG', None)
