@@ -10,7 +10,7 @@
 from datetime import datetime
 
 from sedenbot import HELP
-from sedenecem.core import edit, extract_args, get_translation, reply_doc, sedenify
+from sedenecem.core import edit, extract_args, get_translation, reply_img, sedenify
 
 from speedtest import Speedtest
 
@@ -57,10 +57,11 @@ def speed_test(message):
                 ),
             )
         else:
-            reply_doc(
+            reply_img(
                 message,
                 speedtest_image,
                 caption=get_translation('speedtestResultDoc', ['**', ms]),
+                delete_file=True,
                 delete_orig=True,
             )
     except Exception as exc:
