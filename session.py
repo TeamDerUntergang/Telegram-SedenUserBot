@@ -20,7 +20,7 @@ Create a new application, by entering the required details\n''')
     API_ID = ''
     API_HASH = ''
 
-    while not API_ID.isdigit() or len(API_ID) < 5 or len(API_ID) > 7:
+    while not API_ID.isdigit() or len(API_ID) < 5 or len(API_ID) > 8:
         API_ID = input('API ID: ')
 
     API_ID = int(API_ID)
@@ -29,14 +29,9 @@ Create a new application, by entering the required details\n''')
         API_HASH = input('API HASH: ')
 
     app = Client(
-        'sedenuserbot',
+        'sedenify',
         api_id=API_ID,
-        api_hash=API_HASH,
-        app_version='SedenEcem',
-        device_model='Firefox 91.0.2',
-        system_version='Session',
-        lang_code='en',
-    )
+        api_hash=API_HASH)
 
     with app:
         self = app.get_me()
@@ -64,7 +59,7 @@ Gerekli ayrıntıları girerek yeni bir uygulama oluşturun\n''')
     API_ID = ''
     API_HASH = ''
 
-    while not API_ID.isdigit() or len(API_ID) < 5 or len(API_ID) > 7:
+    while not API_ID.isdigit() or len(API_ID) < 5 or len(API_ID) > 8:
         API_ID = input('API ID: ')
 
     API_ID = int(API_ID)
@@ -73,14 +68,9 @@ Gerekli ayrıntıları girerek yeni bir uygulama oluşturun\n''')
         API_HASH = input('API HASH: ')
 
     app = Client(
-        'sedenuserbot',
+        'sedenify',
         api_id=API_ID,
-        api_hash=API_HASH,
-        app_version='SedenEcem',
-        device_model='Firefox 91.0.2',
-        system_version='Session',
-        lang_code='tr',
-    )
+        api_hash=API_HASH)
 
     with app:
         self = app.get_me()

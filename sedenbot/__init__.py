@@ -275,11 +275,7 @@ class PyroClient(Client):
 app = PyroClient(
     SESSION,
     api_id=API_ID,
-    api_hash=API_HASH,
-    app_version='SedenEcem',
-    device_model='Firefox 91.0.2',
-    system_version=f'v{BOT_VERSION}',
-)
+    api_hash=API_HASH)
 
 
 # delete these variables to add some security
