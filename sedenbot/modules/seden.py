@@ -13,7 +13,7 @@ from sedenbot import HELP
 from sedenecem.core import edit, extract_args, get_translation, reply, sedenify
 
 
-@sedenify(pattern='^.seden')
+@sedenify(pattern='^.(seden|help)')
 def seden(message):
     seden = extract_args(message).lower()
     cmds = OrderedDict(sorted(HELP.items()))

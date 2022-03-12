@@ -2,7 +2,7 @@ from io import FileIO
 from os import path, remove
 from queue import Queue
 from re import findall, search
-from shutil import copy, copyfileobj
+from shutil import copy
 from time import time
 
 from google.oauth2.credentials import Credentials

@@ -30,7 +30,6 @@ from dotenv import load_dotenv, set_key, unset_key
 from pyrogram import Client, filters
 from pyrogram.handlers import MessageHandler
 from requests import get
-from subprocess import Popen
 
 
 def reload_env():
