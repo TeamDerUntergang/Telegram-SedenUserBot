@@ -38,7 +38,7 @@ def spamwatch_action(client, message):
         else:
             myself = message.chat.get_member('me')
             if myself.can_restrict_members:
-                message.chat.kick_member(uid)
+                message.chat.ban_member(uid)
                 reply(message, text)
             else:
                 return

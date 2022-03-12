@@ -75,7 +75,7 @@ def gban_user(client, message):
         try:
             common_chats = client.get_common_chats(user.id)
             for i in common_chats:
-                i.kick_member(user.id)
+                i.ban_member(user.id)
         except BaseException:
             pass
         sleep(1)
