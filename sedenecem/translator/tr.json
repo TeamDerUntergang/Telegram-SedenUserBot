@@ -201,6 +201,7 @@
     "gbannedUsers": "K\u00fcresel yasaklanan kullan\u0131c\u0131lar:",
     "gdriveDown": "%1Dosya Ad\u0131:%1 %2%3%2\n%1\u0130ndirildi:%1 %2%4%2",
     "gdriveDownComplete": "%1Dosya Ad\u0131:%1 %2%3%2\n%1Dosya \u0130ndirildi.%1",
+    "gdriveTokenErr": "%1Sadece token Dosyas\u0131n\u0131 yan\u0131tlay\u0131n.%1",
     "gdriveUp": "%1Dosya Ad\u0131:%1 %2%3%2\n%1Y\u00fcklendi:%1 %2%4%2",
     "gdriveUpComplete": "%1Dosya Ad\u0131:%1 %2%3%2\n%1Dosya Y\u00fcklendi.%1",
     "gdriveUsage": ".gauth <token_file>\nToken dosyas\u0131n\u0131 .gauth ile yan\u0131tlay\u0131n.Yetkilendirme i\u00e7in gereklidir.\n\n.gupload <reply_message> yada <link>\nTelegrama at\u0131lm\u0131\u015f bir dosyay\u0131 .gupload ile yan\u0131tlay\u0131n veya link belirtin.Yant\u0131lanan dosyay\u0131 veya linki google drive'a y\u00fckler.\n\n.gdownload <link>\nKi\u015fisel drive'\u0131n\u0131zdan veya google drive linkinden dosyay\u0131 indirir ve telegrama y\u00fckler.",

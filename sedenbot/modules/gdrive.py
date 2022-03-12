@@ -165,9 +165,12 @@ class WebHelper:
 @sedenify(pattern='.gauth')
 def drive_auth(message):
     msg = message.reply_to_message
-    download_media_wc(data=msg, file_name='token.json')
-    copy('./downloads/token.json', '.')
-    edit(message, get_translation('gauthTokenSucces', ['`']))
+    if msg and msg.document:
+        download_media_wc(data=msg, file_name='token.json')
+        copy('./downloads/token.json', '.')
+        edit(message, get_translation('gauthTokenSucces', ['`']))
+    else:
+        edit(message, get_translation('gdriveTokenErr', ['`']))
 
 
 @sedenify(pattern='.gupload')

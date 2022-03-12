@@ -200,6 +200,7 @@
     "gbannedUsers": "GBanned Users:",
     "gdriveDown": "%1Filename:%1 %2%3%2\n%1Downloading:%1 %2%%4%2",
     "gdriveDownComplete": "%1Filename:%1 %2%3%2\n%1File Downloaded.%1",
+    "gdriveTokenErr": "%1Reply a token file%1",
     "gdriveUp": "%1Filename:%1 %2%3%2\n%1Uploading:%1 %2%%4%2",
     "gdriveUpComplete": "%1Filename:%1 %2%3%2\n%1File Uploaded.%1",
     "gdriveUsage": ".gauth <token_file>\nReply with token file.It needed for authentication.\n\n.gupload <reply_message> or <link>\nReply files or paste link for uploading to google drive.\n\n.gdownload <link>\nPaste link for uploading files to telegram.",
