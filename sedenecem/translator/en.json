@@ -498,6 +498,7 @@
     "sedenUsage": "Please specify a Seden module.",
     "sedenUsage2": "%1Please indicate which Seden module you want help with!\nUsage:%1 %2.seden <module name>%2",
     "sedenVersion": "Bot version; Seden v%1",
+    "shippingTrack": ".yurtici <trackNo>\nUsage: Gives yurtici shipping information",
     "shutdown": "Goodbye *Windows XP shutdown sound\u2026",
     "shutdownLog": "#SHUTDOWN\nBot shut down",
     "snipChats": "Available snips:",
