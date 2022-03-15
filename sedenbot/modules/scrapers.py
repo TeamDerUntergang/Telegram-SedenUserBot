@@ -23,7 +23,6 @@ from gtts import gTTS
 from gtts.lang import tts_langs
 from pyrogram.types import InputMediaPhoto
 from requests import get, post
-from simplejson import JSONDecodeError
 from sedenbot import HELP, SEDEN_LANG
 from sedenecem.core import (
     edit,
