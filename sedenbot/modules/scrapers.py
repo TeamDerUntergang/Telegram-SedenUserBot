@@ -35,7 +35,7 @@ from sedenecem.core import (
     sedenify,
     send_log,
 )
-from urbandict import define
+from urbandic import search
 from wikipedia import set_lang, summary
 from wikipedia.exceptions import DisambiguationError, PageError
 
@@ -326,14 +326,17 @@ def urbandictionary(message):
         edit(message, f'`{get_translation("wrongCommand")}`')
         return
     edit(message, f'`{get_translation("processing")}`')
+    mean = []
+    example = []
     try:
-        define(query)
+        for i in search(query, 5):
+            mean.append(i.definition + "\n")
+            example.append(i.example + "\n")
     except HTTPError:
         edit(message, get_translation('udResult', ['**', query]))
         return
-    mean = define(query)
-    deflen = sum(len(i) for i in mean[0]['def'])
-    exalen = sum(len(i) for i in mean[0]['example'])
+    deflen = sum(len(i) for i in mean)
+    exalen = sum(len(i) for i in example)
     meanlen = deflen + exalen
     if int(meanlen) >= 0:
         if int(meanlen) >= 4096:
@@ -343,10 +346,10 @@ def urbandictionary(message):
                 'Query: '
                 + query
                 + '\n\nMeaning: '
-                + mean[0]['def']
+                + "".join(mean)
                 + '\n\n'
                 + 'Örnek: \n'
-                + mean[0]['example']
+                + "".join(example)
             )
             file.close()
             reply_doc(
@@ -361,7 +364,8 @@ def urbandictionary(message):
         edit(
             message,
             get_translation(
-                'sedenQueryUd', ['**', '`', query, mean[0]['def'], mean[0]['example']]
+                'sedenQueryUd',
+                ['**', '`', query, "".join(choice(mean)), "".join(choice(example))],
             ),
         )
     else:

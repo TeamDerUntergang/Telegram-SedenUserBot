@@ -30,6 +30,6 @@ speedtest-cli
 spotipy
 sqlalchemy==1.3.23
 tgcrypto
-urbandict
+urbandic
 wikipedia
 yt-dlp
