@@ -329,9 +329,11 @@ def urbandictionary(message):
     mean = []
     example = []
     try:
-        for i in search(query, 5):
+        for i in search(query, 1):
             mean.append(i.definition + "\n")
             example.append(i.example + "\n")
+    except TypeError:
+        return edit(message, f'`{get_translation("udNotFound")}`')
     except HTTPError:
         edit(message, get_translation('udResult', ['**', query]))
         return
@@ -538,7 +540,9 @@ def imeichecker(message):
         return
     try:
         while True:
-            response = post(f"https://m.turkiye.gov.tr/api2.php?p=imei-sorgulama&txtImei={imei}").json()
+            response = post(
+                f"https://m.turkiye.gov.tr/api2.php?p=imei-sorgulama&txtImei={imei}"
+            ).json()
             if not response['data']['asyncFinished']:
                 continue
             result = response['data']
@@ -551,9 +555,6 @@ def imeichecker(message):
         edit(message, reply_text, parse='HTML', preview=False)
     except Exception as e:
         raise e
-
-
-
 
 
 HELP.update({'img': get_translation('imgInfo')})
