@@ -22,7 +22,8 @@ from googletrans import LANGUAGES, Translator
 from gtts import gTTS
 from gtts.lang import tts_langs
 from pyrogram.types import InputMediaPhoto
-from requests import get
+from requests import get, post
+from simplejson import JSONDecodeError
 from sedenbot import HELP, SEDEN_LANG
 from sedenecem.core import (
     edit,
@@ -527,7 +528,37 @@ def doviz(message):
     edit(message, out)
 
 
+@sedenify(pattern='^.imeicheck')
+def imeichecker(message):
+    argv = extract_args(message)
+    imei = argv.split(' ', 1)[0]
+    edit(message, f'`{get_translation("processing")}`')
+    print(len(imei))
+    if len(imei) != 15:
+        edit(message, f'`{get_translation("wrongCommand")}`')
+        return
+    try:
+        while True:
+            response = post(f"https://m.turkiye.gov.tr/api2.php?p=imei-sorgulama&txtImei={imei}").json()
+            if not response['data']['asyncFinished']:
+                continue
+            result = response['data']
+            break
+        reply_text = f"<strong>Sorgu Tarihi</strong> <code>{result['sorguTarihi']}</code>\n\
+<strong>IMEI:</strong> <code>{result['imei'][:-5] + 5*'*'}</code>\n\
+<strong>Durum:</strong> <code>{result['durum']}</code>\n\
+<strong>Cihaz:</strong> <code>{result['markaModel']}</code>\n\n\
+<strong>Powered by </strong><a href='https://github.com/TeamDerUntergang/Telegram-SedenUserBot'>Seden</a>♥"
+        edit(message, reply_text, parse='HTML', preview=False)
+    except Exception as e:
+        raise e
+
+
+
+
+
 HELP.update({'img': get_translation('imgInfo')})
+HELP.update({'imeicheck': get_translation('imeiInfo')})
 HELP.update({'carbon': get_translation('carbonInfo')})
 HELP.update({'goolag': get_translation('googleInfo')})
 HELP.update({'duckduckgo': get_translation('ddgoInfo')})

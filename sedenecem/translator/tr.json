@@ -248,6 +248,7 @@
     "herokuInfo": ".kota\nKullan\u0131m: Heroku kaynak kullan\u0131m\u0131n\u0131z\u0131 g\u00f6sterir.\n\n.drestart\nKullan\u0131m: Heroku dynosunu yeniden ba\u015flat\u0131r.\n\n.logs\nKullan\u0131m: Heroku uygulama g\u00fcnl\u00fc\u011f\u00fc g\u00f6nderir.",
     "herokuQuotaInHM": "%1s %2d",
     "herokuQuotaInfo": "%2Heroku Kalan Kota%2\n\n%2Toplam:%2 %1%3%1\n%2Kullan\u0131lan:%2 %1%4 (\u00bd%5)%1\n%2Kalan:%2 %1%6 (\u00bd%7)%1\n%2Uygulama kullan\u0131m\u0131:%2 %1%8 (\u00bd%9)%1",
+    "imeiInfo": ".imeicheck <imeinumber>\nKullan\u0131m: Imei numaras\u0131n\u0131n kay\u0131tl\u0131 olup olmad\u0131\u011f\u0131n\u0131 kontrol eder ve cihaz hakk\u0131nda b\u0131lg\u0131 verir",
     "imgInfo": ".img <kelime>\nKullan\u0131m: Google \u00fczerinde h\u0131zl\u0131 bir resim aramas\u0131 yapar ve ilk 5 resmi g\u00f6sterir.",
     "imgUsage": "Bir arama terimi girmelisiniz.",
     "infoWeather": "Kullan\u0131m: .havadurumu <\u015fehir-ad\u0131> veya .havadurumu\nBir b\u00f6lgenin hava durumunu verir.",
