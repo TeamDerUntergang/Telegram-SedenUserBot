@@ -6,55 +6,51 @@
 #
 # All rights reserved. See COPYING, AUTHORS.
 #
-from requests import get
+
 from json import JSONDecodeError
-from sedenbot import HELP, SEDEN_LANG
-from sedenecem.core import (
-    edit,
-    get_translation,
-    sedenify,
-)
+
+from requests import get
+from sedenbot import HELP
+from sedenecem.core import edit, get_translation, sedenify
 
 
 def parseShipEntity(jsonEntity: dict) -> str:
-    if SEDEN_LANG == 'en':
-        text = f"""
-<strong>Company:</strong> <code>{jsonEntity['data']['company'].title()}</code>
-<strong>Track ID:</strong> <code>{jsonEntity['data']['tracking_no']}</code>
-<strong>Status:</strong> <code>{jsonEntity['data']['status']}</code>
-<strong>Sender:</strong> <code>{jsonEntity['data']['sender_name']}</code>
-<strong>Receiver:</strong> <code>{jsonEntity['data']['receiver_name']}</code>
-<strong>Sender Unit:</strong> <code>{jsonEntity['data']['sender_unit']}</code>
-<strong>Receiver Unit:</strong> <code>{jsonEntity['data']['receiver_unit']}</code>
-<strong>Sended Date:</strong> <code>{jsonEntity['data']['sended_date']}</code>
-<strong>Delivered Date:</strong> <code>{jsonEntity['data']['delivered_date']}</code>
+    text = get_translation(
+        'shippingResult',
+        [
+            '<b>',
+            '</b>',
+            '<code>',
+            '</code>',
+            jsonEntity['data']['company'].title(),
+            jsonEntity['data']['tracking_no'],
+            jsonEntity['data']['status'],
+            jsonEntity['data']['sender_name'],
+            jsonEntity['data']['receiver_name'],
+            jsonEntity['data']['sender_unit'],
+            jsonEntity['data']['receiver_unit'],
+            jsonEntity['data']['sended_date'],
+            jsonEntity['data']['delivered_date'] or get_translation('notFound'),
+            '<u>',
+            '</u>',
+        ],
+    )
 
-<strong><u>Last movement</u></strong>
-
-"""
     movements = ""
     for movement in jsonEntity['data']['movements'][-1:]:
-        movements += f"<code>Unit: {movement['unit']}\nStatus: {movement['status']}\nDate: {movement['date']}\nTime: {movement['time']}\nAction: {movement['action']}</code>\n\n"
-    
-    if SEDEN_LANG == 'tr':
-        text = f"""
-<strong>Firma:</strong> <code>{jsonEntity['data']['company'].title()}</code>
-<strong>Takip No:</strong> <code>{jsonEntity['data']['tracking_no']}</code>
-<strong>Durum:</strong> <code>{jsonEntity['data']['status']}</code>
-<strong>Gönderici:</strong> <code>{jsonEntity['data']['sender_name']}</code>
-<strong>Alıcı:</strong> <code>{jsonEntity['data']['receiver_name']}</code>
-<strong>Gönderim yeri:</strong> <code>{jsonEntity['data']['sender_unit']}</code>
-<strong>Alım yeri:</strong> <code>{jsonEntity['data']['receiver_unit']}</code>
-<strong>Gönderi tarihi:</strong> <code>{jsonEntity['data']['sended_date']}</code>
-<strong>Teslim tarihi:</strong> <code>{jsonEntity['data']['delivered_date']}</code>
+        movements += get_translation(
+            'shippingMovements',
+            [
+                '<code>',
+                '</code>',
+                movement['unit'],
+                movement['status'],
+                movement['date'],
+                movement['time'],
+                movement['action'],
+            ],
+        )
 
-<strong><u>Son hareket</u></strong>
-
-"""
-    movements = ""
-    for movement in jsonEntity['data']['movements'][-1:]:
-        movements += f"<code>Yer: {movement['unit']}\nDurum: {movement['status']}\nTarih: {movement['date']}\nZaman: {movement['time']}\nİşlem: {movement['action']}</code>\n\n"
-    
     text += movements
     return text
 
@@ -71,6 +67,7 @@ def getShipEntity(company: str, trackId: int or str) -> dict or None:
         return response.json() if response.json()['success'] else None
     except JSONDecodeError:
         return None
+
 
 @sedenify(pattern='^.(yurtici|aras|ptt)')
 def shippingTrack(message):
@@ -93,9 +90,7 @@ def shippingTrack(message):
         text = parseShipEntity(kargo_data)
         edit(message, text, parse='HTML')
         return
-    edit(message, '`Tracking information not found!`' if SEDEN_LANG == 'en' else '`Takip bilgisi bulunamadı!`')
-
-
+    edit(message, f"`{get_translation('shippingNoResult')}`")
 
 
 HELP.update({'shippingtrack': get_translation("shippingTrack")})
