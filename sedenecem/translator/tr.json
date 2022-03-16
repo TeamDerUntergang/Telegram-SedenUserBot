@@ -498,7 +498,7 @@
     "sedenUsage": "L\u00fctfen bir Seden mod\u00fcl\u00fc ad\u0131 belirtin.",
     "sedenUsage2": "%1L\u00fctfen hangi Seden mod\u00fcl\u00fc i\u00e7in yard\u0131m istedi\u011finizi belirtin!\nKullan\u0131m:%1 %2.seden <mod\u00fcl ad\u0131>%2",
     "sedenVersion": "Bot s\u00fcr\u00fcm\u00fc; Seden v%1",
-    "shippingTrack": ".yurtici <takipNo>\nKullan\u0131m: Yurti\u00e7i kargo bilgilerini g\u00f6sterir",
+    "shippingTrack": ".yurtici <takipNo>\nKullan\u0131m: Yurti\u00e7i kargo bilgilerini g\u00f6sterir.\n\n.aras <takipNo>\nKullan\u0131m: Aras kargo bilgilerini g\u00f6sterir.\n\n.ptt <takipNo>\nKullan\u0131m: PTT kargo bilgilerini g\u00f6sterir.\n\n",
     "shutdown": "Ben kapan\u0131yorum, g\u00f6r\u00fc\u015f\u00fcr\u00fcz\u2026",
     "shutdownLog": "#SHUTDOWN\nBot kapat\u0131ld\u0131.",
     "snipChats": "Mevcut snipler:",
