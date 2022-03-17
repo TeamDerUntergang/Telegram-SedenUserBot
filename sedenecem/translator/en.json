@@ -501,7 +501,7 @@
     "shippingMovements": "\n\n%1Unit: %3\nStatus: %4\nDate: %5\nTime: %6\nAction: %7%2",
     "shippingNoResult": "Tracking information not found!",
     "shippingResult": "%1Company:%2 %3%5%4\n%1Track ID:%2 %3%6%4\n%1Status:%2 %3%7%4\n%1Sender:%2 %3%8%4\n%1Receiver:%2 %3%9%4\n%1Sender Unit:%2 %3%10%4\n%1Receiver Unit:%2 %3%11%4\n%1Sended Date:%2 %3%12%4\n%1Delivered Date:%2 %3%13%4\n\n%1%14Last movement%15%2",
-    "shippingTrack": ".yurtici <trackNo>\nUsage: Shows yurtici shipping information.\n\n.aras <trackNo>\nUsage: Shows aras shipping information.\n\n.ptt <trackNo>\nUsage: Shows ptt shipping information.\n\n",
+    "shippingTrack": ".<company> <trackNo>\n\nUsage: Shows shipping information.\n\nExample: `.ups 1234567890`\n\nAllowed companies:\n`mng, ptt, ups, aras, surat, yurtici, trendyol, hepsijet`",
     "shutdown": "Goodbye *Windows XP shutdown sound\u2026",
     "shutdownLog": "#SHUTDOWN\nBot shut down",
     "snipChats": "Available snips:",

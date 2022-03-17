@@ -35,19 +35,16 @@ def parseShipEntity(jsonEntity: dict) -> str:
             '</u>',
         ],
     )
-
-    movements = ""
-    for movement in jsonEntity['data']['movements'][-1:]:
-        movements += get_translation(
+    movements = get_translation(
             'shippingMovements',
             [
                 '<code>',
                 '</code>',
-                movement['unit'],
-                movement['status'],
-                movement['date'],
-                movement['time'],
-                movement['action'],
+                jsonEntity['data']['movements'][0]['unit'],
+                jsonEntity['data']['movements'][0]['status'],
+                jsonEntity['data']['movements'][0]['date'],
+                jsonEntity['data']['movements'][0]['time'],
+                jsonEntity['data']['movements'][0]['action'],
             ],
         )
 
@@ -69,7 +66,7 @@ def getShipEntity(company: str, trackId: int or str) -> dict or None:
         return None
 
 
-@sedenify(pattern='^.(yurtici|aras|ptt)')
+@sedenify(pattern='^.(yurtici|aras|ptt|mng|ups|surat|trendyol|hepsiburada)')
 def shippingTrack(message):
     edit(message, f"`{get_translation('processing')}`")
     argv = message.text.split(' ')
@@ -86,6 +83,16 @@ def shippingTrack(message):
         kargo_data = getShipEntity(company="aras", trackId=trackId)
     if comp == '.ptt':
         kargo_data = getShipEntity(company="ptt", trackId=trackId)
+    if comp == '.mng':
+        kargo_data = getShipEntity(company="mng", trackId=trackId)
+    if comp == '.ups':
+        kargo_data = getShipEntity(company="ups", trackId=trackId)
+    if comp == '.surat':
+        kargo_data = getShipEntity(company="surat", trackId=trackId)
+    if comp == '.trendyol':
+        kargo_data = getShipEntity(company="trendyolexpress", trackId=trackId)
+    if comp == '.hepsiburada':
+        kargo_data = getShipEntity(company="hepsijet", trackId=trackId)
     if kargo_data:
         text = parseShipEntity(kargo_data)
         edit(message, text, parse='HTML')
