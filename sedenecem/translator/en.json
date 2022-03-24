@@ -354,6 +354,8 @@
     "packinfoError": "I can't fetch info from nothing, can I ?!",
     "packinfoProcess": "Fetching details of the sticker pack, please wait..",
     "packinfoResult": "%1Sticker Title:%1 %2%3%2\n%1Sticker Short Name:%1 %2%4%2\n%1Official:%1 %2%5%2\n%1Archived:%1 %2%6%2\n%1Animated:%1 %2%7%2\n%1Stickers In Pack:%1 %2%8%2\n%1Emojis In Pack:%1\n%9",
+    "pasteConnErr": "Could not connect to server.",
+    "pasteErr": "Enter text for paste.",
     "phhError": "%1Couldn't find anything for%1 %2%3%2",
     "picspamLog": "#PICSPAM\nPicSpam was executed successfully",
     "pinLog": "#PIN\nGROUP: %1 (%2%3%2)",

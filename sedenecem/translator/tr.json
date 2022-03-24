@@ -355,6 +355,8 @@
     "packinfoErrer2": "Paket detaylar\u0131n\u0131 g\u00f6rmek i\u00e7in bir \u00e7\u0131kartmay\u0131 yan\u0131tlay\u0131n",
     "packinfoError": "Hi\u00e7likten bir bilgi \u00e7ekemem, sence yapabilir miyim?!",
     "packinfoResult": "%1\u00c7\u0131kartma paketi ba\u015fl\u0131\u011f\u0131:%1 %2%3%2\n%1\u00c7\u0131kartma paketi k\u0131sa ad\u0131:%1 %2%4%2\n%1Resmi paket mi:%1 %2%5%2\n%1Ar\u015fivlenmi\u015f mi:%1 %2%6%2\n%1Animasyonlu mu:%1 %2%7%2\n%1Pakettki \u00e7\u0131kartma say\u0131s\u0131:%1 %2%8%2\n%1Paketteki emoji say\u0131s\u0131:%1\n%9",
+    "pasteConnErr": "Sunucuya ba\u011flan\u0131lamad\u0131",
+    "pasteErr": "Yap\u0131\u015ft\u0131rmak i\u00e7in bir \u015fey yaz\u0131n.",
     "phhError": "%2%3%2 %1aramas\u0131 i\u00e7in bir ROM bulunamad\u0131%1",
     "picspamLog": "#PICSPAM\nPicSpam ba\u015far\u0131yla ger\u00e7ekle\u015ftirildi",
     "pinLog": "#PIN\nGRUP: %1 (%2%3%2)",
