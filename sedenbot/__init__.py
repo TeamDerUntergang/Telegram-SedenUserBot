@@ -161,6 +161,8 @@ PACKNICK = environ.get('PACKNICK', None)
 
 # SQL Database URL
 DATABASE_URL = environ.get('DATABASE_URL', None)
+if DATABASE_URL.startswith('postgres://'):
+    DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
 
 # SedenBot Session
 SESSION = environ.get('SESSION', 'sedenify')
