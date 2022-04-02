@@ -54,25 +54,26 @@ def kang(client, message):
     if reply.photo or reply.video or reply.animation or reply.document or reply.sticker:
         edit(message, f'`{choice(DIZCILIK)}`')
         anim = reply.sticker and reply.sticker.is_animated
-        video = reply.animation or reply.sticker and reply.sticker.is_video
+        video = (
+            reply.animation or reply.video or reply.sticker and reply.sticker.is_video
+        )
         media = download_media_wc(reply, sticker_orig=anim or video)
     else:
         edit(message, f'`{get_translation("stickerError")}`')
         return
 
-    if not anim and reply.sticker:
+    if not reply.sticker:
         try:
             if (
                 reply.video
                 or reply.animation
-                or reply.document
-                and 'video' in reply.document.mime_type
+                or (reply.document and 'video' in reply.document.mime_type)
             ):
                 media = video_convert(media)
                 video = True
             else:
                 media = sticker_resize(media)
-        except BaseException as e:
+        except BaseException:
             edit(message, f'`{get_translation("stickerError")}`')
             return
 
