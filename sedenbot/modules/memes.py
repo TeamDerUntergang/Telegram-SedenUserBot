@@ -18,10 +18,13 @@ from PIL import Image, ImageDraw, ImageFont
 from requests import get
 from sedenbot import HELP
 from sedenecem.core import (
+    download_media_wc,
     edit,
     extract_args,
+    get_download_dir,
     get_translation,
     parse_cmd,
+    reply_img,
     reply_sticker,
     sedenify,
 )
@@ -889,6 +892,86 @@ def payf(message):
         f'\n{paytext * 2}\n{paytext * 2}\n{paytext * 2}\n{paytext * 2}'
     )
     edit(message, pay)
+
+
+@sedenify(pattern='.mem')
+def meme_maker(message):
+    args = extract_args(message).upper().split(',')
+    reply = message.reply_to_message
+    font = 'sedenecem/fonts/impact.ttf'
+    if len(args) == 2:
+        top, bottom = args[0], args[1]
+    else:
+        bottom = args[0 if args[1] == '' else 1]
+
+    if (
+        reply
+        and reply.media
+        and (
+            reply.photo
+            or (reply.sticker and not reply.sticker.is_animated)
+            or (reply.document and 'image' in reply.document.mime_type)
+        )
+    ):
+        media = download_media_wc(reply, f'{get_download_dir()}/image.jpg')
+        image = Image.open(media)
+        draw = ImageDraw.Draw(image)
+        width, height = image.size
+        estimated_font_size = find_font_size(''.join(args), font, image, 1)
+
+        text_font = ImageFont.truetype(font, estimated_font_size)
+        text_per_line = width // text_font.size
+        top_text = wrap(top, width=(text_per_line + 5))
+        bottom_text = wrap(bottom, width=(text_per_line + 5))
+        y = 10
+        for text in top_text:
+            text_width, text_height = text_font.getsize(text)
+            x = (width - text_width) / 2
+            draw.text(
+                (x, y),
+                text,
+                fill='white',
+                font=text_font,
+                stroke_width=3,
+                stroke_fill='black',
+            )
+            y += text_height
+        y = height - text_height * len(bottom_text) - 15
+        for text in bottom_text:
+            text_width, text_height = text_font.getsize(text)
+            x = (width - text_width) / 2
+            draw.text(
+                (x, y),
+                text,
+                fill='white',
+                font=text_font,
+                stroke_width=3,
+                stroke_fill='black',
+            )
+            y += text_height
+
+        image.convert('RGB').save(media, 'JPEG')
+        reply_img(reply or message, media, delete_file=True)
+        message.delete()
+    else:
+        edit(message, 'Lütfen bir resim yanıtlayın.')
+
+
+def get_text_size(text, image, font):
+    im = Image.new('RGB', (image.width, image.height))
+    draw = ImageDraw.Draw(im)
+    return draw.textsize(text, font)
+
+
+def find_font_size(text, font, image, target_width_ratio):
+    # https://stackoverflow.com/a/66091387
+    tested_font_size = 100
+    tested_font = ImageFont.truetype(font, tested_font_size)
+    observed_width, observed_height = get_text_size(text, image, tested_font)
+    estimated_font_size = (
+        tested_font_size / (observed_width / image.width) * target_width_ratio
+    )
+    return round(estimated_font_size)
 
 
 HELP.update({'memes': get_translation('memesInfo')})
