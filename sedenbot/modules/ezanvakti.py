@@ -128,7 +128,7 @@ def get_result(konum):
         if knum < 0:
             raise ValueError
         request = get(f'https://namazvakitleri.diyanet.gov.tr/tr-TR/{knum}')
-        return BeautifulSoup(request.content, 'lxml')
+        return BeautifulSoup(request.content, 'html.parser')
     except TypeError:
         return f'`{konum} için bir bilgi bulunamadı.`'
 
