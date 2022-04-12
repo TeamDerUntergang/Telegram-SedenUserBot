@@ -47,7 +47,7 @@ def autopic(client, message):
 
     edit(message, f'`{get_translation("autoppProcess")}`')
 
-    FONT_FILE = 'sedenecem/fonts/GoogleSans.ttf'
+    FONT_FILE = 'sedenecem/fonts/OpenSans.ttf'
 
     downloaded_file_name = 'oldpp.png'
     photo = 'newpp.png'
