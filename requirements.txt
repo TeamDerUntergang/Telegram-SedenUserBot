@@ -13,11 +13,11 @@ humanize
 image_to_ascii
 lyricsgenius
 pillow
-psycopg2
+psycopg2-binary
 pybase64
 pydrive
 pylast
-pyrogram==1.4.15
+pyrogram==2.0.13
 python-barcode
 python-dotenv
 qrcode

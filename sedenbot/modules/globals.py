@@ -9,6 +9,7 @@
 
 from time import sleep
 
+from pyrogram import enums
 from pyrogram.types import ChatPermissions
 from sedenbot import BRAIN, HELP, LOGS, TEMP_SETTINGS
 from sedenecem.core import edit, extract_args, get_translation, sedenify, send_log
@@ -59,8 +60,7 @@ def gban_user(client, message):
     if user.id in BRAIN:
         return edit(
             message,
-            get_translation(
-                'brainError', ['`', '**', user.first_name, user.id]),
+            get_translation('brainError', ['`', '**', user.first_name, user.id]),
         )
 
     try:
@@ -69,8 +69,7 @@ def gban_user(client, message):
         sql.gban(user.id)
         edit(
             message,
-            get_translation(
-                'gbanResult', ['**', user.first_name, user.id, '`']),
+            get_translation('gbanResult', ['**', user.first_name, user.id, '`']),
         )
         try:
             common_chats = client.get_common_chats(user.id)
@@ -123,20 +122,23 @@ def ungban_user(client, message):
 
         def find_member(dialog):
             try:
-                return (dialog.chat.get_member(user.id)
+                return (
+                    dialog.chat.get_member(user.id)
                     and dialog.chat.get_member(user.id).restricted_by
-                    and dialog.chat.get_member(user.id).restricted_by.id == me_id)
+                    and dialog.chat.get_member(user.id).restricted_by.id == me_id
+                )
             except BaseException:
                 return False
 
         try:
-            dialogs = client.iter_dialogs()
+            dialogs = client.get_dialogs()
             me_id = TEMP_SETTINGS['ME'].id
             chats = [
                 dialog.chat
                 for dialog in dialogs
                 if (
-                    'group' in dialog.chat.type
+                    dialog.chat.type
+                    in [enums.ChatType.SUPERGROUP, enums.ChatType.GROUP]
                     and find_me(dialog)
                     and find_member(dialog)
                 )
@@ -147,8 +149,7 @@ def ungban_user(client, message):
             pass
         edit(
             message,
-            get_translation(
-                'unbanResult', ['**', user.first_name, user.id, '`']),
+            get_translation('unbanResult', ['**', user.first_name, user.id, '`']),
         )
     except Exception as e:
         edit(message, get_translation('banError', ['`', '**', e]))
@@ -209,8 +210,7 @@ def gmute_user(client, message):
     if user.id in BRAIN:
         return edit(
             message,
-            get_translation(
-                'brainError', ['`', '**', user.first_name, user.id]),
+            get_translation('brainError', ['`', '**', user.first_name, user.id]),
         )
 
     try:
@@ -219,13 +219,12 @@ def gmute_user(client, message):
         sql2.gmute(user.id)
         edit(
             message,
-            get_translation(
-                'gmuteResult', ['**', user.first_name, user.id, '`']),
+            get_translation('gmuteResult', ['**', user.first_name, user.id, '`']),
         )
         try:
             common_chats = client.get_common_chats(user.id)
             for i in common_chats:
-                i.restrict_member(user.id, ChatPermissions())
+                i.restrict_member(user.id, permissions=ChatPermissions())
         except BaseException:
             pass
         sleep(1)
@@ -272,8 +271,7 @@ def ungmute_user(client, message):
             pass
         edit(
             message,
-            get_translation('unmuteResult', [
-                            '**', user.first_name, user.id, '`']),
+            get_translation('unmuteResult', ['**', user.first_name, user.id, '`']),
         )
     except Exception as e:
         edit(message, get_translation('banError', ['`', '**', e]))
@@ -302,7 +300,7 @@ def gmute_check(client, message):
         try:
             user_id = message.from_user.id
             chat_id = message.chat.id
-            client.restrict_chat_member(chat_id, user_id, ChatPermissions())
+            client.restrict_chat_member(chat_id, user_id, permissions=ChatPermissions())
         except BaseException:
             pass
 

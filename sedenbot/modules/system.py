@@ -101,7 +101,7 @@ def test_echo(message):
 
 @sedenify(pattern='^.dc$', compat=False)
 def data_center(client, message):
-    result = client.send(GetNearestDc())
+    result = client.invoke(GetNearestDc())
 
     edit(
         message,
@@ -135,6 +135,7 @@ def terminal(message):
     result = get_translation("termNoResult")
     try:
         from sedenecem.core.misc import __status_out__
+
         _, result = __status_out__(command)
     except BaseException as e:
         pass

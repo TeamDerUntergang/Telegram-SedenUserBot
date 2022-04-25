@@ -24,4 +24,3 @@ def get_webdriver():
         return Chrome(executable_path=CHROME_DRIVER, options=options)
     except BaseException:
         raise Exception('CHROME_DRIVER not found!')
-        return None

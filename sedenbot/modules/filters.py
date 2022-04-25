@@ -104,7 +104,7 @@ def add_filter(message):
                 if not msg_o:
                     edit(message, f'`{get_translation("filterError")}`')
                     return
-                msg_id = msg_o.message_id
+                msg_id = msg_o.message.id
                 send_log(get_translation('filterLog', ['`', message.chat.id, keyword]))
         else:
             edit(message, f'`{get_translation("wrongCommand")}`')

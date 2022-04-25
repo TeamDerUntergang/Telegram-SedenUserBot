@@ -40,7 +40,7 @@ class PyroConversation:
         msg = conv[self.count]
         self.count = len(conv)
         if read:
-            self.client.read_history(chat_id=self.chat_id)
+            self.client.read_chat_history(chat_id=self.chat_id)
         return msg
 
     def forward_msg(self, msg):

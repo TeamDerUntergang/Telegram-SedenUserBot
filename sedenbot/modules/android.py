@@ -68,7 +68,7 @@ def phh(message):
     edit(message, releases, preview=False)
 
 
-@sedenify(pattern=r'^.device')
+@sedenify(pattern='^.device')
 def device(message):
     textx = message.reply_to_message
     codename = extract_args(message)
@@ -98,7 +98,7 @@ def device(message):
     edit(message, reply)
 
 
-@sedenify(pattern=r'^.codename')
+@sedenify(pattern='^.codename')
 def codename(message):
     textx = message.reply_to_message
     arr = extract_args(message)
@@ -145,7 +145,7 @@ def codename(message):
     edit(message, reply)
 
 
-@sedenify(pattern=r'^.twrp')
+@sedenify(pattern='^.twrp')
 def twrp(message):
     textx = message.reply_to_message
     device = extract_args(message)
@@ -173,7 +173,7 @@ def twrp(message):
     edit(message, reply)
 
 
-@sedenify(pattern=r'^.o(range|)f(ox|rp)')
+@sedenify(pattern='^.o(range|)f(ox|rp)')
 def ofox(message):
     if len(args := extract_args(message)) < 1:
         edit(message, f'`{get_translation("ofrpUsage")}`')
@@ -206,7 +206,7 @@ def ofox(message):
     edit(message, f'**OrangeFox Recovery ({args}):**\n{out}')
 
 
-@sedenify(pattern=r'^.specs')
+@sedenify(pattern='^.specs')
 def specs(message):
     args = extract_args(message)
     if len(args) < 1:
@@ -301,7 +301,7 @@ def specs(message):
 
 
 def find_device(query, proxy):
-    """@frknkrc44, GSMArena üzerinden cihaz bulma"""
+    """Find device from GSMArena by @frknkrc44"""
     raw_query = query.lower()
 
     def replace_query(query):
@@ -318,12 +318,12 @@ def find_device(query, proxy):
     )
     soup = BeautifulSoup(req.text, features='html.parser')
 
-    if 'Too' in soup.find('title').text:  # GSMArena geçici ban atarsa
+    if 'Too' in soup.find('title').text:  # if temp banned by GSMArena
         return None
 
     res = soup.findAll('div', {'class': ['makers']})
 
-    if not res or len(res) < 1:  # hiçbir cihaz bulunamazsa
+    if not res or len(res) < 1:  # if no device found
         return None
 
     res = res[0].findAll('li')

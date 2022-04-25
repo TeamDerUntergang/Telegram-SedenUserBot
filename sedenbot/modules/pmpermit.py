@@ -7,15 +7,8 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from re import VERBOSE
-from sedenbot import (
-    HELP,
-    LOGS,
-    PM_AUTO_BAN,
-    PM_MSG_COUNT,
-    PM_UNAPPROVED,
-    TEMP_SETTINGS,
-)
+from pyrogram import enums
+from sedenbot import HELP, LOGS, PM_AUTO_BAN, PM_MSG_COUNT, PM_UNAPPROVED, TEMP_SETTINGS
 from sedenbot.modules.chat import is_muted
 from sedenecem.core import edit, get_translation, reply, sedenify, send_log
 from sqlalchemy.exc import IntegrityError
@@ -43,7 +36,6 @@ pmpermit_init()
 @sedenify(
     incoming=True,
     outgoing=True,
-    disable_edited=True,
     disable_notify=True,
     group=False,
     compat=False,
@@ -71,7 +63,9 @@ def permitpm(client, message):
                     if message.text != prevmsg:
                         for message in _find_unapproved_msg(client, message.chat.id):
                             message.delete()
-                        if TEMP_SETTINGS['PM_COUNT'][message.chat.id] < (PM_MSG_COUNT - 1):
+                        if TEMP_SETTINGS['PM_COUNT'][message.chat.id] < (
+                            PM_MSG_COUNT - 1
+                        ):
                             ret = reply(message, UNAPPROVED_MSG)
                             TEMP_SETTINGS['PM_LAST_MSG'][message.chat.id] = ret.text
                 else:
@@ -80,12 +74,14 @@ def permitpm(client, message):
                         TEMP_SETTINGS['PM_LAST_MSG'][message.chat.id] = ret.text
 
                 if notifsoff:
-                    client.read_history(message.chat.id)
+                    client.read_chat_history(message.chat.id)
 
                 if message.chat.id not in TEMP_SETTINGS['PM_COUNT']:
                     TEMP_SETTINGS['PM_COUNT'][message.chat.id] = 1
                 else:
-                    TEMP_SETTINGS['PM_COUNT'][message.chat.id] = TEMP_SETTINGS['PM_COUNT'][message.chat.id] + 1
+                    TEMP_SETTINGS['PM_COUNT'][message.chat.id] = (
+                        TEMP_SETTINGS['PM_COUNT'][message.chat.id] + 1
+                    )
 
                 if TEMP_SETTINGS['PM_COUNT'][message.chat.id] > (PM_MSG_COUNT - 1):
                     reply(message, f'`{get_translation("pmpermitBlock")}`')
@@ -119,14 +115,12 @@ def auto_accept(client, message):
         if is_approved(chat.id):
             return True
 
-        for msg in client.get_history(chat.id, limit=1, reverse=True):
+        for msg in client.get_chat_history(chat.id, limit=1):
             # chat.id in TEMP_SETTINGS['PM_LAST_MSG']
             #    and msg.text != UNAPPROVED_MSG
             #    and
 
-            if (
-                 msg.from_user.id == self_user.id
-            ):
+            if msg.from_user.id == self_user.id:
                 try:
                     del TEMP_SETTINGS['PM_COUNT'][chat.id]
                     del TEMP_SETTINGS['PM_LAST_MSG'][chat.id]
@@ -190,7 +184,7 @@ def approvepm(client, message):
         uid = replied_user.id
     else:
         aname = message.chat
-        if not aname.type == 'private':
+        if not aname.type == enums.ChatType.PRIVATE:
             edit(message, f'`{get_translation("pmApproveError")}`')
             return
         name0 = aname.first_name
@@ -226,7 +220,7 @@ def disapprovepm(message):
         uid = replied_user.id
     else:
         aname = message.chat
-        if not aname.type == 'private':
+        if not aname.type == enums.ChatType.PRIVATE:
             edit(message, f'`{get_translation("pmApproveError")}`')
             return
         name0 = aname.first_name

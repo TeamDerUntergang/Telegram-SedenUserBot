@@ -73,7 +73,7 @@ def keep_read(client, message):
         return
 
     if is_muted(message.chat.id):
-        client.read_history(message.chat.id)
+        client.read_chat_history(message.chat.id)
 
     message.continue_propagation()
 

@@ -141,7 +141,7 @@ def tagall(client, message):
     msg = '@tag'
     chat = message.chat.id
     length = 0
-    for member in client.iter_chat_members(chat):
+    for member in client.get_chat_members(chat):
         if length < 4092:
             msg += f'[\u2063](tg://user?id={member.user.id})'
             length += 1
@@ -152,7 +152,7 @@ def tagall(client, message):
 def report_admin(client, message):
     msg = '@admin'
     chat = message.chat.id
-    for member in client.iter_chat_members(chat, filter='administrators'):
+    for member in client.get_chat_members(chat, filter='administrators'):
         msg += f'[\u2063](tg://user?id={member.user.id})'
     re_msg = message.reply_to_message
     reply(re_msg if re_msg else message, msg)

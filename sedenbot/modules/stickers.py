@@ -119,7 +119,7 @@ def kang(client, message):
         try:
             set_name = InputStickerSetShortName(short_name=TEMP_SETTINGS[pname])
             set = GetStickerSet(stickerset=set_name, hash=0)
-            client.send(data=set)
+            client.invoke(query=set)
             return True
         except BaseException:
             return False
@@ -263,7 +263,7 @@ def packinfo(client, message):
 
     edit(message, f'`{get_translation("processing")}`')
 
-    get_stickerset = client.send(
+    get_stickerset = client.invoke(
         GetStickerSet(
             stickerset=InputStickerSetShortName(short_name=reply.sticker.set_name),
             hash=0,

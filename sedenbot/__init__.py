@@ -273,10 +273,7 @@ class PyroClient(Client):
         raise NotImplementedError
 
 
-app = PyroClient(
-    SESSION,
-    api_id=API_ID,
-    api_hash=API_HASH)
+app = PyroClient('sedenify', api_id=API_ID, api_hash=API_HASH, session_string=SESSION)
 
 
 # delete these variables to add some security

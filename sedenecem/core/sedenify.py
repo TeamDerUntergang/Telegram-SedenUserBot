@@ -13,7 +13,7 @@ from sys import exc_info
 from time import gmtime, strftime
 from traceback import format_exc
 
-from pyrogram import ContinuePropagation, StopPropagation, filters
+from pyrogram import ContinuePropagation, StopPropagation, enums, filters
 from pyrogram.handlers import MessageHandler
 from sedenbot import BLACKLIST, BOT_VERSION, BRAIN, TEMP_SETTINGS, app, get_translation
 
@@ -25,7 +25,6 @@ def sedenify(**args):
     pattern = args.get('pattern', None)
     outgoing = args.get('outgoing', True)
     incoming = args.get('incoming', False)
-    disable_edited = args.get('disable_edited', False)
     disable_notify = args.get('disable_notify', False)
     compat = args.get('compat', True)
     brain = args.get('brain', False)
@@ -57,18 +56,24 @@ def sedenify(**args):
                 if message.service and not service:
                     return
 
-                if message.chat.type == 'channel':
+                if message.chat.type == enums.ChatType.CHANNEL:
                     return
 
-                if not bot and message.chat.type == 'bot':
+                if not bot and message.chat.type == enums.ChatType.BOT:
                     message.continue_propagation()
 
-                if not private and message.chat.type in ['private', 'bot']:
+                if not private and message.chat.type in [
+                    enums.ChatType.PRIVATE,
+                    enums.ChatType.BOT,
+                ]:
                     if not disable_notify:
                         edit(message, f'`{get_translation("groupUsage")}`')
                     message.continue_propagation()
 
-                if not group and 'group' in message.chat.type:
+                if not group and message.chat.type == [
+                    enums.ChatType.SUPERGROUP,
+                    enums.ChatType.GROUP,
+                ]:
                     if not disable_notify:
                         edit(message, f'`{get_translation("privateUsage")}`')
                     message.continue_propagation()
@@ -152,9 +157,6 @@ def sedenify(**args):
                 filter = filters.incoming & ~filters.bot & ~filters.me
             else:
                 filter = (filters.me | filters.incoming) & ~filters.bot
-
-        if disable_edited:
-            filter &= ~filters.edited
 
         app.add_handler(MessageHandler(wrap, filter))
 

@@ -32,7 +32,6 @@ TEMP_SETTINGS['COUNT_MSG'] = 0
 @sedenify(
     incoming=True,
     outgoing=False,
-    disable_edited=True,
     private=False,
     bot=False,
     disable_notify=True,
@@ -155,7 +154,7 @@ def afk_on_pm(message):
     raise ContinuePropagation
 
 
-@sedenify(pattern=r'^.afk')
+@sedenify(pattern='^.afk')
 def set_afk(message):
     args = extract_args(message)
     if len(args) > 0:

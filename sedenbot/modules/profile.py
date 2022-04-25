@@ -11,6 +11,7 @@ from os import remove
 from time import sleep
 
 from PIL import Image
+from pyrogram import enums
 from pyrogram.errors import UsernameOccupied
 from pyrogram.raw.functions.account import UpdateProfile, UpdateStatus, UpdateUsername
 from pyrogram.raw.functions.channels import GetAdminedPublicChannels
@@ -32,7 +33,7 @@ ALWAYS_ONLINE = 'offline'
 
 @sedenify(pattern='^.reserved$', compat=False)
 def reserved(client, message):
-    sonuc = client.send(GetAdminedPublicChannels())
+    sonuc = client.invoke(GetAdminedPublicChannels())
     mesaj = ''
     for channel_obj in sonuc.chats:
         mesaj += f'{channel_obj.title}\n@{channel_obj.username}\n\n'
@@ -50,7 +51,7 @@ def name(client, message):
         firstname = namesplit[0]
         lastname = namesplit[1]
 
-    client.send(UpdateProfile(first_name=firstname, last_name=lastname))
+    client.invoke(UpdateProfile(first_name=firstname, last_name=lastname))
     edit(message, f'`{get_translation("nameOk")}`')
 
 
@@ -98,7 +99,7 @@ def remove_profilepic(client, message):
         lim = 1
 
     count = 0
-    for photo in client.iter_profile_photos('me', limit=lim):
+    for photo in client.get_chat_photos('me', limit=lim):
         client.delete_profile_photos(photo.file_id)
         count += 1
     edit(message, f'`{get_translation("ppDeleted", [count])}`')
@@ -107,7 +108,7 @@ def remove_profilepic(client, message):
 @sedenify(pattern='^.setbio', compat=False)
 def setbio(client, message):
     newbio = extract_args(message)
-    client.send(UpdateProfile(about=newbio))
+    client.invoke(UpdateProfile(about=newbio))
     edit(message, f'`{get_translation("bioSuccess")}`')
 
 
@@ -115,7 +116,7 @@ def setbio(client, message):
 def username(client, message):
     newusername = extract_args(message)
     try:
-        client.send(UpdateUsername(username=newusername))
+        client.invoke(UpdateUsername(username=newusername))
         edit(message, f'`{get_translation("usernameSuccess")}`')
     except UsernameOccupied:
         edit(message, f'`{get_translation("usernameTaken")}`')
@@ -134,7 +135,7 @@ def blockpm(client, message):
         uid = replied_user.id
     else:
         aname = message.chat
-        if not aname.type == 'private':
+        if not aname.type == enums.ChatType.PRIVATE:
             edit(message, f'`{get_translation("pmApproveError")}`')
             return
         name0 = aname.first_name
@@ -194,7 +195,7 @@ def online(client, message):
 
     while ALWAYS_ONLINE in TEMP_SETTINGS:
         try:
-            client.send(UpdateStatus(offline=False))
+            client.invoke(UpdateStatus(offline=False))
             sleep(5)
         except BaseException:
             return
@@ -211,13 +212,13 @@ def user_stats(client, message):
     bots = 0
     unread = 0
     user = []
-    for i in client.iter_dialogs():
+    for i in client.get_dialogs():
         chats += 1
-        if i.chat.type == 'channel':
+        if i.chat.type == enums.ChatType.CHANNEL:
             channels += 1
-        elif i.chat.type == 'group':
+        elif i.chat.type == enums.ChatType.GROUP:
             groups += 1
-        elif i.chat.type == 'supergroup':
+        elif i.chat.type == enums.ChatType.SUPERGROUP:
             sgroups += 1
         else:
             pms += 1

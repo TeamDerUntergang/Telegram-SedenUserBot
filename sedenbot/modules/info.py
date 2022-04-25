@@ -7,6 +7,7 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
+from pyrogram import enums
 from pyrogram.errors import PeerIdInvalid
 from pyrogram.raw.functions.messages import GetOnlines
 from sedenbot import BLACKLIST, BRAIN, HELP
@@ -26,7 +27,7 @@ def who_is(client, message):
     reply = message.reply_to_message
     edit(message, f'`{get_translation("whoisProcess")}`')
     media_perm = True
-    if 'group' in message.chat.type:
+    if message.chat.type == [enums.ChatType.SUPERGROUP, enums.ChatType.GROUP]:
         perm = message.chat.permissions
         media_perm = perm.can_send_media_messages
 
@@ -59,7 +60,7 @@ def who_is(client, message):
             else get_translation('notSet')
         )
         user_id = reply_user.id
-        photos = client.get_profile_photos_count(user_id)
+        photos = client.get_chat_photos_count(user_id)
         dc_id = reply_user.dc_id
         bot = reply_user.is_bot
         scam = reply_user.is_scam
@@ -103,15 +104,15 @@ def who_is(client, message):
 def LastSeen(bot, status):
     if bot:
         return 'BOT'
-    elif status == 'online':
+    elif status == enums.UserStatus.ONLINE:
         return get_translation('statusOnline')
-    elif status == 'recently':
+    elif status == enums.UserStatus.RECENTLY:
         return get_translation('statusRecently')
-    elif status == 'within_week':
+    elif status == enums.UserStatus.LAST_WEEK:
         return get_translation('statusWeek')
-    elif status == 'within_month':
+    elif status == enums.UserStatus.LAST_MONTH:
         return get_translation('statusMonth')
-    elif status == 'long_time_ago':
+    elif status == enums.UserStatus.LONG_AGO:
         return get_translation('statusLong')
 
 
@@ -140,12 +141,12 @@ def get_chat_info(client, message):
         return
 
     media_perm = True
-    if 'group' in message.chat.type:
+    if message.chat.type == [enums.ChatType.SUPERGROUP, enums.ChatType.GROUP]:
         perm = message.chat.permissions
         media_perm = perm.can_send_media_messages
 
     try:
-        online_users = client.send(GetOnlines(peer=peer))
+        online_users = client.invoke(GetOnlines(peer=peer))
         online = online_users.onlines
     except PeerIdInvalid:
         edit(message, f'`{get_translation("groupNotFound")}`')

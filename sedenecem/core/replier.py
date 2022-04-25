@@ -7,12 +7,13 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from os import remove, path
+from os import path, remove
 
+from pyrogram import enums
 from pyrogram.types import Message
-
-from .misc import MARKDOWN_FIX_CHAR, get_duration, __status_out__
 from sedenbot import LOG_VERBOSE
+
+from .misc import MARKDOWN_FIX_CHAR, __status_out__, get_duration
 
 
 def reply_img(
@@ -22,7 +23,7 @@ def reply_img(
     fix_markdown=False,
     delete_orig=False,
     delete_file=False,
-    parse='md',
+    parse=enums.ParseMode.MARKDOWN,
 ):
     try:
         if len(caption) > 0 and fix_markdown:
@@ -71,7 +72,7 @@ def reply_video(
     progress=None,
     delete_orig=False,
     delete_file=False,
-    parse='md',
+    parse=enums.ParseMode.MARKDOWN,
 ):
     try:
         if not thumb:
@@ -182,7 +183,7 @@ def reply_sticker(message, sticker, delete_orig=False, delete_file=False):
 
 def reply_msg(message: Message, message2: Message, delete_orig=False):
     try:
-        message2.copy(chat_id=message.chat.id, reply_to_message_id=message.message_id)
+        message2.copy(chat_id=message.chat.id, reply_to_message_id=message.message.id)
 
         if delete_orig:
             message.delete()

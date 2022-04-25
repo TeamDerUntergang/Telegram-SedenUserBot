@@ -9,15 +9,19 @@
 
 from os import makedirs
 from re import escape, sub
-from subprocess import CalledProcessError, check_output, STDOUT
+from subprocess import STDOUT, CalledProcessError, check_output
 
+from pyrogram import enums
 from pyrogram.types import Message
 from sedenbot import BOT_PREFIX, BRAIN, LOG_VERBOSE, TEMP_SETTINGS, app
 
 MARKDOWN_FIX_CHAR = '\u2064'
 SPAM_COUNT = [0]
 _parsed_prefix = escape(BOT_PREFIX) if BOT_PREFIX else r'\.'
-_admin_status_list = ['creator', 'administrator']
+_admin_status_list = [
+    enums.ChatMemberStatus.OWNER,
+    enums.ChatMemberStatus.ADMINISTRATOR,
+]
 google_domains = [
     'www.google.com',
     'www.google.ad',
@@ -212,7 +216,12 @@ google_domains = [
 
 
 def reply(
-    message, text, preview=True, fix_markdown=False, delete_orig=False, parse='md'
+    message,
+    text,
+    preview=True,
+    fix_markdown=False,
+    delete_orig=False,
+    parse=enums.ParseMode.MARKDOWN,
 ):
     try:
         if fix_markdown:
@@ -246,7 +255,9 @@ def extract_args_arr(message, markdown=True):
     return extract_args(message, markdown).split()
 
 
-def edit(message, text, preview=True, fix_markdown=False, parse='md'):
+def edit(
+    message, text, preview=True, fix_markdown=False, parse=enums.ParseMode.MARKDOWN
+):
     try:
         if fix_markdown:
             text += MARKDOWN_FIX_CHAR
@@ -351,7 +362,7 @@ def parse_cmd(text):
 
 
 def is_admin(message):
-    if not 'group' in message.chat.type:
+    if not message.chat.type in [enums.ChatType.SUPERGROUP, enums.ChatType.GROUP]:
         return True
 
     user = app.get_chat_member(chat_id=message.chat.id, user_id=message.from_user.id)
@@ -359,7 +370,7 @@ def is_admin(message):
 
 
 def is_admin_myself(chat):
-    if not 'group' in chat.type:
+    if not chat.type in [enums.ChatType.SUPERGROUP, enums.ChatType.GROUP]:
         return True
 
     user = app.get_chat_member(chat_id=chat.id, user_id='me')

@@ -11,13 +11,14 @@ from os import remove
 from time import sleep
 
 from PIL import Image
+from pyrogram import enums
 from pyrogram.errors import (
     ImageProcessFailed,
     MessageTooLong,
     PhotoCropSizeSmall,
     UserAdminInvalid,
 )
-from pyrogram.types import ChatPermissions
+from pyrogram.types import ChatPermissions, ChatPrivileges
 from sedenbot import BRAIN, HELP
 from sedenecem.core import (
     download_media_wc,
@@ -182,7 +183,7 @@ def mute_user(client, message):
     try:
         from sedenecem.sql import mute_sql as sql
     except BaseException:
-        edit(message,f'`{get_translation("nonSqlMode")}`')
+        edit(message, f'`{get_translation("nonSqlMode")}`')
         return
 
     args = extract_args(message)
@@ -240,7 +241,7 @@ def unmute_user(client, message):
     try:
         from sedenecem.sql import mute_sql as sql
     except BaseException:
-        edit(message,f'`{get_translation("nonSqlMode")}`')
+        edit(message, f'`{get_translation("nonSqlMode")}`')
         return
 
     args = extract_args(message)
@@ -312,12 +313,14 @@ def promote_user(client, message):
         client.promote_chat_member(
             chat_id,
             user.id,
-            can_change_info=True,
-            can_delete_messages=True,
-            can_restrict_members=True,
-            can_invite_users=True,
-            can_pin_messages=True,
-            can_promote_members=True,
+            privileges=ChatPrivileges(
+                can_change_info=True,
+                can_delete_messages=True,
+                can_restrict_members=True,
+                can_invite_users=True,
+                can_pin_messages=True,
+                can_promote_members=True,
+            ),
         )
         if rank is not None:
             if len(rank) > 16:
@@ -369,12 +372,14 @@ def demote_user(client, message):
         client.promote_chat_member(
             chat_id,
             user.id,
-            can_change_info=False,
-            can_delete_messages=False,
-            can_restrict_members=False,
-            can_invite_users=False,
-            can_pin_messages=False,
-            can_promote_members=False,
+            privileges=ChatPrivileges(
+                can_change_info=False,
+                can_delete_messages=False,
+                can_restrict_members=False,
+                can_invite_users=False,
+                can_pin_messages=False,
+                can_promote_members=False,
+            ),
         )
         edit(
             message,
@@ -394,14 +399,13 @@ def pin_message(client, message):
 
     try:
         chat_id = message.chat.id
-        message_id = reply.message_id
-        client.pin_chat_message(chat_id, message_id)
+        message_id = reply.id
+        client.pin_chat_message(chat_id, message_id, disable_notification=True)
         edit(message, f'`{get_translation("pinResult")}`')
         sleep(1)
         send_log(get_translation('pinLog', [message.chat.title, '`', chat_id]))
     except Exception as e:
-        edit(message, get_translation('banError', ['`', '**', e]))
-        return
+        return edit(message, get_translation('banError', ['`', '**', e]))
 
 
 @sedenify(pattern='^.unpin', compat=False, private=False, admin=True)
@@ -427,7 +431,6 @@ def unpin_message(client, message):
         edit(message, f'`{get_translation("wrongCommand")}`')
 
 
-
 @sedenify(pattern='^.(admins|bots|user(s|sdel))$', compat=False, private=False)
 def get_users(client, message):
     args = message.text.split(' ', 1)
@@ -447,17 +450,17 @@ def get_users(client, message):
                 message.chat.title,
             ],
         )
-        filtr = 'all'
+        filtr = enums.ChatMembersFilter.SEARCH
     elif admins:
         out = get_translation('adminlist', ['**', '`', message.chat.title])
-        filtr = 'administrators'
+        filtr = enums.ChatMembersFilter.ADMINISTRATORS
     elif bots:
         out = get_translation('botlist', ['**', '`', message.chat.title])
-        filtr = 'bots'
+        filtr = enums.ChatMembersFilter.BOTS
 
     try:
         chat_id = message.chat.id
-        find = client.iter_chat_members(chat_id, filter=filtr)
+        find = client.get_chat_members(chat_id, filter=filtr)
         for i in find:
             if not i.user.is_deleted and showdel:
                 continue
@@ -499,7 +502,7 @@ def zombie_accounts(client, message):
 
     if args != 'clean':
         edit(message, f'`{get_translation("zombiesFind")}`')
-        for i in client.iter_chat_members(chat_id):
+        for i in client.get_chat_members(chat_id):
             if i.user.is_deleted:
                 count += 1
                 sleep(1)
@@ -515,7 +518,7 @@ def zombie_accounts(client, message):
     count = 0
     users = 0
 
-    for i in client.iter_chat_members(chat_id):
+    for i in client.get_chat_members(chat_id):
         if i.user.is_deleted:
             try:
                 client.ban_chat_member(chat_id, i.user.id)
@@ -600,7 +603,7 @@ def mute_check(client, message):
         try:
             user_id = message.from_user.id
             chat_id = message.chat.id
-            client.restrict_chat_member(chat_id, user_id, ChatPermissions())
+            client.restrict_chat_member(chat_id, user_id, permissions=ChatPermissions())
         except BaseException:
             pass
 

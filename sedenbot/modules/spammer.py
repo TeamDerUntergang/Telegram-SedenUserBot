@@ -95,7 +95,7 @@ def picspam(message):
 
 @sedenify(pattern='^.delayspam')
 def delayspam(message):
-    # Copyright (c) @ReversedPosix | 2020-2021
+    # Copyright (c) @ReversedPosix | 2020-2022
     delayspam = extract_args(message)
     arr = delayspam.split()
     if len(arr) < 3 or not arr[0].isdigit() or not arr[1].isdigit():

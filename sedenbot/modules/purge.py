@@ -25,19 +25,17 @@ from sedenecem.core import (
 def purge(client, message):
     msg = message.reply_to_message
     if msg:
-        itermsg = client.iter_history(
-            message.chat.id, offset_id=msg.message_id, reverse=True
-        )
+        itermsg = list(range(msg.id, message.id))
     else:
         edit(message, f'`{get_translation("purgeUsage")}`')
         return
 
     count = 0
 
-    for message in itermsg:
+    for i in itermsg:
         try:
             count = count + 1
-            client.delete_messages(message.chat.id, message.message_id)
+            client.delete_messages(chat_id=message.chat.id, message_ids=i, revoke=True)
         except FloodWait as e:
             sleep(e.x)
         except Exception as e:
@@ -47,6 +45,7 @@ def purge(client, message):
     done = reply(message, get_translation('purgeResult', ['**', '`', str(count)]))
     send_log(get_translation('purgeLog', ['**', '`', str(count)]))
     sleep(2)
+    message.delete()
     done.delete()
 
 
@@ -57,7 +56,7 @@ def purgeme(client, message):
         return edit(message, f'`{get_translation("purgemeUsage")}`')
     i = 1
 
-    itermsg = client.get_history(message.chat.id)
+    itermsg = client.get_chat_history(message.chat.id)
     for message in itermsg:
         if i > int(count) + 1:
             break
@@ -77,7 +76,7 @@ def delete(client, message):
     if msg_src:
         if msg_src.from_user.id:
             try:
-                client.delete_messages(message.chat.id, msg_src.message_id)
+                client.delete_messages(message.chat.id, msg_src.id)
                 message.delete()
                 send_log(f'`{get_translation("delResultLog")}`')
             except BaseException:
