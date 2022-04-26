@@ -103,6 +103,9 @@ def set_logger():
     pyrogram_auth = getLogger('pyrogram.session.auth')
     pyrogram_auth.setLevel(CRITICAL)
 
+    asyncio = getLogger('asyncio')
+    asyncio.setLevel(CRITICAL)
+
 
 set_logger()
 
