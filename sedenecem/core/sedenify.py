@@ -70,7 +70,7 @@ def sedenify(**args):
                         edit(message, f'`{get_translation("groupUsage")}`')
                     message.continue_propagation()
 
-                if not group and message.chat.type == [
+                if not group and message.chat.type in [
                     enums.ChatType.SUPERGROUP,
                     enums.ChatType.GROUP,
                 ]:

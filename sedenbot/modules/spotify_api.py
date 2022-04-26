@@ -14,6 +14,7 @@ from threading import Thread
 from urllib.request import urlretrieve
 from zipfile import ZipFile
 
+from pyrogram import enums
 from requests import get
 from sedenbot import HELP
 from sedenecem.core import (
@@ -202,7 +203,10 @@ class Spotipy:
                 )
 
                 media_perm = True
-                if 'group' in message.chat.type:
+                if message.chat.type == [
+                    enums.ChatType.SUPERGROUP,
+                    enums.ChatType.GROUP,
+                ]:
                     perm = message.chat.permissions
                     media_perm = perm.can_send_media_messages
 

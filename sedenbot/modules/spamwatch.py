@@ -23,7 +23,6 @@ class SWClient:
     outgoing=False,
     incoming=True,
     disable_notify=True,
-    disable_edited=True,
 )
 def spamwatch_action(client, message):
     if not SWClient.spamwatch_client:

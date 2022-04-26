@@ -79,7 +79,7 @@ def save_note(message):
                 if not msg_o:
                     edit(message, f'`{get_translation("noteError")}`')
                     return
-                msg_id = msg_o.message.id
+                msg_id = msg_o.id
                 send_log(get_translation('notesLog', ['`', message.chat.id, keyword]))
         else:
             edit(message, f'`{get_translation("wrongCommand")}`')
