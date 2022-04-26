@@ -183,7 +183,7 @@ def reply_sticker(message, sticker, delete_orig=False, delete_file=False):
 
 def reply_msg(message: Message, message2: Message, delete_orig=False):
     try:
-        message2.copy(chat_id=message.chat.id, reply_to_message_id=message.message.id)
+        message2.copy(chat_id=message.chat.id, reply_to_message_id=message.id)
 
         if delete_orig:
             message.delete()
