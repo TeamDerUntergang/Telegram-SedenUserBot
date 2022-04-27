@@ -373,7 +373,7 @@
     "pmUnblocked": "You've been unblocked.",
     "pmUnblockedLog": "[%1](tg://user?id=%2) was unblocc'd!",
     "pmUnblockedUsage": "You should reply message of the person you are unblocking.",
-    "pmpermitBlock": "You were spamming my F\u00fchrer's PM, which I don't like.\nI'mma block you.",
+    "pmpermitBlock": "You were spamming my F\u00fchrer's PM, which I don't like.\nI'mma block you and reporting as SPAM.",
     "pmpermitInfo": ".approve\nUsage: Approves the replied person to PM.\n\n.disapprove\nUsage: Disapproves the replied person to PM.\n\n.block\nUsage: Blocks the person.\n\n.unblock\nUsage: Unblocks the person so they can PM you.\n\n.notifoff\nUsage: Clears/Disables any notifications of unapproved PMs.\n\n.notifon\nUsage: Allows notifications for unapproved PMs.",
     "pmpermitLog": "[%1](tg://user?id=%2) was just another retarded nibba",
     "pmpermitMessage": "%1Bleep blop! This is a bot. Don't fret.\n\nMy F\u00fchrer hasn't approved you to PM.\nPlease wait for my F\u00fchrer to look in, he mostly approves PMs.\n\nAs far as I know, he doesn't usually approve retards though.%1",

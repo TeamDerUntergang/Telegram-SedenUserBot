@@ -374,7 +374,7 @@
     "pmUnblocked": "Engelin kald\u0131r\u0131ld\u0131.",
     "pmUnblockedLog": "[%1](tg://user?id=%2) ki\u015fisinin engeli kald\u0131r\u0131ld\u0131.",
     "pmUnblockedUsage": "Engelini kald\u0131raca\u011f\u0131n ki\u015finin mesaj\u0131n\u0131 al\u0131nt\u0131lamal\u0131s\u0131n.",
-    "pmpermitBlock": "Sen benim sahibimin PM'ini spaml\u0131yorsun, bu benim ho\u015fuma gitmiyor.\n\u015eu an ENGELLENDIN, ileride de\u011fi\u015fiklik olmad\u0131\u011f\u0131 s\u00fcrece\u2026",
+    "pmpermitBlock": "Sen benim sahibimin PM'ini spaml\u0131yorsun, bu benim ho\u015fuma gitmiyor.\n\u015eu an ENGELLENDIN ve SPAM olarak bildirildin, ileride de\u011fi\u015fiklik olmad\u0131\u011f\u0131 s\u00fcrece\u2026",
     "pmpermitInfo": ".approve\nKullan\u0131m: Yan\u0131t verilen kullan\u0131c\u0131ya PM atma izni verilir.\n\n.disapprove\nKullan\u0131m: Yan\u0131t verilen kullan\u0131c\u0131n\u0131n PM onay\u0131n\u0131 kald\u0131r\u0131r.\n\n.notifoff\nKullan\u0131m: Onaylanmam\u0131\u015f \u00f6zel mesajlar\u0131n bildirimlerini temizler ya da devre d\u0131\u015f\u0131 b\u0131rak\u0131r.\n\n.notifon\nKullan\u0131m: Onaylanmam\u0131\u015f \u00f6zel mesajlar\u0131n bildirim g\u00f6ndermesine izin verir.",
     "pmpermitLog": "[%1](tg://user?id=%2) ki\u015fisi sadece bir hayal k\u0131r\u0131kl\u0131\u011f\u0131yd\u0131.\nPM'ni me\u015fgul etti\u011fi i\u00e7in engellendi.",
     "pmpermitMessage": "%1Hey! Bu bir bot. Endi\u015felenme.\n\nSahibim sana PM atma izni vermedi.\nL\u00fctfen sahibimin aktif olmas\u0131n\u0131 bekleyin, o genellikle PM'leri onaylar.\n\nBildi\u011fim kadar\u0131yla o kafay\u0131 yemi\u015f insanlara PM izni vermiyor.%1",
