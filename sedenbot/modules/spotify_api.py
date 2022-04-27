@@ -203,7 +203,7 @@ class Spotipy:
                 )
 
                 media_perm = True
-                if message.chat.type == [
+                if message.chat.type in [
                     enums.ChatType.SUPERGROUP,
                     enums.ChatType.GROUP,
                 ]:
