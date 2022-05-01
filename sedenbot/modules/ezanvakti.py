@@ -54,6 +54,7 @@ def ezanvakti(message):
     edit(message, vakitler)
 
 
+"""
 @sedenify(pattern='^.ramazan')
 def ramazan(message):
     konum = extract_args(message).lower()
@@ -108,6 +109,7 @@ def ramazan(message):
     )
 
     edit(message, vakitler)
+"""
 
 
 def find_loc(konum):
@@ -135,7 +137,7 @@ def get_result(konum):
     request = get(f'https://namazvakitleri.diyanet.gov.tr/tr-TR/{knum}')
     return BeautifulSoup(request.content, 'html.parser')
 
-
+"""
 def calculate_time(saat, yarin_saat):
     now = datetime.now().timestamp()
     now_t = datetime.fromtimestamp(now).strftime('%d.%m.%Y')
@@ -158,7 +160,7 @@ def timedelta(time):
     saat = int(time / 3600)
     dakika = int((time % 3600) / 60)
     return saat, dakika
-
+"""
 
 sehirler = [
     '01 Adana 9146',
@@ -248,9 +250,6 @@ HELP.update(
     {
         "ezanvakti": ".ezanvakti <şehir> \
     \nKullanım: Belirtilen şehir için namaz vakitlerini gösterir. \
-    \nÖrnek: .ezanvakti istanbul \
-    \n.ramazan <şehir> \
-    \nKullanım: Belirtilen şehir için ramazan vakitlerini gösterir. \
-    \nÖrnek: .ramazan istanbul"
+    \nÖrnek: .ezanvakti istanbul"
     }
 )
