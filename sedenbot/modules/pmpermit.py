@@ -38,6 +38,7 @@ pmpermit_init()
 @sedenify(
     incoming=True,
     outgoing=True,
+    disable_edited=True,
     disable_notify=True,
     group=False,
     compat=False,

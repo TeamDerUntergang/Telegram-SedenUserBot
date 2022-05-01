@@ -32,6 +32,7 @@ TEMP_SETTINGS['COUNT_MSG'] = 0
 @sedenify(
     incoming=True,
     outgoing=False,
+    disable_edited=True,
     private=False,
     bot=False,
     disable_notify=True,

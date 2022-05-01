@@ -10,9 +10,10 @@
 from os import makedirs
 from re import escape, sub
 from subprocess import STDOUT, CalledProcessError, check_output
+from typing import List
 
 from pyrogram import enums
-from pyrogram.types import Message
+from pyrogram.types import Message, User
 from sedenbot import BOT_PREFIX, BRAIN, LOG_VERBOSE, TEMP_SETTINGS, app
 
 MARKDOWN_FIX_CHAR = '\u2064'
@@ -406,3 +407,40 @@ def __status_out__(cmd, encoding='utf-8'):
         if encoding != 'latin-1':
             return __status_out__(cmd, 'latin-1')
         raise e
+
+
+def extract_user(message: Message) -> List[User]:
+    users: List[User] = []
+    mentions = None
+
+    if message.text and not mentions:
+        try:
+            users.append(message._client.get_users(message.text.split()[1]))
+        except BaseException:
+            pass
+
+    if message.reply_to_message:
+        users.append(message.reply_to_message.from_user)
+
+    if message.entities:
+        mentions = [
+            entity
+            for entity in message.entities
+            if entity.type == enums.MessageEntityType.TEXT_MENTION
+        ]
+        no_username = [
+            i.user for i in mentions if i.type == enums.MessageEntityType.TEXT_MENTION
+        ]
+        users += no_username
+
+        for i in mentions:
+            try:
+                users.append(
+                    message._client.get_users(
+                        message.text[i.offset : i.offset + i.length]
+                    )
+                )
+            except BaseException:
+                pass
+
+    return users

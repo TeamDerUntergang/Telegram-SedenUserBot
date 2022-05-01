@@ -9,12 +9,14 @@
 
 from json import JSONDecodeError
 
+from pyrogram import enums
 from requests import get
 from sedenbot import HELP
 from sedenecem.core import edit, get_translation, sedenify
 
 
 def parseShipEntity(jsonEntity: dict) -> str:
+
     text = get_translation(
         'shippingResult',
         [
@@ -35,7 +37,8 @@ def parseShipEntity(jsonEntity: dict) -> str:
             '</u>',
         ],
     )
-    movements = get_translation(
+    if jsonEntity['data']['movements']:
+        movements = get_translation(
             'shippingMovements',
             [
                 '<code>',
@@ -47,8 +50,8 @@ def parseShipEntity(jsonEntity: dict) -> str:
                 jsonEntity['data']['movements'][0]['action'],
             ],
         )
+        text += movements
 
-    text += movements
     return text
 
 
@@ -73,7 +76,12 @@ def shippingTrack(message):
     if len(argv) > 2:
         edit(message, f"`{get_translation('wrongCommand')}`")
         return
-    comp, trackId = argv
+
+    try:
+        comp, trackId = argv
+    except ValueError:
+        return edit(message, f"`{get_translation('wrongCommand')}`")
+
     if not trackId:
         edit(message, f"`{get_translation('wrongCommand')}`")
         return
@@ -95,7 +103,7 @@ def shippingTrack(message):
         kargo_data = getShipEntity(company="hepsijet", trackId=trackId)
     if kargo_data:
         text = parseShipEntity(kargo_data)
-        edit(message, text, parse='HTML')
+        edit(message, text, parse=enums.ParseMode.HTML)
         return
     edit(message, f"`{get_translation('shippingNoResult')}`")
 

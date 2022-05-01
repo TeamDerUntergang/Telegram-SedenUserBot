@@ -13,7 +13,7 @@ from sedenecem.core import edit, get_translation, parse_cmd, sedenify
 
 
 @sedenify(pattern=r'^.(un|)lock', compat=False, private=False, admin=True)
-def lock(client, message):
+def lock_unlock_chat(client, message):
     text = (message.text or message.caption).replace(r'\s+', ' ').split(' ', 1)
 
     unlock = parse_cmd(text[0])[:2] == 'un'
@@ -21,86 +21,71 @@ def lock(client, message):
         edit(message, f"`{get_translation('wrongCommand')}`")
         return
 
-    kilit = text[1].lower()
+    args = text[1].lower()
 
     msg = None
     media = None
-    sticker = None
-    gif = None
-    gamee = None
-    ainline = None
+    other = None
     webprev = None
     gpoll = None
     adduser = None
     cpin = None
     changeinfo = None
-    if kilit == 'msg':
+    if args == 'msg':
         msg = unlock
-        kullanim = get_translation('lockMsg')
-    elif kilit == 'media':
+        usage = get_translation('lockMsg')
+    elif args == 'media':
         media = unlock
-        kullanim = get_translation('lockMedia')
-    elif kilit == 'gif':
-        gif = unlock
-        sticker = gif
-        kullanim = get_translation('lockGif')
-    elif kilit == 'game':
-        gamee = unlock
-        kullanim = get_translation('lockGame')
-    elif kilit == 'inline':
-        ainline = unlock
-        kullanim = get_translation('lockInline')
-    elif kilit == 'web':
+        usage = get_translation('lockMedia')
+    elif args == 'other':
+        other = unlock
+        usage = get_translation('lockOther')
+    elif args == 'web':
         webprev = unlock
-        kullanim = get_translation('lockWeb')
-    elif kilit == 'poll':
+        usage = get_translation('lockWeb')
+    elif args == 'poll':
         gpoll = unlock
-        kullanim = get_translation('lockPoll')
-    elif kilit == 'invite':
+        usage = get_translation('lockPoll')
+    elif args == 'invite':
         adduser = unlock
-        kullanim = get_translation('lockInvite')
-    elif kilit == 'pin':
+        usage = get_translation('lockInvite')
+    elif args == 'pin':
         cpin = unlock
-        kullanim = get_translation('lockPin')
-    elif kilit == 'info':
+        usage = get_translation('lockPin')
+    elif args == 'info':
         changeinfo = unlock
-        kullanim = get_translation('lockInformation')
-    elif kilit == 'all':
+        usage = get_translation('lockInformation')
+    elif args == 'all':
         msg = unlock
         media = unlock
-        gif = unlock
-        gamee = unlock
-        ainline = unlock
+        other = unlock
         webprev = unlock
         gpoll = unlock
         adduser = unlock
         cpin = unlock
         changeinfo = unlock
-        kullanim = get_translation('lockAll')
+        usage = get_translation('lockAll')
     else:
-        if not kilit:
+        if not args:
             edit(
                 message,
-                get_translation('locksUnlockNoArgs' if unlock else 'locksLockNoArgs'),
+                get_translation('locksUnlockNoArgs' if usage else 'locksLockNoArgs'),
             )
             return
         else:
-            edit(message, get_translation('lockError', ['`', kilit]))
+            edit(message, get_translation('lockError', ['`', args]))
             return
 
-    kilitle = client.get_chat(message.chat.id)
+    chat = client.get_chat(message.chat.id)
 
-    msg = get_on_none(msg, kilitle.permissions.can_send_messages)
-    media = get_on_none(media, kilitle.permissions.can_send_media_messages)
-    sticker = get_on_none(sticker, kilitle.permissions.can_send_stickers)
-    gif = get_on_none(gif, kilitle.permissions.can_send_animations)
-    gamee = get_on_none(gamee, kilitle.permissions.can_send_games)
-    ainline = get_on_none(ainline, kilitle.permissions.can_use_inline_bots)
-    webprev = get_on_none(webprev, kilitle.permissions.can_add_web_page_previews)
-    gpoll = get_on_none(gpoll, kilitle.permissions.can_send_polls)
-    adduser = get_on_none(adduser, kilitle.permissions.can_invite_users)
-    cpin = get_on_none(cpin, kilitle.permissions.can_pin_messages)
-    changeinfo = get_on_none(changeinfo, kilitle.permissions.can_change_info)
+    msg = get_on_none(msg, chat.permissions.can_send_messages)
+    media = get_on_none(media, chat.permissions.can_send_media_messages)
+    other = get_on_none(other, chat.permissions.can_send_other_messages)
+    webprev = get_on_none(webprev, chat.permissions.can_add_web_page_previews)
+    gpoll = get_on_none(gpoll, chat.permissions.can_send_polls)
+    adduser = get_on_none(adduser, chat.permissions.can_invite_users)
+    cpin = get_on_none(cpin, chat.permissions.can_pin_messages)
+    changeinfo = get_on_none(changeinfo, chat.permissions.can_change_info)
 
     try:
         client.set_chat_permissions(
@@ -108,10 +93,7 @@ def lock(client, message):
             ChatPermissions(
                 can_send_messages=msg,
                 can_send_media_messages=media,
-                can_send_stickers=sticker,
-                can_send_animations=gif,
-                can_send_games=gamee,
-                can_use_inline_bots=ainline,
+                can_send_other_messages=other,
                 can_add_web_page_previews=webprev,
                 can_send_polls=gpoll,
                 can_change_info=changeinfo,
@@ -122,7 +104,7 @@ def lock(client, message):
         edit(
             message,
             get_translation(
-                'locksUnlockSuccess' if unlock else 'locksLockSuccess', ['`', kullanim]
+                'locksUnlockSuccess' if unlock else 'locksLockSuccess', ['`', usage]
             ),
         )
     except BaseException as e:

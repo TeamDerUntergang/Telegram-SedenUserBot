@@ -22,6 +22,7 @@ class SWClient:
     compat=False,
     outgoing=False,
     incoming=True,
+    disable_edited=True,
     disable_notify=True,
 )
 def spamwatch_action(client, message):
@@ -44,7 +45,7 @@ def spamwatch_action(client, message):
             client.block_user(uid)
         else:
             myself = message.chat.get_member('me')
-            if myself.can_restrict_members:
+            if myself.privileges and myself.privileges.can_restrict_members:
                 message.chat.ban_member(uid)
                 reply(message, text)
             else:

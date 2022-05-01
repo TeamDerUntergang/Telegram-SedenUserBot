@@ -23,7 +23,10 @@ def ezanvakti(message):
     if len(konum) < 1:
         return edit(message, '`Lütfen komutun yanına bir şehir belirtin.`')
 
-    result = get_result(konum)
+    try:
+        result = get_result(konum)
+    except BaseException:
+        return edit(message, f'`{konum} için bir bilgi bulunamadı.`')
     res1 = result.body.findAll('div', {'class': ['body-content']})
     res1 = res1[0].findAll('script')
     res1 = sub(
@@ -57,7 +60,10 @@ def ramazan(message):
     if len(konum) < 1:
         return edit(message, '`Lütfen komutun yanına bir şehir belirtin.`')
 
-    result = get_result(konum)
+    try:
+        result = get_result(konum)
+    except BaseException:
+        return edit(message, f'`{konum} için bir bilgi bulunamadı.`')
     saat_imsak = (
         result.find('div', {'data-vakit-name': 'imsak'})
         .find('div', {'class': 'tpt-time'})
@@ -123,14 +129,11 @@ def find_loc(konum):
 
 
 def get_result(konum):
-    try:
-        knum = find_loc(konum)
-        if knum < 0:
-            raise ValueError
-        request = get(f'https://namazvakitleri.diyanet.gov.tr/tr-TR/{knum}')
-        return BeautifulSoup(request.content, 'html.parser')
-    except TypeError:
-        return f'`{konum} için bir bilgi bulunamadı.`'
+    knum = find_loc(konum)
+    if knum < 0:
+        raise ValueError
+    request = get(f'https://namazvakitleri.diyanet.gov.tr/tr-TR/{knum}')
+    return BeautifulSoup(request.content, 'html.parser')
 
 
 def calculate_time(saat, yarin_saat):

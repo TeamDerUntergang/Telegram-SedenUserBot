@@ -14,7 +14,7 @@ from time import gmtime, strftime
 from traceback import format_exc
 
 from pyrogram import ContinuePropagation, StopPropagation, enums, filters
-from pyrogram.handlers import MessageHandler
+from pyrogram.handlers import MessageHandler, EditedMessageHandler
 from sedenbot import BLACKLIST, BOT_VERSION, BRAIN, TEMP_SETTINGS, app, get_translation
 
 from .misc import _parsed_prefix, edit, get_cmd, is_admin
@@ -25,6 +25,7 @@ def sedenify(**args):
     pattern = args.get('pattern', None)
     outgoing = args.get('outgoing', True)
     incoming = args.get('incoming', False)
+    disable_edited = args.get('disable_edited', False)
     disable_notify = args.get('disable_notify', False)
     compat = args.get('compat', True)
     brain = args.get('brain', False)
@@ -158,6 +159,8 @@ def sedenify(**args):
             else:
                 filter = (filters.me | filters.incoming) & ~filters.bot
 
+        if not disable_edited:
+            app.add_handler(EditedMessageHandler(wrap, filter))
         app.add_handler(MessageHandler(wrap, filter))
 
     return msg_decorator
