@@ -190,7 +190,7 @@ def gban_check(message):
     message.continue_propagation()
 
 
-@sedenify(pattern='^.(ung|gun)mute', compat=False)
+@sedenify(pattern='^.gmute', compat=False)
 def gmute_user(client, message):
     reply = message.reply_to_message
     edit(message, f'`{get_translation("muteProcess")}`')
@@ -243,7 +243,7 @@ def gmute_user(client, message):
             return
 
 
-@sedenify(pattern='^.ungmute', compat=False)
+@sedenify(pattern='^.(ung|gun)mute', compat=False)
 def ungmute_user(client, message):
     args = extract_args_arr(message)
     if len(args) > 1:
