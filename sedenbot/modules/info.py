@@ -32,7 +32,7 @@ def who_is(client, message):
     if len(find_user) < 1:
         return edit(message, f'`{get_translation("banFailUser")}`')
 
-    if message.chat.type == [enums.ChatType.SUPERGROUP, enums.ChatType.GROUP]:
+    if message.chat.type in [enums.ChatType.SUPERGROUP, enums.ChatType.GROUP]:
         perm = message.chat.permissions
         media_perm = perm.can_send_media_messages
 
@@ -135,7 +135,7 @@ def get_chat_info(client, message):
         edit(message, f'`{get_translation("groupNotFound")}`')
         return
 
-    if message.chat.type == [enums.ChatType.SUPERGROUP, enums.ChatType.GROUP]:
+    if message.chat.type in [enums.ChatType.SUPERGROUP, enums.ChatType.GROUP]:
         perm = message.chat.permissions
         media_perm = perm.can_send_media_messages
 
