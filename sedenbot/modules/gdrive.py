@@ -1,16 +1,17 @@
-from io import FileIO
-from os import path, remove
-from queue import Queue
-from re import findall, search
-from shutil import copy
+import pickle
+from os import path, remove, replace
+from re import match, search
 from time import time
 
-from google.oauth2.credentials import Credentials
+from urllib.parse import unquote
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
+from httplib2 import Http
+from oauth2client.client import FlowExchangeError, OAuth2WebServerFlow
 from pyrogram.types import Message
+from pySmartDL import SmartDL
 from requests import get
-from sedenbot import GDRIVE_FOLDER_ID, HELP, LOGS
+from sedenbot import GDRIVE_FOLDER_ID, DRIVE_CLIENT, DRIVE_SECRET, HELP
 from sedenecem.core import (
     download_media_wc,
     edit,
@@ -19,6 +20,55 @@ from sedenecem.core import (
     reply_doc,
     sedenify,
 )
+from sedenecem.sql import BASE, SESSION
+from sqlalchemy import Column, Integer, LargeBinary
+
+
+class GDriveCreds(BASE):
+    __tablename__ = 'GDrive'
+
+    user_id = Column(Integer, primary_key=True)
+    credentials_string = Column(LargeBinary)
+
+    def __init__(self, user_id):
+        self.user_id = user_id
+
+
+GDriveCreds.__table__.create(checkfirst=True)
+
+
+def set(user_id, credentials):
+    saved_creds = SESSION.query(GDriveCreds).get(user_id)
+    if not saved_creds:
+        saved_creds = GDriveCreds(user_id)
+    saved_creds.credentials_string = pickle.dumps(credentials)
+
+    SESSION.add(saved_creds)
+    SESSION.commit()
+
+
+def get(user_id):
+    saved_creds = SESSION.query(GDriveCreds).get(user_id)
+    creds = None
+    if saved_creds is not None:
+        creds = pickle.loads(saved_creds.credentials_string)
+    return creds
+
+
+def remove_(user_id):
+    saved_cred = SESSION.query(GDriveCreds).get(user_id)
+    if saved_cred:
+        SESSION.delete(saved_cred)
+        SESSION.commit()
+
+
+def extract_code(url) -> str:
+    if 'error' in url:
+        return ''
+    if '%2F' in url:
+        url = unquote(url)
+    code = search('code=(\d\/.*)&', url)[1]
+    return code
 
 
 class Progress:
@@ -27,7 +77,7 @@ class Progress:
         self.file_name = file_name
         self.start_time = start_time
 
-    def pyrogram_download(self, current, total):
+    def download(self, current, total):
         percentage = float(current * 100 / total)
         if (curr_time := time()) - self.start_time > 5:
             self.start_time = curr_time
@@ -38,77 +88,95 @@ class Progress:
                 )
             )
 
+    def upload(self, current, total):
+        percentage = float(current * 100 / total)
+        if (curr_time := time()) - self.start_time > 5:
+            self.start_time = curr_time
+            self.msg.edit_text(
+                get_translation(
+                    'pyrogramUp',
+                    ['**', '`', self.file_name, f'½{round(percentage, 2)}'],
+                )
+            )
 
-class WebHelper:
+
+class Gdrive:
     def __init__(self, message: Message):
         self.message = message
+        self.dl_path = '.'
+        self.service = build('drive', 'v3', credentials=get(self.message.from_user.id))
 
-    def download_link(self, queue: Queue):
-        while not queue.empty():
-            url = queue.get()
-            re_url = search("^https://drive.google.com", url)
-            if re_url:
-                self.download_link_gdrive(url)
+    def download_link(self, url):
+        try:
+            dl = SmartDL(urls=url, dest=self.dl_path, progress_bar=False)
+            dl.start(blocking=False)
+            while not dl.isFinished():
+                if dl.isFinished():
+                    break
+                edit(
+                    self.message,
+                    get_translation(
+                        'gdriveEta',
+                        [
+                            '**',
+                            '`',
+                            dl.get_dest(),
+                            dl.get_speed(human=True),
+                            dl.get_eta(human=True),
+                            round(dl.get_progress(), 2),
+                        ],
+                    ),
+                )
+            return dl.get_dest()
+        except:
+            return edit(self.message, f'Bir Hatayla Karşılaşıldı')
 
-                queue.task_done()
-            else:
-                r = get(url, stream=True)
-
-                total_size = int(r.headers.get('content-length', 0))
-                downloaded_size = 0
-
-                if 'Content-Disposition' in r.headers.keys():
-                    fname = findall("filename=(.+)", r.headers["Content-Disposition"])[
-                        0
-                    ]
-                else:
-                    fname = url.split('/')[-1]
-
-                start_time = time()
-                with open(f'./{fname}', 'wb') as f:
-                    for chunk in r.iter_content(chunk_size=50 * 1024 * 1024):
-                        f.write(chunk)
-                        downloaded_size += int(len(chunk))
-                        percentage = round(float(downloaded_size * 100 / total_size), 2)
-                        print(f'Hız {downloaded_size / total_size}\n')
-                        if (curr_time := time()) - start_time > 5:
-                            start_time = curr_time
-                            edit(
-                                self.message,
-                                get_translation(
-                                    'reqDown', ['**', '`', fname, f'½{percentage}']
-                                ),
-                            )
-                self.upload_to_gdrive(fname)
-                del fname
-
-                queue.task_done()
-
-    def download_link_gdrive(self, link):
-        file_id = search('d\/(.*)\/v', link).group(1)
-
-        scopes = ['https://www.googleapis.com/auth/drive']
-        creds = Credentials.from_authorized_user_file('token.json', scopes)
-        service = build('drive', 'v3', credentials=creds)
+    def upload_to_telegram(self, url):
+        file_id = search('d\/(.*)\/v', url).group(1)
 
         file_info = (
-            service.files()
-            .get(fileId=file_id, fields='name,size', supportsTeamDrives=True)
+            self.service.files()
+            .get(fileId=file_id, fields='size,name', supportsAllDrives=True)
             .execute()
         )
-        request = service.files().get_media(fileId=file_id, supportsTeamDrives=True)
+        size = file_info.get('size')
+        file_name = file_info.get('name')
+
+        if int(size) > 2147483648:
+            return edit(self.message, get_translation('tgUpLimit', ['`']))
+        else:
+            file_name = self.download_from_gdrive(url)
+            start_time = time()
+            progress = Progress(self.message, file_name, start_time)
+
+            reply_doc(
+                self.message,
+                file_name,
+                progress=progress.upload,
+            )
+            self.message.delete()
+
+    def download_from_gdrive(self, link) -> str:
+        file_id = search('d\/(.*)\/v', link).group(1)
+
+        file_info = (
+            self.service.files()
+            .get(fileId=file_id, fields='name,size', supportsAllDrives=True)
+            .execute()
+        )
+        request = self.service.files().get_media(fileId=file_id, supportsAllDrives=True)
 
         fh = open(f'{file_info.get("name")}', 'wb')
         downloader = MediaIoBaseDownload(
-            fd=fh, request=request, chunksize=50 * 1024 * 1024
+            fd=fh, request=request, chunksize=100 * 1024 * 1024
         )
 
         done = False
         while done is False:
             status, done = downloader.next_chunk()
             progress = edit(
+                self.message,
                 get_translation(
-                    self.message,
                     'gdriveDown',
                     [
                         '**',
@@ -116,29 +184,24 @@ class WebHelper:
                         file_info.get('name'),
                         f'½{int(status.progress() * 100)}',
                     ],
-                )
+                ),
             )
         edit(
             self.message,
             get_translation('gdriveDownComplete', ['**', '`', file_info.get('name')]),
         )
-        self.upload_to_gdrive(file_info.get("name"))
+        return file_info.get("name")
 
     def upload_to_gdrive(self, filename):
-
-        scopes = ['https://www.googleapis.com/auth/drive']
-        creds = Credentials.from_authorized_user_file('token.json', scopes)
-        service = build('drive', 'v3', credentials=creds)
-
         file_metadata = {
             'name': filename,
             'parents': [GDRIVE_FOLDER_ID],
         }
 
-        media = MediaFileUpload(filename, resumable=True, chunksize=50 * 1024 * 1024)
+        media = MediaFileUpload(filename, resumable=True, chunksize=100 * 1024 * 1024)
 
-        file = service.files().create(
-            body=file_metadata, media_body=media, fields='id', supportsTeamDrives=True
+        file = self.service.files().create(
+            body=file_metadata, media_body=media, fields='id', supportsAllDrives=True
         )
         response = None
         start_time = time()
@@ -162,124 +225,105 @@ class WebHelper:
                 remove(filename)
 
 
-@sedenify(pattern='.gauth')
+flow = None
+
+
+@sedenify(pattern='^.gauth')
 def drive_auth(message):
-    msg = message.reply_to_message
-    if msg and msg.document:
-        download_media_wc(data=msg, file_name='token.json')
-        copy('./downloads/token.json', '.')
-        edit(message, get_translation('gauthTokenSucces', ['`']))
+    global flow
+    user_id = message.from_user.id
+    args = extract_args(message).split()
+
+    if len(args) == 0:
+        creds = get(user_id)
+        if creds is not None:
+            creds.refresh(Http())
+            set(user_id, creds)
+        else:
+            OAUTH_SCOPE = "https://www.googleapis.com/auth/drive"
+            REDIRECT_URI = "http://localhost:8080"
+
+            flow = OAuth2WebServerFlow(
+                DRIVE_CLIENT, DRIVE_SECRET, OAUTH_SCOPE, redirect_uri=REDIRECT_URI
+            )
+            auth_url = flow.step1_get_authorize_url()
+            edit(
+                message,
+                f'{get_translation("gauthURL", ["**","`"])} [Google Drive Auth URL]({auth_url})',
+            )
+
+    elif args[0] == 'token':
+        url = args[1]
+        code = extract_code(url)
+        if not code:
+            return edit(message, f'`{get_translation("gauthTokenErr")}`')
+        if flow:
+            try:
+                creds = flow.step2_exchange(code)
+                set(user_id, creds)
+                edit(message, f'`{get_translation("gauthTokenSuccess")}`')
+            except FlowExchangeError:
+                edit(
+                    message,
+                    f'`{get_translation("gauthTokenInvalid")}`',
+                )
+            flow = None
+        else:
+            edit(message, f'`{get_translation("gauthFirstRun")}`')
+    elif args[0] == 'revoke':
+        remove_(user_id)
+        edit(message, f'`{get_translation("gauthTokenRevoke")}`')
     else:
-        edit(message, get_translation('gdriveTokenErr', ['`']))
+        edit(message, get_translation('gdriveUsage'))
 
 
-@sedenify(pattern='.gupload')
+@sedenify(pattern='^.gupload')
 def drive_upload(message):
 
-    if path.exists('token.json'):
-        pass
-    else:
-        return edit(message, get_translation('gauthTokenErr', ['`']))
+    if get(message.from_user.id) is None:
+        return edit(message, f'`{get_translation("gauthFirstRun")}`')
 
+    drive = Gdrive(message)
     reply = message.reply_to_message
-    if reply:
+    if reply and reply.document:
         file_name = reply.document.file_name
 
         start_time = time()
         progress = Progress(message, file_name, start_time)
 
-        down_file = download_media_wc(
-            reply, file_name, progress=progress.pyrogram_download
-        )
+        down_file = download_media_wc(reply, file_name, progress=progress.download)
+        replace(path.join('downloads', file_name), file_name)
 
-        scopes = ['https://www.googleapis.com/auth/drive']
-        creds = Credentials.from_authorized_user_file('token.json', scopes)
-        service = build('drive', 'v3', credentials=creds)
+        drive.upload_to_gdrive(file_name)
 
-        file_metadata = {
-            'name': file_name,
-            'parents': [GDRIVE_FOLDER_ID],
-        }
-
-        media = MediaFileUpload(down_file, resumable=True, chunksize=50 * 1024 * 1024)
-
-        file = service.files().create(
-            body=file_metadata, media_body=media, fields='id', supportsTeamDrives=True
-        )
-        start_time = time()
-        response = None
-        while response is None:
-            status, response = file.next_chunk()
-            if status:
-                if (curr_time := time()) - start_time > 5:
-                    start_time = curr_time
-                    edit(
-                        message,
-                        get_translation(
-                            'gdriveUp',
-                            ['**', '`', file_name, int(status.progress() * 100)],
-                        ),
-                    )
-        edit(message, get_translation('gdriveUpComplete', ['**', '`', file_name]))
-        remove(down_file)
     else:
-        args = extract_args(message).split(' ')
-        queue = Queue()
 
-        for i in args:
-            queue.put(i)
+        args = extract_args(message)
+        if not args.startswith('https://' or 'http://'):
+            return edit(message, f'`Geçerli bir url girin.`')
 
-        web = WebHelper(message)
-        web.download_link(queue)
+        is_drive = match("^https://drive.google.com", args)
+        if is_drive:
+            dl = drive.download_from_gdrive(args)
+        else:
+            dl = drive.download_link(args)
+
+        drive.upload_to_gdrive(dl)
 
 
 @sedenify(pattern='.gdownload')
 def gdownload(message):
-    if path.exists('token.json'):
-        pass
+    if get(message.from_user.id) is None:
+        return edit(message, f'`{get_translation("gauthFirstRun")}`')
     else:
-        return edit(message, get_translation('gauthTokenErr', ['`']))
+        pass
     args = extract_args(message)
-    file_id = search('d\/(.*)\/v', args).group(1)
 
-    scopes = ['https://www.googleapis.com/auth/drive']
-    creds = Credentials.from_authorized_user_file('token.json', scopes)
-    service = build('drive', 'v3', credentials=creds)
+    if not match('^https://drive\.google\.com', args):
+        return edit(message, f'`{get_translation("onlySupportGdrive")}`')
 
-    file_info = (
-        service.files()
-        .get(fileId=file_id, fields='name,size', supportsTeamDrives=True)
-        .execute()
-    )
-
-    if int(file_info.get('size')) >= 2147483648:
-        return edit(message, get_translation('tgUpLimit', ['`']))
-    request = service.files().get_media(fileId=file_id, supportsTeamDrives=True)
-
-    fh = FileIO(f'./downloads/{file_info.get("name")}', 'wb')
-    downloader = MediaIoBaseDownload(fd=fh, request=request, chunksize=50 * 1024 * 1024)
-
-    done = False
-    while done is False:
-        status, done = downloader.next_chunk()
-        progress = edit(
-            message,
-            get_translation(
-                'gdriveDown',
-                ['**', '`', file_info.get('name'), int(status.progress() * 100)],
-            ),
-        )
-
-    start_time = time()
-    progress = Progress(message, file_info.get('name'), start_time)
-
-    reply_doc(
-        message,
-        f'./downloads/{file_info.get("name")}',
-        progress=progress.pyrogram_download,
-        delete_orig=False,
-    )
-    message.delete()
+    drive = Gdrive(message)
+    drive.upload_to_telegram(args)
 
 
 HELP.update({'gdrive': get_translation('gdriveUsage')})

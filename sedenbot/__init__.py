@@ -133,8 +133,14 @@ GENIUS_TOKEN = environ.get('GENIUS_TOKEN', None) or environ.get('GENIUS', None)
 # Spoify Client ID
 SPOTIPY_CLIENT_ID = environ.get('SPOTIPY_CLIENT_ID')
 
-# SPotify Client SECRET
+# Spotify Client SECRET
 SPOTIPY_CLIENT_SECRET = environ.get('SPOTIPY_CLIENT_SECRET')
+
+# Gdrive Client
+DRIVE_CLIENT = environ.get('DRIVE_CLIENT')
+
+# Gdrive Secret
+DRIVE_SECRET = environ.get('DRIVE_SECRET')
 
 # Gdrive Folder ID
 GDRIVE_FOLDER_ID = environ.get('GDRIVE_FOLDER_ID', None)

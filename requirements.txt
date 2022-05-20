@@ -32,3 +32,4 @@ tgcrypto
 urbandic
 wikipedia
 yt-dlp
+pysmartDL
