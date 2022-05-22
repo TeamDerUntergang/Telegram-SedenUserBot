@@ -204,6 +204,7 @@
     "gbanLog": "#GBAN\nKullan\u0131c\u0131: [%1](tg://user?id=%2) (%3%2%3)\n%4",
     "gbanResult": "%1[%2](tg://user?id=%3)%1 %4k\u00fcresel yasakland\u0131!%4\n%5",
     "gbannedUsers": "K\u00fcresel yasaklanan kullan\u0131c\u0131lar:",
+    "gdriveAuth": "Gdrive token kay\u0131tl\u0131.Token yenileniyor...",
     "gdriveDown": "%1Dosya Ad\u0131:%1 %2%3%2\n%1\u0130ndirildi:%1 %2%4%2",
     "gdriveDownComplete": "%1Dosya Ad\u0131:%1 %2%3%2\n%1Dosya \u0130ndirildi.%1",
     "gdriveEta": "%1Dosya Ad\u0131:%1 %2%3%2\n%1H\u0131z:%1 %2%4%2\n%1Kalan S\u00fcre:%1 %2%5%2\n%1\u0130ndirildi:%1 %2%6%2",

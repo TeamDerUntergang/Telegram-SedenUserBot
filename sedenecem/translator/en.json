@@ -203,6 +203,7 @@
     "gbanLog": "#GBAN\nUSER: [%1](tg://user?id=%2) (%3%2%3)\n%4",
     "gbanResult": "%1[%2](tg://user?id=%3)%1 %4globally banned!%4\n%5",
     "gbannedUsers": "GBanned Users:",
+    "gdriveAuth": "Gdrive token is already in database.Token is refreshing...",
     "gdriveDown": "%1Filename:%1 %2%3%2\n%1Downloading:%1 %2%4%2",
     "gdriveDownComplete": "%1Filename:%1 %2%3%2\n%1File Downloaded.%1",
     "gdriveEta": "%1Filename:%1 %2%3%2\n%1Speed:%1 %2%4%2\n%1ETA:%1 %2%5%2\n%1Downloaded:%1 %2%6%2",
