@@ -15,6 +15,7 @@ from traceback import format_exc
 
 from pyrogram import ContinuePropagation, StopPropagation, enums, filters
 from pyrogram.handlers import MessageHandler, EditedMessageHandler
+from pyrogram.raw.types import MessageActionContactSignUp
 from sedenbot import BLACKLIST, BOT_VERSION, BRAIN, TEMP_SETTINGS, app, get_translation
 
 from .misc import _parsed_prefix, edit, get_cmd, is_admin
@@ -55,6 +56,9 @@ def sedenify(**args):
                         raise RetardsException('RETARDS CANNOT USE THIS BOT')
 
                 if message.service and not service:
+                    return
+
+                if message.service and isinstance(message.action, MessageActionContactSignUp):
                     return
 
                 if message.chat.type == enums.ChatType.CHANNEL:
