@@ -10,7 +10,7 @@
 from time import sleep
 
 from pyrogram.errors import FloodWait
-from sedenbot import HELP
+from sedenbot import HELP, TEMP_SETTINGS
 from sedenecem.core import (
     edit,
     extract_args,
@@ -51,6 +51,7 @@ def purge(client, message):
 
 @sedenify(pattern='^.purgeme', compat=False)
 def purgeme(client, message):
+    me = TEMP_SETTINGS['ME']
     count = extract_args(message)
     if not count.isdigit():
         return edit(message, f'`{get_translation("purgemeUsage")}`')
@@ -60,8 +61,9 @@ def purgeme(client, message):
     for message in itermsg:
         if i > int(count) + 1:
             break
-        i = i + 1
-        message.delete()
+        if message.from_user.id == me.id:
+            i = i + 1
+            message.delete()
 
     smsg = reply(message, get_translation('purgeResult', ['**', '`', str(count)]))
     send_log(get_translation('purgeLog', ['**', '`', str(count)]))
