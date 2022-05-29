@@ -17,7 +17,8 @@ psycopg2-binary
 pybase64
 pydrive
 pylast
-pyrogram==2.0.19
+pyrogram==2.0.26
+pysmartDL
 python-barcode
 python-dotenv
 qrcode
@@ -32,4 +33,3 @@ tgcrypto
 urbandic
 wikipedia
 yt-dlp
-pysmartDL
