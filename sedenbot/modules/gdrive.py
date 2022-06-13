@@ -74,6 +74,11 @@ class Gdrive:
         self.message = message
         self.dl_path = "."
         self.service = build("drive", "v3", credentials=get(self.message.from_user.id))
+        self.folder_mimetype = "application/vnd.google-apps.folder"
+
+    def get_file_id(self, link):
+        file_id = search("d\/(.+)\/v", link).group(1)
+        return file_id
 
     def download_link(self, url):
         try:
@@ -85,23 +90,21 @@ class Gdrive:
                 edit(
                     self.message,
                     get_translation(
-                        "gdriveEta",
+                        "gdriveDown",
                         [
                             "**",
                             "`",
-                            dl.get_dest(),
-                            dl.get_speed(human=True),
-                            dl.get_eta(human=True),
+                            path.basename(dl.get_dest()),
                             round(dl.get_progress(), 2),
                         ],
                     ),
                 )
-            return dl.get_dest()
+            return path.basename(dl.get_dest())
         except:
             return edit(self.message, f"Bir Hatayla Karşılaşıldı")
 
     def upload_to_telegram(self, url):
-        file_id = search("d\/(.*)\/v", url).group(1)
+        file_id = self.get_file_id(url)
 
         file_info = (
             self.service.files()
@@ -126,7 +129,7 @@ class Gdrive:
             self.message.delete()
 
     def download_from_gdrive(self, link) -> str:
-        file_id = search("d\/(.*)\/v", link).group(1)
+        file_id = self.get_file_id(link)
 
         file_info = (
             self.service.files()
@@ -160,6 +163,32 @@ class Gdrive:
             get_translation("gdriveDownComplete", ["**", "`", file_info.get("name")]),
         )
         return file_info.get("name")
+
+    def copy_file_gdrive(self, link):
+
+        edit(self.message, get_translation('processing'))
+        file_id = self.get_file_id(link)
+
+        meta = (
+            self.service.files()
+            .get(
+                supportsAllDrives=True,
+                fileId=file_id,
+                fields="name,id,mimeType,size",
+            )
+            .execute()
+        )
+
+        if meta.get('mimeType') == self.folder_mimetype:
+            return edit(self.message, f"`{get_translation('gdriveCopyErr')}`")
+
+        body = {'parents': [GDRIVE_FOLDER_ID]}
+
+        self.service.files().copy(
+            fileId=file_id, body=body, supportsAllDrives=True
+        ).execute()
+
+        edit(self.message, get_translation('gdriveCopyFile'))
 
     def upload_to_gdrive(self, filename):
         file_metadata = {
@@ -274,7 +303,7 @@ def drive_upload(message):
 
         is_drive = match("^https://drive.google.com", args)
         if is_drive:
-            dl = drive.download_from_gdrive(args)
+            return drive.copy_file_gdrive(args)
         else:
             dl = drive.download_link(args)
 

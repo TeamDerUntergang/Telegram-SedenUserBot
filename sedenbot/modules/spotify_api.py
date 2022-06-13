@@ -7,10 +7,10 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
+from concurrent.futures import ThreadPoolExecutor
 from glob import glob
-from os import mkdir, path, remove
-from queue import Queue
-from threading import Thread
+from os import cpu_count, mkdir, path, remove, rmdir
+from threading import Lock
 from urllib.request import urlretrieve
 from zipfile import ZipFile
 
@@ -33,21 +33,18 @@ from yt_dlp import YoutubeDL
 class Spotipy:
     def __init__(self):
         self.spotify_dir()
+        self.sp = Spotify(auth_manager=SpotifyClientCredentials())
 
     def spotify_dir(self):
-        if path.exists('./Spotify'):
-            pass
+        if path.exists('Spotify'):
+            rmdir('Spotify')
+            mkdir('Spotify')
         else:
-            mkdir('./Spotify')
+            mkdir('Spotify')
 
-    def fetch_token(self):
-        self.spotify_dir()
-        sp = Spotify(auth_manager=SpotifyClientCredentials())
-        return sp
-
-    def download_track(self, query):
+    def search_track(self, name: str):
         ydl_opts = {
-            'outtmpl': f'./Spotify/%(title)s.%(ext)s',
+            'outtmpl': f'Spotify/{name}.%(ext)s',
             'format': 'bestaudio/best',
             'addmetadata': True,
             'writethumbnail': True,
@@ -72,94 +69,73 @@ class Spotipy:
         }
 
         with YoutubeDL(ydl_opts) as ydl:
-            ydl.download([query])
+            ydl.download([name])
 
-    def worker(self, q):
-        while not q.empty():
-            item = q.get()
-            self.download_track(item)
-            q.task_done()
+    def fetch_track(self, message, playlist_url: str, is_zip=False):
+        fullname = []
+        offset = 0
 
-    def search_track(self, message):
-        sp = self.fetch_token()
-        args = extract_args(message)
-        if 'zip' in args:
-            args = extract_args(message).split(' ', 3)
-            playlist_url = args[2]
-            edit(message, f'`{get_translation("downloadMedia")}`')
-            zip_file = ZipFile('./Spotify/playlist.zip', 'w')
-            fields = "items.track.track_number,items.track.name,items.track.artists.name,items.track.album.name,items.track.album.release_date,total,items.track.album.images"
-            playlist = sp.playlist_items(
+        edit(message, f'`{get_translation("downloadMedia")}`')
+
+        while True:
+            fields = "items.track.name,items.track.artists.name,total"
+            playlist = self.sp.playlist_items(
                 playlist_url,
                 fields=fields,
+                offset=offset,
                 additional_types=['track'],
-            )['items']
-            threads = []
-            video_urls = []
-            q = Queue()
-            for item in playlist:
-                track = f'{item["track"]["name"]} '
+            )
+            total = playlist['total']
+
+            for item in playlist['items']:
+                if item['track'] is None:
+                    offset += 1
+                    continue
+
+                track = item['track']['name']
                 artist = item['track']['artists'][0]['name']
-                track += artist
-                video_urls.append(track)
-            for url in video_urls:
-                q.put(url)
-            for i in range(15):
-                t1 = Thread(target=self.worker, args=(q,), daemon=True)
-                t1.start()
-                threads.append(t1)
-            for t in threads:
-                t.join()
-            for i in glob('./Spotify/*.mp3'):
-                zip_file.write(i)
-            zip_file.close()
+                name = f'{artist} - {track}'
+                fullname.append(name)
+
+                offset += 1
+
+            if total == offset:
+                break
+        self.download_track(message, fullname, is_zip=is_zip)
+
+    def download_track(self, message, song_list: list, is_zip):
+        lock = Lock()
+        with lock:
+            with ThreadPoolExecutor(min(32, cpu_count() or 0) + 4) as executor:
+                executor.map(self.search_track, song_list)
+
+        if is_zip:
+            zipfile = ZipFile('Spotify/playlist.zip', 'w')
+            for song in glob('Spotify/*.mp3'):
+                zipfile.write(song)
+                remove(song)
+            zipfile.close()
+
             edit(message, f'`{get_translation("uploadingZip")}`')
-            reply_doc(message, './Spotify/playlist.zip', delete_after_send=True)
-            message.delete()
-            for song in glob('./Spotify/*.mp3'):
-                remove(song)
-
+            reply_doc(
+                message,
+                'Spotify/playlist.zip',
+                delete_orig=True,
+                delete_after_send=True,
+            )
         else:
-            args = extract_args(message).split(' ', 2)
-            playlist_url = args[1]
-            edit(message, f'`{get_translation("downloadMedia")}`')
-            fields = "items.track.track_number,items.track.name,items.track.artists.name,items.track.album.name,items.track.album.release_date,total,items.track.album.images"
-            playlist = sp.playlist_items(
-                playlist_url,
-                fields=fields,
-                additional_types=['track'],
-            )['items']
-            threads = []
-            video_urls = []
-            q = Queue()
-            for item in playlist:
-                track = f'{item["track"]["name"]} '
-                artist = item['track']['artists'][0]['name']
-                track += artist
-                video_urls.append(track)
-            for url in video_urls:
-                q.put(url)
-            for i in range(15):
-                t1 = Thread(target=self.worker, args=(q,), daemon=True)
-                t1.start()
-                threads.append(t1)
-            for t in threads:
-                t.join()
-            for song in glob('./Spotify/*.mp3'):
-                reply_audio(message, song, delete_file=True)
-            for song in glob('./Spotify/*.mp3'):
-                remove(song)
+            for song in glob('Spotify/*.mp3'):
+                reply_audio(message, song, delete_orig=True, delete_file=True)
 
     def show_playlist(self, username=None):
-        sp = self.fetch_token()
         global counter
         counter = 0
         users_playlists = '\n'
 
         if username:
-            result = sp.user_playlists(username, limit=50)
+            result = self.sp.user_playlists(username, limit=50)
         else:
-            result = sp.user_playlists(username=self.username)
+            result = self.sp.user_playlists(username=self.username)
 
         for item in result['items']:
             pl_name = item['name']
@@ -173,7 +149,6 @@ class Spotipy:
         username,
         message,
     ):
-        sp = self.fetch_token()
         if username == None:
             return edit(message, (get_translation("invalidUsername")))
         else:
@@ -182,10 +157,10 @@ class Spotipy:
                 edit(message, get_translation("userNotFound", ['**', '`', username]))
 
             else:
-                user = sp.user(username)
+                user = self.sp.user(username)
                 profile_photo = [i['url'] for i in user['images']]
                 if profile_photo:
-                    r = urlretrieve("".join(profile_photo), './Spotify/pfp.png')
+                    r = urlretrieve("".join(profile_photo), 'Spotify/pfp.png')
                 else:
                     profile_photo = None
                     pass
@@ -213,11 +188,11 @@ class Spotipy:
                 if profile_photo and media_perm:
                     reply_img(
                         message,
-                        photo='./Spotify/pfp.png',
+                        photo='Spotify/pfp.png',
                         caption=out,
                         delete_file=True,
+                        delete_orig=True,
                     )
-                    message.delete()
                 else:
                     edit(message, out, preview=False)
 
@@ -225,15 +200,21 @@ class Spotipy:
 @sedenify(pattern='^.spoti(|fy)')
 def spotify_download(message):
     spotify = Spotipy()
-    args = extract_args(message).split(' ', 2)
-    if args[0] == 'dl' or args[0] == 'dl zip':
-        spotify.search_track(message)
+    args = extract_args(message).split()
 
-    elif 'show' == args[0]:
-        if len(args) == 1:
+    if len(args) == 2 and args[0] == 'dl' and not args[1] == 'zip':
+        url = args[1]
+        spotify.fetch_track(message, url)
+
+    elif len(args) == 3 and args[0] == 'dl' and args[1] == 'zip':
+        url = args[2]
+        spotify.fetch_track(message, url, is_zip=True)
+
+    elif len(args) == 2 and args[0] == 'show':
+        username = args[1]
+        if len(username) == 1:
             edit(message, f'`{get_translation("invalidUsername")}`')
         else:
-            username = args[1]
             spotify.show_users_detail(username=username, message=message)
     else:
         edit(message, f'`{get_translation("invalidProcess")}`')
