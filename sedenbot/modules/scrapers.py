@@ -547,11 +547,11 @@ def imeichecker(message):
                 continue
             result = response['data']
             break
-        reply_text = f"<strong>Sorgu Tarihi</strong> <code>{result['sorguTarihi']}</code>\n\
-<strong>IMEI:</strong> <code>{result['imei'][:-5] + 5*'*'}</code>\n\
-<strong>Durum:</strong> <code>{result['durum']}</code>\n\
-<strong>Cihaz:</strong> <code>{result['markaModel']}</code>\n\n\
-<strong>Powered by </strong><a href='https://github.com/TeamDerUntergang/Telegram-SedenUserBot'>Seden</a>♥"
+        reply_text = f"<b>Sorgu Tarihi</b> <code>{result['sorguTarihi']}</code>\n\
+<b>IMEI:</b> <code>{result['imei'][:-5] + 5*'*'}</code>\n\
+<b>Durum:</b> <code>{result['durum']}</code>\n\
+<b>Cihaz:</b> <code>{result['markaModel']}</code>\n\n\
+<b>Powered by </b><a href='https://github.com/TeamDerUntergang/Telegram-SedenUserBot'>Seden</a>♥"
         edit(message, reply_text, parse='HTML', preview=False)
     except Exception as e:
         raise e

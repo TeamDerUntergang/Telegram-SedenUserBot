@@ -59,7 +59,7 @@ def get_translation(transKey, params: list = None):
     return ret
 
 
-if version_info[0] < 3 or version_info[1] < 8:
+if version_info[0] < 3 or version_info[1] < 10:
     LOGS.warn(get_translation('pythonVersionError'))
     quit(1)
 
