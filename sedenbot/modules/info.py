@@ -61,6 +61,7 @@ def who_is(client, message):
             dc_id = reply_user.dc_id or get_translation('notSet')
             bot = reply_user.is_bot
             chats = len(client.get_common_chats(user_id))
+            premium = reply_user.is_premium
             bio = reply_chat.bio or get_translation('notSet')
             status = reply_user.status
             last_seen = LastSeen(bot, status)
@@ -79,6 +80,7 @@ def who_is(client, message):
                     photos,
                     dc_id,
                     chats,
+                    premium,
                     bio,
                     last_seen,
                     sudo if sudo else '',
