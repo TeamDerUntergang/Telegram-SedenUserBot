@@ -568,7 +568,7 @@
     "termUsage": "Please write a command.",
     "testException": "This is a test, don't submit a bug log.",
     "testLogId": "Testing LOG_ID value\u2026",
-    "tgUpLimit": "%1File size bigger than 2Gb.I cant do that.%1",
+    "tgUpLimit": "%1File size too big.I cant do that.%1",
     "transHeader": "%1From:%1 %2%3%2\n%1To:%1 %2%4%2\n",
     "translatorInfo": ".trt <text> [or reply]\nUsage: Translates text to the language which is set.\nUse .lang trt <language code> to set language for trt. (Default is English)\n\n.tts <text> [or reply]\nUsage: Translates text to speech for the language which is set.\nUse .lang tts <language code> to set language for tts. (Default is English)",
     "trtError": "Invalid destination language.",

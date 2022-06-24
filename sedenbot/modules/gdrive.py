@@ -84,21 +84,24 @@ class Gdrive:
         try:
             dl = SmartDL(urls=url, dest=self.dl_path, progress_bar=False)
             dl.start(blocking=False)
+            start_time = time()
             while not dl.isFinished():
                 if dl.isFinished():
                     break
-                edit(
-                    self.message,
-                    get_translation(
-                        "gdriveDown",
-                        [
-                            "**",
-                            "`",
-                            path.basename(dl.get_dest()),
-                            round(dl.get_progress(), 2),
-                        ],
-                    ),
-                )
+                if (curr_time := time()) - start_time > 5:
+                    start_time = curr_time
+                    edit(
+                        self.message,
+                        get_translation(
+                            "gdriveDown",
+                            [
+                                "**",
+                                "`",
+                                path.basename(dl.get_dest()),
+                                round(dl.get_progress(), 2),
+                            ],
+                        ),
+                    )
             return path.basename(dl.get_dest())
         except:
             return edit(self.message, f"Bir Hatayla Karşılaşıldı")
@@ -114,7 +117,7 @@ class Gdrive:
         size = file_info.get("size")
         file_name = file_info.get("name")
 
-        if int(size) > 2147483648:
+        if int(size) > 4294967296 if self.message.from_user.is_premium else 2147483648:
             return edit(self.message, get_translation("tgUpLimit", ["`"]))
         else:
             file_name = self.download_from_gdrive(url)

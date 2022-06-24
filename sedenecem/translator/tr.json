@@ -568,7 +568,7 @@
     "termUsage": "L\u00fctfen bir komut yaz\u0131n.",
     "testException": "Bu bir test, hata kayd\u0131 g\u00f6ndermeyin.",
     "testLogId": "LOG_ID de\u011feri test ediliyor\u2026",
-    "tgUpLimit": "%1Dosya boyutu 2gb dan fazla oldu\u011fu i\u00e7in bunu yapamam.%1",
+    "tgUpLimit": "%1Dosya boyutu fazla oldu\u011fu i\u00e7in bunu yapamam.%1",
     "transHeader": "%1Kaynak:%1 %2%3%2\n%1Hedef:%1 %2%4%2\n",
     "translatorInfo": ".trt <metin>\nKullan\u0131m: Basit bir \u00e7eviri mod\u00fcl\u00fc.\n.lang trt komutuyla varsay\u0131lan dili ayarlayabilirsin. (T\u00fcrk\u00e7e ayarl\u0131 geliyor merak etme)\n\n.tts <metin>\nKullan\u0131m: Metni sese d\u00f6n\u00fc\u015ft\u00fcr\u00fcr.\n.lang tts komutuyla varsay\u0131lan dili ayarlayabilirsin. (T\u00fcrk\u00e7e ayarl\u0131 geliyor merak etme)",
     "trtError": "Ayarlanan hedef dil ge\u00e7ersiz.",
