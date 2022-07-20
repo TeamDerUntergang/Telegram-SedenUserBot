@@ -60,13 +60,12 @@ def autopic(client, message):
                 load.write(get(AUTO_PP).content)
         else:
             try:
-                profile_photo = client.get_profile_photos('me', limit=1)
-                downloaded_file_name = download_media_wc(
-                    profile_photo[0], downloaded_file_name
-                )
+                for i in client.get_chat_photos('me', limit=1):
+                    downloaded_file_name = download_media_wc(
+                        i.file_id, downloaded_file_name
+                    )
             except BaseException:
-                edit(message, f'`{get_translation("autoppConfig")}`')
-                return
+                return edit(message, f'`{get_translation("autoppConfig")}`')
 
     edit(message, f'`{get_translation("autoppResult")}`')
 

@@ -42,7 +42,7 @@ def github(message):
 
     user_id = json.get('id', -1)
 
-    NULL_TEXT = f'{get_translation("gitNull")}'
+    NULL_TEXT = get_translation('gitNull')
 
     name = return_defval_onnull('name', NULL_TEXT)
     acc_type = return_defval_onnull('type', 'User')
