@@ -7,7 +7,14 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
+from os import environ
+from os.path import isfile
+
+from dotenv import load_dotenv
 from pyrogram import Client
+
+if isfile('config.env'):
+    load_dotenv('config.env')
 
 
 def select_lang():
@@ -21,8 +28,8 @@ def select_lang():
 
 
 def get_api_hash():
-    API_ID = ''
-    API_HASH = ''
+    API_ID = environ.get('API_ID', '')
+    API_HASH = environ.get('API_HASH', '') 
 
     while not API_ID.isdigit() or len(API_ID) < 5 or len(API_ID) > 8:
         API_ID = input('API ID: ')
