@@ -17,7 +17,7 @@ from urllib.error import HTTPError
 from urllib.parse import quote_plus
 
 from bs4 import BeautifulSoup
-from emoji import get_emoji_regexp
+from emoji import demojize
 from googletrans import LANGUAGES, Translator
 from gtts import gTTS
 from gtts.lang import tts_langs
@@ -461,7 +461,7 @@ def translate(message):
         return
 
     try:
-        reply_text = translator.translate(deEmojify(args), dest=TRT_LANG)
+        reply_text = translator.translate(demojize(args), dest=TRT_LANG)
     except ValueError:
         edit(message, f'`{get_translation("trtError")}`')
         return
@@ -479,9 +479,6 @@ def translate(message):
 
     send_log(get_translation('trtLog', [source_lan.title(), transl_lan.title()]))
 
-
-def deEmojify(inputString):
-    return get_emoji_regexp().sub(u'', inputString)
 
 
 @sedenify(pattern='^.lang')
