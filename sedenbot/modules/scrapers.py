@@ -21,6 +21,7 @@ from emoji import demojize
 from googletrans import LANGUAGES, Translator
 from gtts import gTTS
 from gtts.lang import tts_langs
+from pyrogram import enums
 from pyrogram.types import InputMediaPhoto
 from requests import get, post
 from sedenbot import HELP, SEDEN_LANG
@@ -480,7 +481,6 @@ def translate(message):
     send_log(get_translation('trtLog', [source_lan.title(), transl_lan.title()]))
 
 
-
 @sedenify(pattern='^.lang')
 def lang(message):
     arr = extract_args(message).split(' ', 1)
@@ -549,7 +549,7 @@ def imeichecker(message):
 <b>Durum:</b> <code>{result['durum']}</code>\n\
 <b>Cihaz:</b> <code>{result['markaModel']}</code>\n\n\
 <b>Powered by </b><a href='https://github.com/TeamDerUntergang/Telegram-SedenUserBot'>Seden</a>♥"
-        edit(message, reply_text, parse='HTML', preview=False)
+        edit(message, reply_text, parse=enums.ParseMode.HTML, preview=False)
     except Exception as e:
         raise e
 
