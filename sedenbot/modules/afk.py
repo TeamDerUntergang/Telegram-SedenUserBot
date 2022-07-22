@@ -7,11 +7,13 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
+from datetime import datetime
 from random import choice, randint
 from time import sleep
 
+from humanize import i18n, naturaltime
 from pyrogram import ContinuePropagation, StopPropagation
-from sedenbot import HELP, PM_AUTO_BAN, TEMP_SETTINGS, app
+from sedenbot import HELP, PM_AUTO_BAN, SEDEN_LANG, TEMP_SETTINGS, app
 from sedenecem.core import (
     edit,
     extract_args,
@@ -26,6 +28,15 @@ AFKSTR = [get_translation(f'afkstr{i+1}') for i in range(0, 22)]
 TEMP_SETTINGS['AFK_USERS'] = {}
 TEMP_SETTINGS['IS_AFK'] = False
 TEMP_SETTINGS['COUNT_MSG'] = 0
+TEMP_SETTINGS['AFK_TIME'] = {}
+
+
+def get_time(now, then) -> str:
+    i18n.activate('tr_TR') if SEDEN_LANG == 'tr' else i18n.deactivate()
+    time = naturaltime(now - then)
+    return time
+
+
 # =================================================================
 
 
@@ -43,6 +54,7 @@ def mention_afk(msg):
     rep_m = msg.reply_to_message
     if mentioned or rep_m and rep_m.from_user and rep_m.from_user.id == me.id:
         if TEMP_SETTINGS['IS_AFK']:
+            afk_duration = get_time(datetime.now(), TEMP_SETTINGS['AFK_TIME'])
             if msg.from_user.id not in TEMP_SETTINGS['AFK_USERS']:
                 if 'AFK_REASON' in TEMP_SETTINGS:
                     reply(
@@ -55,6 +67,7 @@ def mention_afk(msg):
                                 me.id,
                                 '`',
                                 TEMP_SETTINGS['AFK_REASON'],
+                                afk_duration,
                             ],
                         ),
                     )
@@ -75,6 +88,7 @@ def mention_afk(msg):
                                     me.id,
                                     '`',
                                     TEMP_SETTINGS['AFK_REASON'],
+                                    afk_duration,
                                 ],
                             ),
                         )
@@ -110,15 +124,24 @@ def afk_on_pm(message):
             apprv = True
     else:
         apprv = True
+
     if apprv and TEMP_SETTINGS['IS_AFK']:
         me = TEMP_SETTINGS['ME']
+        afk_duration = get_time(datetime.now(), TEMP_SETTINGS['AFK_TIME'])
         if message.from_user.id not in TEMP_SETTINGS['AFK_USERS']:
             if 'AFK_REASON' in TEMP_SETTINGS:
                 reply(
                     message,
                     get_translation(
                         "afkMessage2",
-                        ['**', me.first_name, me.id, '`', TEMP_SETTINGS['AFK_REASON']],
+                        [
+                            '**',
+                            me.first_name,
+                            me.id,
+                            '`',
+                            TEMP_SETTINGS['AFK_REASON'],
+                            afk_duration,
+                        ],
                     ),
                 )
             else:
@@ -138,6 +161,7 @@ def afk_on_pm(message):
                                 me.id,
                                 '`',
                                 TEMP_SETTINGS['AFK_REASON'],
+                                afk_duration,
                             ],
                         ),
                     )
@@ -168,6 +192,7 @@ def set_afk(message):
         edit(message, f'**{get_translation("afkStart")}**')
     send_log(get_translation('afkLog'))
     TEMP_SETTINGS['IS_AFK'] = True
+    TEMP_SETTINGS['AFK_TIME'] = datetime.now()
     raise StopPropagation
 
 
@@ -199,6 +224,7 @@ def type_afk_is_not_true(message):
             )
         TEMP_SETTINGS['COUNT_MSG'] = 0
         TEMP_SETTINGS['AFK_USERS'] = {}
+        TEMP_SETTINGS['AFK_TIME'] = {}
         if 'AFK_REASON' in TEMP_SETTINGS:
             del TEMP_SETTINGS['AFK_REASON']
     raise ContinuePropagation
