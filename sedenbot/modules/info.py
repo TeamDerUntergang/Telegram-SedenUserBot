@@ -80,7 +80,7 @@ def who_is(client, message):
                     photos,
                     dc_id,
                     chats,
-                    premium,
+                    '✅' if premium else '❌',
                     bio,
                     last_seen,
                     sudo if sudo else '',
