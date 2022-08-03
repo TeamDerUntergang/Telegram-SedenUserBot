@@ -36,6 +36,9 @@ def who_is(client, message):
         perm = message.chat.permissions
         media_perm = perm.can_send_media_messages
 
+    if message.chat.type == enums.ChatType.PRIVATE:
+        media_perm = True
+
     for reply_user in find_user:
         try:
             reply_chat = client.get_chat(reply_user.id)
