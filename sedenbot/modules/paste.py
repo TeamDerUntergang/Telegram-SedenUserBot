@@ -6,25 +6,33 @@
 #
 # All rights reserved. See COPYING, AUTHORS.
 #
-from requests import post
-from sedenecem.core import edit, get_translation, sedenify
+
+from requests import get, post
+from requests.exceptions import HTTPError, Timeout, TooManyRedirects
+from sedenbot import HELP
+from sedenecem.core import edit, extract_args, get_translation, sedenify
 
 
 @sedenify(pattern="^.paste")
-def paste(message):
-
+def paste_hastebin(message):
     text = message.text.strip()
-    if len(text) <= 6:
+    reply = message.reply_to_message
+    edit(message, f'`{get_translation("processing")}`')
+    if not reply and len(text) <= 6:
         return edit(message, f'`{get_translation("pasteErr")}`')
 
-    paste = text.replace('.paste ', '').encode('utf-8')
+    paste = text.replace('.paste ', '')
+    url = "https://hastebin.com/documents"
 
-    url = "https://www.toptal.com/developers/hastebin/documents"
+    if reply:
+        if not reply.text:
+            return edit(message, f'`{get_translation("pasteErr")}`')
+        paste = reply.text
 
     try:
         r = post(
             url=url,
-            data=paste,
+            data=paste.encode('utf-8'),
         )
     except BaseException as e:
         edit(message, f'`{get_translation("pasteConErr")}`')
@@ -32,7 +40,42 @@ def paste(message):
     try:
         resp = r.json()
         key = resp['key']
-        new_url = f"https://www.toptal.com/developers/hastebin/{key}"
-        return edit(message, new_url, False)
+        new_url = f"https://hastebin.com/{key}"
+        return edit(message, new_url, preview=False)
     except BaseException as e:
         raise e
+
+
+@sedenify(pattern='^.getpaste')
+def get_hastebin_text(message):
+    args = extract_args(message)
+    reply = message.reply_to_message
+    edit(message, f'`{get_translation("processing")}`')
+
+    if reply:
+        args = reply.text
+
+    if args.startswith('https://hastebin.com/'):
+        args = args[len('https://hastebin.com/') :]
+    elif args.startswith("hastebin.com/"):
+        args = args[len("hastebin.com/") :]
+    else:
+        return edit(message, f'`{get_translation("wrongURL")}`')
+
+    resp = get(f'https://hastebin.com/raw/{args}')
+
+    try:
+        resp.raise_for_status()
+    except HTTPError as err:
+        return edit(message, get_translation('banError', ['`', '**', err]))
+    except Timeout as err:
+        return edit(message, get_translation('banError', ['`', '**', err]))
+    except TooManyRedirects as err:
+        return edit(message, get_translation('banError', ['`', '**', err]))
+
+    out = f'`Hastebin içeriği başarıyla getirildi!`\n\n`İçerik:` {resp.text}'
+
+    edit(message, out)
+
+
+HELP.update({'hastebin': get_translation('pasteInfo')})

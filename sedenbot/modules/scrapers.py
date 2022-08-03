@@ -516,13 +516,20 @@ def lang(message):
 
 @sedenify(pattern='^.d[oö]viz')
 def doviz(message):
-    page = BeautifulSoup(get('https://www.doviz.com/').content, 'html.parser')
+    req = get(
+        'https://www.doviz.com/',
+        headers={
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.9999.0 Safari/537.36'
+        },
+    )
+    page = BeautifulSoup(req.content, 'html.parser')
     res = page.find_all('div', {'class', 'item'})
     out = '**Güncel döviz kurları:**\n\n'
     for i in res:
         name = i.find('span', {'class': 'name'}).text
         value = i.find('span', {'class': 'value'}).text
-        out += f'`•`  **{name}:** `{value}`\n'
+        changes = i.find('span', {'data-socket-attr': 'a'}).text
+        out += f'`•`  **{name}:** `{value}` // `{changes}`\n'
     edit(message, out)
 
 
