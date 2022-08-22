@@ -7,12 +7,10 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-import math
+from math import floor, sqrt
 from os import remove, path
 
 from exifread import process_file
-from fractions import Fraction
-from PIL import Image
 from sedenbot import HELP
 from sedenecem.core import (
     download_media_wc,
@@ -22,7 +20,7 @@ from sedenecem.core import (
 )
 
 
-@sedenify(pattern="^.exif")
+@sedenify(pattern="^.exif$")
 def exif_data(message):
     reply = message.reply_to_message
     google_coordinate = ["https://www.google.com/maps?q="]
@@ -96,10 +94,11 @@ def exif_data(message):
 
 
 def calculate_aperture(string):
-    division = string.split("/")
-    return "f/%.1f" % (
-        math.sqrt(2.0) ** (int(division[0]) / int(division[1]))
-    )
+    if '/' in string:
+        division = string.split("/")
+        return "f/%.1f" % (sqrt(2.0) ** (int(division[0]) / int(division[1])))
+    else:
+        return f'f/{float(string):.1f}'
 
 
 def calculate_brightness(string):
@@ -108,22 +107,27 @@ def calculate_brightness(string):
 
 
 def calculate_fnumber(string):
-    division = string.split("/")
-    return "f/%.1f" % (int(division[0]) / int(division[1]))
+    if '/' in string:
+        division = string.split("/")
+        return "f/%.1f" % (int(division[0]) / int(division[1]))
+    return f'f/{float(string):.1f}'
 
 
 def calculate_focal(string):
-    division = string.split("/")
-    return "{0} mm".format(
-        str(math.floor(int(division[0]) / int(division[1])))
-    )
+    if '/' in string:
+        division = string.split("/")
+        return "{0} mm".format(str(floor(int(division[0]) / int(division[1]))))
+    return f'{string} mm'
 
 
 def calculate_shutter(string):
-    division = string.split("/")
-    return "1/{0} sec".format(
-        str(math.floor(2 ** (int(division[0]) / int(division[1]))))
-    )
+    print(string)
+    if '/' in string:
+        division = string.split("/")
+        return "1/{0} sec".format(
+            str(floor(2 ** (int(division[0]) / int(division[1]))))
+        )
+    return f"1/{int(string)} sec"
 
 
 def calculate_altitude(string, google_coordinate):
@@ -146,10 +150,8 @@ def calculate_gps(coord, google_coordinate):
         minutes = int(minutes[0])
         seconds = int(seconds[0]) / int(seconds[1])
 
-    google_coordinate.append(
-        f"{hour}%C2%B0{math.floor(minutes)}'{seconds:.2f}%22"
-    )
-    return f"{hour}°{math.floor(minutes)}'{seconds:.2f}\""
+    google_coordinate.append(f"{hour}%C2%B0{floor(minutes)}'{seconds:.2f}%22")
+    return f"{hour}°{floor(minutes)}'{seconds:.2f}\""
 
 
 def calculate_latitude_ref(coord, google_coordinate):
