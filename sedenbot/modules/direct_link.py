@@ -217,13 +217,11 @@ def androidfilehost(link: str) -> str:
 
 
 def useragent():
-    req = get('https://user-agents.net/random')
+    req = get('https://useragents.io/random')
     soup = BeautifulSoup(req.text, 'html.parser')
-    agent = soup.find('article')
-    if agent:
-        agent = agent.find('li')
-        if agent:
-            return agent.find('a').text.replace('"', '')
+    agent = soup.find_all('td')
+    for i in agent:
+        return i.find('a').text
 
     return 'Googlebot/2.1 (+http://www.google.com/bot.html)'
 
