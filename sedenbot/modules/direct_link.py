@@ -52,7 +52,7 @@ def direct(message):
             reply += f'`{get_translation("directUrlNotFound")}`\n'
             continue
         try:
-            if check(link, 'drive.google.com'):
+            if check(link, ['drive.google.com', 'docs.google.com']):
                 reply += gdrive(link)
             elif check(link, 'zippyshare.com'):
                 reply += zippy_share(link)
