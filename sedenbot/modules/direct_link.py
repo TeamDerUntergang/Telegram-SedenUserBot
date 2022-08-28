@@ -83,7 +83,9 @@ def gdrive(link: str) -> str:
     response = get(url=dl_url, headers=headers, stream=True)
     name = response.headers.get('Content-Disposition').split(';')[1].split('"')[1]
     size = f'{int(response.headers.get("Content-Length")) / (1024 * 1024):0.2f}'
-    reply += f'[{name} ({size}MB)]({dl_url})\n'
+    alternative_url = response.url
+    reply += f'[1 - {name} ({size}MB)]({dl_url})\n'
+    reply += f'[2 - {name} ({size}MB)]({alternative_url})\n'
     return reply
 
 
