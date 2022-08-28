@@ -52,7 +52,9 @@ def direct(message):
             reply += f'`{get_translation("directUrlNotFound")}`\n'
             continue
         try:
-            if check(link, 'zippyshare.com'):
+            if check(link, 'drive.google.com'):
+                reply += gdrive(link)
+            elif check(link, 'zippyshare.com'):
                 reply += zippy_share(link)
             elif check(link, 'yadi.sk'):
                 reply += yandex_disk(link)
@@ -71,6 +73,18 @@ def direct(message):
         except BaseException:
             reply += f'{get_translation("directError", [link])}\n'
     edit(message, reply, preview=False)
+
+
+def gdrive(link: str) -> str:
+    reply = ''
+    url_id = link.split('/')[5]
+    dl_url = f'https://drive.google.com/u/0/uc?id={url_id}&export=download&confirm=t'
+    headers = {'user-agent': useragent()}
+    response = get(url=dl_url, headers=headers, stream=True)
+    name = response.headers.get('Content-Disposition').split(';')[1].split('"')[1]
+    size = f'{int(response.headers.get("Content-Length")) / (1024 * 1024):0.2f}'
+    reply += f'[{name} ({size}MB)]({dl_url})\n'
+    return reply
 
 
 def zippy_share(link: str) -> str:
