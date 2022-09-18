@@ -14,7 +14,7 @@ from urllib.parse import unquote, urlparse
 from bs4 import BeautifulSoup
 from requests import Session, get
 from sedenbot import HELP
-from sedenecem.core import edit, extract_args, get_translation, get_webdriver, sedenify
+from sedenecem.core import edit, extract_args, get_translation, get_webdriver, reply_doc, sedenify
 
 
 @sedenify(pattern=r'^.direct')
@@ -53,7 +53,7 @@ def direct(message):
             continue
         try:
             if check(link, ['drive.google.com', 'docs.google.com']):
-                reply += gdrive(link)
+                reply += gdrive(link, message)
             elif check(link, 'zippyshare.com'):
                 reply += zippy_share(link)
             elif check(link, 'yadi.sk'):
@@ -75,12 +75,17 @@ def direct(message):
     edit(message, reply, preview=False)
 
 
-def gdrive(link: str) -> str:
+def gdrive(link: str, message) -> str:
     reply = ''
     url_id = link.split('/')[5]
     dl_url = f'https://drive.google.com/u/0/uc?id={url_id}&export=download&confirm=t'
     headers = {'user-agent': useragent()}
     response = get(url=dl_url, headers=headers, stream=True)
+    if response.status_code == 429:
+        reply_doc(message, 'cookies.txt', caption=get_translation("directGdriveCookieUsage"))
+        reply += get_translation("directGdriveCookie")
+        cookies = {'__Secure-1PSID': 'OQhdhyIxvvx3wyIAlCJ3hUqpH3ttB4osdTsnFnpkDWJCtt7XqwPg5PZZKN6KNnoBsXJrQw.'}
+        response = get(url=dl_url, headers=headers, cookies=cookies, stream=True)
     name = response.headers.get('Content-Disposition').split(';')[1].split('"')[1]
     size = f'{int(response.headers.get("Content-Length")) / (1024 * 1024):0.2f}'
     alternative_url = response.url
