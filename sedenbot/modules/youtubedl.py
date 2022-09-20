@@ -16,7 +16,7 @@ from requests import get
 from sedenbot import HELP
 from sedenecem.core import (
     edit,
-    extract_args,
+    extract_args_arr,
     get_download_dir,
     get_translation,
     reply_audio,
@@ -26,9 +26,9 @@ from sedenecem.core import (
 from yt_dlp import YoutubeDL
 
 
-@sedenify(pattern='^.(youtube|yt)dl')
+@sedenify(pattern='^.y(outube|tdl)')
 def youtubedl(message):
-    args = extract_args(message).split(' ', 2)
+    args = extract_args_arr(message)
 
     if len(args) != 2:
         edit(message, f'`{get_translation("wrongCommand")}`')
@@ -39,7 +39,7 @@ def youtubedl(message):
 
     if util == 'mp4':
         ydl_opts = {
-            'outtmpl': f'%(id)s.%(ext)s',
+            'outtmpl': '%(id)s.%(ext)s',
             'format': 'bestvideo[ext=mp4][height<=?1080]+bestaudio[ext=m4a]/best',
             'addmetadata': True,
             'prefer_ffmpeg': True,
@@ -98,7 +98,7 @@ def youtubedl(message):
 
     elif util == 'mp3':
         ydl_opts = {
-            'outtmpl': f'%(title)s.%(ext)s',
+            'outtmpl': '%(id)s.%(ext)s',
             'format': 'bestaudio/best',
             'addmetadata': True,
             'writethumbnail': True,
@@ -136,7 +136,7 @@ def youtubedl(message):
         edit(message, f'`{get_translation("uploadMedia")}`')
         reply_audio(
             message,
-            f'{title}.mp3',
+            f'{video_info["id"]}.mp3',
             caption=f"**{get_translation('videoUploader')}** `{uploader}`",
             duration=duration,
             delete_orig=True,
