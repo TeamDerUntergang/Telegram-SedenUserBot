@@ -70,17 +70,19 @@ def exif_data(message):
         if i in unit_dict.keys():
             converted = ""
 
-            # GPS Data
-            if "GPS" == i.split(" ")[0]:
-                converted = unit_dict[i](data[i].printable, google_coordinate)
+            if not str(data[i]) in ['0', '0/0', '[0/0, 0/0, 0/0]']:
 
-            # Thumbnail Image Data in Byte Array
-            elif type(data[i]) == bytes:
-                converted = unit_dict[i](data[i])
+                # GPS Data
+                if "GPS" == i.split(" ")[0]:
+                    converted = unit_dict[i](data[i].printable, google_coordinate)
 
-            # Others
-            else:
-                converted = unit_dict[i](data[i].printable)
+                # Thumbnail Image Data in Byte Array
+                elif type(data[i]) == bytes:
+                    converted = unit_dict[i](data[i])
+
+                # Others
+                else:
+                    converted = unit_dict[i](data[i].printable)
 
             data_str += "{0} : {1}\n".format(i, converted)
         else:
