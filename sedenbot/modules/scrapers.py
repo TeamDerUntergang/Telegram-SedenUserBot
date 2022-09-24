@@ -533,7 +533,7 @@ def doviz(message):
     edit(message, out)
 
 
-@sedenify(pattern='^.imeicheck')
+@sedenify(pattern='^.imei(checker)?')
 def imeichecker(message):
     argv = extract_args(message)
     imei = argv.split(' ', 1)[0]
@@ -551,18 +551,25 @@ def imeichecker(message):
                 continue
             result = response['data']
             break
-        reply_text = f"<b>Sorgu Tarihi</b> <code>{result['sorguTarihi']}</code>\n\
-<b>IMEI:</b> <code>{result['imei'][:-5] + 5*'*'}</code>\n\
-<b>Durum:</b> <code>{result['durum']}</code>\n\
-<b>Cihaz:</b> <code>{result['markaModel']}</code>\n\n\
-<b>Powered by </b><a href='https://github.com/TeamDerUntergang/Telegram-SedenUserBot'>Seden</a>♥"
-        edit(message, reply_text, parse=enums.ParseMode.HTML, preview=False)
+        _marka = findall(r'Marka:(.+) Model', result['markaModel'])
+        _model = findall(r'Model Bilgileri:(.+)', result['markaModel'])
+        marka = _marka[0].replace(',','').strip() if _marka else "Marka Bilgisi Bulunamadi"
+        model = _model[0].replace(',','').strip() if _model else "Model Bilgisi Bulunamadi"
+        reply_text = (
+            f"<b>Sorgu Tarihi</b> ⇾ <code>{result['sorguTarihi']}</code>\n"
+            f"<b>IMEI</b> ⇾ <code>{result['imei'][:-5]+5*'*'}</code>\n"
+            f"<b>Durum</b> ⇾ <code>{result['durum']}</code>\n"
+            f"<b>Marka</b> ⇾ <code>{marka}</code>\n"
+            f"<b>Model</b> ⇾ <code>{model}</code>\n\n"
+            f"<b>Powered by</b> ⇾ <a href='https://github.com/TeamDerUntergang/Telegram-SedenUserBot'>Seden ♥</a>\n"
+        )
+        edit(message, reply_text, parse=enums.parse_mode.ParseMode.HTML, preview=False)
     except Exception as e:
         raise e
 
 
 HELP.update({'img': get_translation('imgInfo')})
-HELP.update({'imeicheck': get_translation('imeiInfo')})
+HELP.update({'imei': get_translation('imeiInfo')})
 HELP.update({'carbon': get_translation('carbonInfo')})
 HELP.update({'goolag': get_translation('googleInfo')})
 HELP.update({'duckduckgo': get_translation('ddgoInfo')})

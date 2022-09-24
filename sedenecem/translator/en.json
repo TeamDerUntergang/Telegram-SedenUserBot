@@ -256,7 +256,7 @@
     "herokuInfo": ".quota\nUsage: It shows your Heroku resource & dyno usage.\n\n.drestart\nUsage: Restarts your Heroku dyno.\n\n.logs\nUsage: Sends Heroku app log.",
     "herokuQuotaInHM": "%1h %2m",
     "herokuQuotaInfo": "%2Heroku Remaining Quota%2\n\n%2Total:%2 %1%3%1\n%2Used:%2 %1%4 (%5\u00bd)%1\n%2Remaining:%2 %1%6 (%7\u00bd)%1\n%2App usage:%2 %1%8 (%9\u00bd)%1",
-    "imeiInfo": ".imeicheck <imeinumber>\nUsage: Check if IMEI is registered and get device information about model, vendor, etc.",
+    "imeiInfo": ".imei <imeinumber>\nUsage: Check if IMEI is registered and get device information about model, vendor, etc.",
     "imgInfo": ".img <query>\nUsage: Does an image search on Google and shows 5 images.",
     "imgUsage": "You must enter a search term.",
     "infoWeather": ".weather <city> or .weather\nUsage: Gets the weather of a city.",
