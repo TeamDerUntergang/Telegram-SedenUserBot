@@ -117,7 +117,11 @@ class Gdrive:
         size = file_info.get("size")
         file_name = file_info.get("name")
 
-        if int(size) > 4294967296 if self.message.from_user.is_premium else 2147483648:
+        if (
+            int(size) > 4294967296
+            if self.message.from_user.is_premium
+            else int(size) > 2147483648
+        ):
             return edit(self.message, get_translation("tgUpLimit", ["`"]))
         else:
             file_name = self.download_from_gdrive(url)
@@ -149,7 +153,7 @@ class Gdrive:
         done = False
         while done is False:
             status, done = downloader.next_chunk()
-            progress = edit(
+            edit(
                 self.message,
                 get_translation(
                     "gdriveDown",
