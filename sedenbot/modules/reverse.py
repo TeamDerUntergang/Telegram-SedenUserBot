@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -23,11 +23,11 @@ from sedenecem.core import (
     get_translation,
     reply_doc,
     sedenify,
+    useragent,
 )
 
 opener = request.build_opener()
-useragent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4464.5 Safari/537.36'
-opener.addheaders = [('User-agent', useragent)]
+opener.addheaders = [('User-agent', useragent())]
 
 
 @sedenify(pattern='^.reverse$')
@@ -65,7 +65,7 @@ def reverse(message):
             edit(message, f'`{get_translation("reverseGoogle")}`')
             return
 
-        remove(photo)
+        #remove(photo)
         match = ParseSauce(fetchUrl + '&preferences?hl=en&fg=1#languages')
         guess = match['best_guess']
         imgspage = match['similar_images']

@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -22,8 +22,8 @@ from sedenecem.core import (
 )
 
 
-@sedenify(pattern='^.whois', compat=False)
-def who_is(client, message):
+@sedenify(pattern='^.whois')
+def who_is(message):
     find_user = extract_user(message)
     reply = message.reply_to_message
     media_perm = None
@@ -41,7 +41,7 @@ def who_is(client, message):
 
     for reply_user in find_user:
         try:
-            reply_chat = client.get_chat(reply_user.id)
+            reply_chat = message._client.get_chat(reply_user.id)
         except Exception:
             return edit(message, f'`{get_translation("whoisError")}`')
         if reply_user or reply_chat is not None:
@@ -60,16 +60,17 @@ def who_is(client, message):
                 else get_translation('notSet')
             )
             user_id = reply_user.id
-            photos = client.get_chat_photos_count(user_id)
+            photos = message._client.get_chat_photos_count(user_id)
             dc_id = reply_user.dc_id or get_translation('notSet')
             bot = reply_user.is_bot
-            chats = len(client.get_common_chats(user_id))
+            chats = len(message._client.get_common_chats(user_id))
             premium = reply_user.is_premium
             bio = reply_chat.bio or get_translation('notSet')
             status = reply_user.status
-            last_seen = LastSeen(bot, status)
-            sudo = SudoCheck(user_id)
-            blacklist = BlacklistCheck(user_id)
+            user_utils = UserUtils(BRAIN, BLACKLIST)
+            last_seen = user_utils.last_seen(bot, status)
+            sudo = user_utils.sudo_check(user_id)
+            blacklist = user_utils.blacklist_check(user_id)
 
             caption = get_translation(
                 'whoisResult',
@@ -98,35 +99,38 @@ def who_is(client, message):
         return edit(message, caption)
 
 
-def LastSeen(bot, status):
-    if bot:
-        return 'BOT'
-    elif status == enums.UserStatus.ONLINE:
-        return get_translation('statusOnline')
-    elif status == enums.UserStatus.OFFLINE:
-        return get_translation('statusOffline')
-    elif status == enums.UserStatus.RECENTLY:
-        return get_translation('statusRecently')
-    elif status == enums.UserStatus.LAST_WEEK:
-        return get_translation('statusWeek')
-    elif status == enums.UserStatus.LAST_MONTH:
-        return get_translation('statusMonth')
-    elif status == enums.UserStatus.LONG_AGO:
-        return get_translation('statusLong')
+class UserUtils:
+    def __init__(self, brain, blacklist):
+        self.brain = brain
+        self.blacklist = blacklist
+
+    def last_seen(self, bot, status):
+        if bot:
+            return 'BOT'
+        elif status == enums.UserStatus.ONLINE:
+            return get_translation('statusOnline')
+        elif status == enums.UserStatus.OFFLINE:
+            return get_translation('statusOffline')
+        elif status == enums.UserStatus.RECENTLY:
+            return get_translation('statusRecently')
+        elif status == enums.UserStatus.LAST_WEEK:
+            return get_translation('statusWeek')
+        elif status == enums.UserStatus.LAST_MONTH:
+            return get_translation('statusMonth')
+        elif status == enums.UserStatus.LONG_AGO:
+            return get_translation('statusLong')
+
+    def sudo_check(self, user_id):
+        if user_id in self.brain:
+            return get_translation('sudoCheck')
+
+    def blacklist_check(self, user_id):
+        if user_id in self.blacklist:
+            return get_translation('blacklistCheck')
 
 
-def SudoCheck(user_id):
-    if user_id in BRAIN:
-        return get_translation('sudoCheck')
-
-
-def BlacklistCheck(user_id):
-    if user_id in BLACKLIST:
-        return get_translation('blacklistCheck')
-
-
-@sedenify(pattern='^.ginfo', compat=False)
-def get_chat_info(client, message):
+@sedenify(pattern='^.ginfo')
+def get_chat_info(message):
     args = extract_args(message)
     reply = message.reply_to_message
     chat_id = message.chat.id
@@ -134,8 +138,8 @@ def get_chat_info(client, message):
     edit(message, f'`{get_translation("processing")}`')
 
     try:
-        reply_chat = client.get_chat(args or chat_id)
-        peer = client.resolve_peer(args or chat_id)
+        reply_chat = message._client.get_chat(args or chat_id)
+        peer = message._client.resolve_peer(args or chat_id)
     except PeerIdInvalid:
         edit(message, f'`{get_translation("groupNotFound")}`')
         return
@@ -145,7 +149,7 @@ def get_chat_info(client, message):
         media_perm = perm.can_send_media_messages
 
     try:
-        online_users = client.invoke(GetOnlines(peer=peer))
+        online_users = message._client.invoke(GetOnlines(peer=peer))
         online = online_users.onlines
     except PeerIdInvalid:
         edit(message, f'`{get_translation("groupNotFound")}`')

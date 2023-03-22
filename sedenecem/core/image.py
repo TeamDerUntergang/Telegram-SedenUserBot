@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -16,6 +16,16 @@ from .misc import get_download_dir
 
 
 def sticker_resize(photo):
+    """
+    Resizes a given sticker image file to have a maximum dimension of 512 pixels while maintaining aspect ratio.
+    If the image is already smaller than 512x512 pixels, it will be resized to its original size.
+    
+    Args:
+        photo (str): The file path to the sticker image file to be resized.
+        
+    Returns:
+        str: The file path to the resized image file in PNG format, stored in a temporary directory.
+    """
     image = Image.open(photo)
     if (image.width and image.height) < 512:
         size1 = image.width
@@ -42,6 +52,15 @@ def sticker_resize(photo):
 
 
 def video_convert(video):
+    """
+    Converts a video file to a webm format with dimensions of 512x512 and duration of 3.0 seconds.
+    
+    Args:
+        video (str): Path of the video file to be converted.
+    
+    Returns:
+        str: Path of the converted webm file.
+    """
     process = Popen(
         [
             'ffmpeg',

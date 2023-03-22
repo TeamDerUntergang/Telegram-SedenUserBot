@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -14,8 +14,16 @@ from urllib.parse import urlencode
 
 from bs4 import BeautifulSoup
 from requests import get
+
 from sedenbot import HELP
-from sedenecem.core import edit, extract_args, get_translation, sedenify, use_proxy
+from sedenecem.core import (
+    ProxyHandler,
+    edit,
+    extract_args,
+    get_translation,
+    sedenify,
+    useragent,
+)
 
 
 @sedenify(pattern='^.magisk$')
@@ -66,6 +74,40 @@ def phh(message):
     if count < 1:
         releases = get_translation('phhError', ['`', '**', search])
     edit(message, releases, preview=False)
+
+
+@sedenify(pattern='^.l(ineage(os)?|os)')
+def get_lineageos(message):
+    args = extract_args(message).lower()
+
+    if len(args) < 1:
+        return edit(message, f'`{get_translation("wrongCommand")}`')
+    else:
+        edit(message, f'`{get_translation("processing")}`')
+
+    req = get(
+        f'https://download.lineageos.org/api/v1/{args}/nightly/*',
+        headers={'User-Agent': useragent()},
+    ).json()
+
+    response = req['response']
+
+    if response:
+        build = response[0]
+        time = datetime.utcfromtimestamp(int(build['datetime'])).strftime('%Y-%m-%d')
+        filename = build['filename']
+        size = '{:,.2f} MB'.format(int(build['size']) / float(1 << 20))
+        build_url = build['url']
+        version = build['version']
+    else:
+        return edit(message, get_translation('losNoBuild', ['**', '`', args]))
+
+    edit(
+        message,
+        get_translation(
+            'losBuild', ['**', '`', args, filename, build_url, size, version, time]
+        ),
+    )
 
 
 @sedenify(pattern='^.device')
@@ -213,7 +255,8 @@ def specs(message):
         edit(message, f'`{get_translation("specsUsage")}`')
         return
 
-    proxy = use_proxy(message)
+    handler = ProxyHandler()
+    proxy = handler.use_proxy(message)
     link = find_device(args, proxy)
 
     if not link:
@@ -222,10 +265,7 @@ def specs(message):
 
     req = get(
         link,
-        headers={
-            'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; '
-            '+http://www.google.com/bot.html)'
-        },
+        headers={'User-Agent': useragent()},
         proxies=proxy,
     )
     soup = BeautifulSoup(req.text, features='html.parser')
@@ -310,10 +350,7 @@ def find_device(query, proxy):
     query = replace_query(raw_query)
     req = get(
         f'https://www.gsmarena.com/res.php3?{query}',
-        headers={
-            'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; '
-            '+http://www.google.com/bot.html)'
-        },
+        headers={'User-Agent': useragent()},
         proxies=proxy,
     )
     soup = BeautifulSoup(req.text, features='html.parser')
@@ -391,7 +428,7 @@ def ofrp_get(url):
     try:
         head = {
             'Accept-Language': 'en-US,en;q=0.8',
-            'User-Agent': 'ArabyBot (compatible; Mozilla/5.0; GoogleBot; FAST Crawler 6.4; http://www.araby.com;)',
+            'User-Agent': useragent(),
             'Referer': 'https://orangefox.download/en',
         }
         req = get(url, headers=head)

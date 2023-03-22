@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -31,17 +31,17 @@ ALWAYS_ONLINE = 'offline'
 # ===============================================================
 
 
-@sedenify(pattern='^.reserved$', compat=False)
-def reserved(client, message):
-    sonuc = client.invoke(GetAdminedPublicChannels())
-    mesaj = ''
-    for channel_obj in sonuc.chats:
-        mesaj += f'{channel_obj.title}\n@{channel_obj.username}\n\n'
-    edit(message, mesaj)
+@sedenify(pattern='^.reserved$')
+def reserved_channels(message):
+    channels = message._client.invoke(GetAdminedPublicChannels())
+    out = ''
+    for chat in channels.chats:
+        out += f'{chat.title}\n@{chat.username}\n\n'
+    edit(message, out)
 
 
-@sedenify(pattern='^.name', compat=False)
-def name(client, message):
+@sedenify(pattern='^.name')
+def set_name(message):
     newname = extract_args(message)
     if ' ' not in newname:
         firstname = newname
@@ -51,12 +51,12 @@ def name(client, message):
         firstname = namesplit[0]
         lastname = namesplit[1]
 
-    client.invoke(UpdateProfile(first_name=firstname, last_name=lastname))
+    message._client.invoke(UpdateProfile(first_name=firstname, last_name=lastname))
     edit(message, f'`{get_translation("nameOk")}`')
 
 
-@sedenify(pattern='^.setpfp$', compat=False)
-def set_profilepic(client, message):
+@sedenify(pattern='^.setpfp$')
+def set_profilepic(message):
     reply = message.reply_to_message
     photo = None
     if (
@@ -80,7 +80,7 @@ def set_profilepic(client, message):
         image = image.resize((int(width * ratio), int(height * ratio)))
         new_photo = f'{get_download_dir()}/profile_photo_new.png'
         image.save(new_photo)
-        client.set_profile_photo(photo=new_photo)
+        message._client.set_profile_photo(photo=new_photo)
         remove(photo)
         remove(new_photo)
         edit(message, f'`{get_translation("ppChanged")}`')
@@ -88,8 +88,8 @@ def set_profilepic(client, message):
         edit(message, f'`{get_translation("ppError")}`')
 
 
-@sedenify(pattern='^.delpfp', compat=False)
-def remove_profilepic(client, message):
+@sedenify(pattern='^.delpfp')
+def remove_profilepic(message):
     group = extract_args(message)
     if group == 'all':
         lim = 0
@@ -99,33 +99,33 @@ def remove_profilepic(client, message):
         lim = 1
 
     count = 0
-    for photo in client.get_chat_photos('me', limit=lim):
-        client.delete_profile_photos(photo.file_id)
+    for photo in message._client.get_chat_photos('me', limit=lim):
+        message._client.delete_profile_photos(photo.file_id)
         count += 1
     edit(message, f'`{get_translation("ppDeleted", [count])}`')
 
 
-@sedenify(pattern='^.setbio', compat=False)
-def setbio(client, message):
+@sedenify(pattern='^.setbio')
+def set_bio(message):
     newbio = extract_args(message)
-    client.invoke(UpdateProfile(about=newbio))
+    message._client.invoke(UpdateProfile(about=newbio))
     edit(message, f'`{get_translation("bioSuccess")}`')
 
 
-@sedenify(pattern='^.username', compat=False)
-def username(client, message):
+@sedenify(pattern='^.username')
+def set_username(message):
     newusername = extract_args(message)
     try:
-        client.invoke(UpdateUsername(username=newusername))
+        message._client.invoke(UpdateUsername(username=newusername))
         edit(message, f'`{get_translation("usernameSuccess")}`')
     except UsernameOccupied:
         edit(message, f'`{get_translation("usernameTaken")}`')
 
 
-@sedenify(pattern='^.block$', compat=False)
-def blockpm(client, message):
-    if message.reply_to_message:
-        reply = message.reply_to_message
+@sedenify(pattern='^.block$')
+def block_pm(message):
+    reply = message.reply_to_message
+    if reply:
         replied_user = reply.from_user
         if replied_user.is_self:
             edit(message, f'`{get_translation("cannotBlockMyself")}`')
@@ -141,7 +141,7 @@ def blockpm(client, message):
         name0 = aname.first_name
         uid = aname.id
 
-    client.block_user(uid)
+    message._client.block_user(uid)
 
     edit(message, f'`{get_translation("pmBlocked")}`')
 
@@ -155,17 +155,17 @@ def blockpm(client, message):
     send_log(get_translation('pmBlockedLog', [name0, uid]))
 
 
-@sedenify(pattern='^.unblock$', compat=False)
-def unblockpm(client, message):
-    if message.reply_to_message:
-        reply = message.reply_to_message
+@sedenify(pattern='^.unblock$')
+def unblock_pm(message):
+    reply = message.reply_to_message
+    if reply:
         replied_user = reply.from_user
         if replied_user.is_self:
             edit(message, f'`{get_translation("cannotUnblockMyself")}`')
             return
         name0 = str(replied_user.first_name)
         uid = replied_user.id
-        client.unblock_user(uid)
+        message._client.unblock_user(uid)
         edit(message, f'`{get_translation("pmUnblocked")}`')
 
         send_log(get_translation('pmUnblockedLog', [name0, replied_user.id]))
@@ -173,8 +173,8 @@ def unblockpm(client, message):
         edit(message, f'`{get_translation("pmUnblockedUsage")}`')
 
 
-@sedenify(pattern='^.online', compat=False)
-def online(client, message):
+@sedenify(pattern='^.online')
+def always_online(message):
     args = extract_args(message)
     offline = ALWAYS_ONLINE in TEMP_SETTINGS
     if args == 'disable':
@@ -195,14 +195,14 @@ def online(client, message):
 
     while ALWAYS_ONLINE in TEMP_SETTINGS:
         try:
-            client.invoke(UpdateStatus(offline=False))
+            message._client.invoke(UpdateStatus(offline=False))
             sleep(5)
         except BaseException:
             return
 
 
-@sedenify(pattern='^.stats$', compat=False)
-def user_stats(client, message):
+@sedenify(pattern='^.stats$')
+def user_stats(message):
     edit(message, f'`{get_translation("processing")}`')
     chats = 0
     channels = 0
@@ -212,7 +212,7 @@ def user_stats(client, message):
     bots = 0
     unread = 0
     user = []
-    for i in client.get_dialogs():
+    for i in message._client.get_dialogs():
         chats += 1
         if i.chat.type == enums.ChatType.CHANNEL:
             channels += 1
@@ -227,7 +227,7 @@ def user_stats(client, message):
         if i.unread_messages_count > 0:
             unread += 1
 
-    users = client.get_users(user)
+    users = message._client.get_users(user)
     for i in users:
         if i.is_bot:
             bots += 1

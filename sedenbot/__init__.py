@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -7,11 +7,6 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from os import name
-
-if name == 'nt':
-    print('Uninstall Windows to use this bot')
-    quit(1)
 
 from distutils.util import strtobool as sb
 from importlib import import_module
@@ -25,11 +20,12 @@ from sys import version_info
 from traceback import format_exc
 from typing import Any, Dict
 
-import sedenecem.translator as _tr
 from dotenv import load_dotenv, set_key, unset_key
 from pyrogram import Client, filters
 from pyrogram.handlers import MessageHandler
 from requests import get
+
+import sedenecem.translator as _tr
 
 
 def reload_env():
@@ -302,9 +298,10 @@ def __get_modules():
 
 
 def __import_modules():
-    modules = sorted(__get_modules())
+    get_modules = sorted(__get_modules())
+    modules = ', '.join(get_modules)
     LOGS.info(get_translation('loadedModules', [modules]))
-    for module in modules:
+    for module in get_modules:
         try:
             import_module(f'sedenbot.modules.{module}')
         except Exception:

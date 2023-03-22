@@ -1,11 +1,12 @@
-Seden UserBot
-==
+# Seden UserBot <sub><sup><sub>_Feel my hands in your hair_</sup></sub></sub>
+### Telegram Python Bot running on Python3 with a Postgresql Sqlalchemy database. It is an modular and simple to use bot.
 
-![GitHub repo size](https://img.shields.io/github/repo-size/TeamDerUntergang/Telegram-SedenUserBot?color=brightgreen)
 ![GitHub](https://img.shields.io/github/license/TeamDerUntergang/Telegram-SedenUserBot?color=red)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-Telegram Python Bot running on Python3 with a Postgresql Sqlalchemy database. It is an modular and simple to use bot.
+## Disclaimer
+<details>
+  <summary>Click to expand!</summary>
 
 ```c
 #include <std/disclaimer.h>
@@ -18,7 +19,12 @@ Telegram Python Bot running on Python3 with a Postgresql Sqlalchemy database. It
     I'll just laugh at you.
 /**
 ```
+</details>
+
 ## Run Bot
+<details>
+  <summary>Click to expand!</summary>
+
 ```bash
 # Clone repo
 git clone https://github.com/TeamDerUntergang/Telegram-SedenUserBot.git
@@ -38,12 +44,17 @@ python3 seden.py
 ```
 ### Nix/NixOS
 Just type `nix-shell` command in bot folder.
+</details>
 
+## Q&A
 If you have any requests & complaints & suggestions, you can join our [support group](https://t.me/SedenUserBotSupport) or please contact us through a [GitHub issue](https://github.com/TeamDerUntergang/Telegram-SedenUserBot/issues).
 
 Please go to our [GitHub.io](https://teamderuntergang.github.io/installation.html) page for installation instructions! Questions asked without reading the instruction will not be answered.
 
 ## Credits
+<details>
+  <summary>Click to expand!</summary>
+
 *   [@NaytSeyd](https://github.com/NaytSeyd) - Founder
 *   [@frknkrc44](https://github.com/frknkrc44) - Operator
 *   [@Sedenogen](https://github.com/ciyanogen) - Co-Founder
@@ -51,7 +62,7 @@ Please go to our [GitHub.io](https://teamderuntergang.github.io/installation.htm
 *   [@Skittles9823](https://github.com/skittles9823) - Memes
 *   [@RaphielGang](https://github.com/raphielgang) - Other Modules
 *   [All Contributors](https://github.com/TeamDerUntergang/Telegram-SedenUserBot/graphs/contributors)
+</details>
 
 ## License
-
 This project is licensed under the [AGPL-3](https://www.gnu.org/licenses/agpl-3.0.html).

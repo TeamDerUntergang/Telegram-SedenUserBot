@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -7,13 +7,13 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
+from json import JSONDecodeError, loads
 from mimetypes import guess_type
 from os import path, remove
-from random import choice
+from random import choice, randrange
 from re import findall, sub
 from time import sleep
 from traceback import format_exc
-from urllib.error import HTTPError
 from urllib.parse import quote_plus
 
 from bs4 import BeautifulSoup
@@ -23,11 +23,14 @@ from gtts import gTTS
 from gtts.lang import tts_langs
 from pyrogram import enums
 from pyrogram.types import InputMediaPhoto
-from requests import get, post
+from requests import RequestException, get, post
+from selenium.webdriver.common.by import By
+
 from sedenbot import HELP, SEDEN_LANG
 from sedenecem.core import (
     edit,
     extract_args,
+    extract_args_split,
     get_translation,
     get_webdriver,
     google_domains,
@@ -35,10 +38,8 @@ from sedenecem.core import (
     reply_voice,
     sedenify,
     send_log,
+    useragent,
 )
-from urbandic import search
-from wikipedia import set_lang, summary
-from wikipedia.exceptions import DisambiguationError, PageError
 
 CARBONLANG = 'auto'
 TTS_LANG = SEDEN_LANG
@@ -78,8 +79,8 @@ def carbon(message):
         'POST',
         '/session/$sessionId/chromium/send_command',
     )
-    driver.find_element_by_xpath("//button[contains(text(),'Export')]").click()
-    edit(message, f'`{get_translation("processing")}\n%`75')
+    driver.find_element(By.XPATH, "//button[contains(text(),'Export')]").click()
+    edit(message, f'`{get_translation("processing")}\n%75`')
     while not path.isfile('./carbon.png'):
         sleep(0.5)
     edit(message, f'`{get_translation("processing")}\n%100`')
@@ -119,15 +120,16 @@ def img(message):
     driver.get(url)
     count = 1
     files = []
-    for i in driver.find_elements_by_xpath(
-        '//div[contains(@class,"isv-r PNCib MSM1fd BUooTd")]'
+    for i in driver.find_elements(
+        By.XPATH, '//div[contains(@class,"isv-r PNCib MSM1fd BUooTd")]'
     ):
         i.click()
         try_count = 0
         while (
             len(
-                element := driver.find_elements_by_xpath(
-                    '//img[contains(@class,"n3VNCb") and contains(@src,"http")]'
+                element := driver.find_elements(
+                    By.XPATH,
+                    '//img[contains(@class,"n3VNCb") and contains(@src,"http")]',
                 )
             )
             < 1
@@ -150,7 +152,9 @@ def img(message):
             continue
         files.append(InputMediaPhoto(filename))
         sleep(1)
-        driver.find_elements_by_xpath('//a[contains(@class,"hm60ue")]')[0].click()
+        elements = driver.find_elements(By.XPATH, '//a[contains(@class,"hm60ue")]')
+        for element in elements:
+            element.click()
         count += 1
         if lim < count:
             break
@@ -161,7 +165,7 @@ def img(message):
     reply_doc(message, files, delete_orig=True, delete_after_send=True)
 
 
-@sedenify(pattern=r'^.google')
+@sedenify(pattern='^.google')
 def google(message):
     match = extract_args(message)
     if len(match) < 1:
@@ -223,7 +227,7 @@ def do_gsearch(query, page):
     req = get(
         f'https://{choice(google_domains)}{temp}',
         headers={
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0',
+            'User-Agent': useragent(),
             'Content-Type': 'text/html',
         },
     )
@@ -234,7 +238,7 @@ def do_gsearch(query, page):
         req = get(
             f'https://{choice(google_domains)}{temp}',
             headers={
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0',
+                'User-Agent': useragent(),
                 'Content-Type': 'text/html',
             },
         )
@@ -268,9 +272,7 @@ def ddgo(message):
     req = get(
         f'https://duckduckgo.com/lite?q={query}',
         headers={
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64)'
-            'AppleWebKit/537.36 (KHTML, like Gecko)'
-            'Chrome/81.0.4044.138 Safari/537.36',
+            'User-Agent': useragent(),
             'Content-Type': 'text/html',
         },
     )
@@ -327,32 +329,22 @@ def urbandictionary(message):
         edit(message, f'`{get_translation("wrongCommand")}`')
         return
     edit(message, f'`{get_translation("processing")}`')
-    mean = []
-    example = []
-    try:
-        for i in search(query, 1):
-            mean.append(i.definition + "\n")
-            example.append(i.example + "\n")
-    except TypeError:
-        return edit(message, f'`{get_translation("udNotFound")}`')
-    except HTTPError:
-        edit(message, get_translation('udResult', ['**', query]))
-        return
-    deflen = sum(len(i) for i in mean)
-    exalen = sum(len(i) for i in example)
-    meanlen = deflen + exalen
-    if int(meanlen) >= 0:
-        if int(meanlen) >= 4096:
+    response = get(f'https://api.urbandictionary.com/v0/define?term={query}')
+    data = loads(response.text)
+    if len(data["list"]):
+        item = data['list'][randrange(9)]
+        meanlen = item['definition'] + item['example']
+        if len(meanlen) >= 4096:
             edit(message, f'`{get_translation("outputTooLarge")}`')
             file = open('urbandictionary.txt', 'w+')
             file.write(
                 'Query: '
                 + query
                 + '\n\nMeaning: '
-                + "".join(mean)
+                + item['definition']
                 + '\n\n'
                 + 'Örnek: \n'
-                + "".join(example)
+                + item['example']
             )
             file.close()
             reply_doc(
@@ -368,7 +360,7 @@ def urbandictionary(message):
             message,
             get_translation(
                 'sedenQueryUd',
-                ['**', '`', query, "".join(choice(mean)), "".join(choice(example))],
+                ['**', '`', query, item['definition'], item['example']],
             ),
         )
     else:
@@ -381,29 +373,56 @@ def wiki(message):
     if len(args) < 1:
         edit(message, f'`{get_translation("wrongCommand")}`')
         return
-    set_lang(SEDEN_LANG)
+
     try:
-        summary(args)
-    except DisambiguationError as error:
-        edit(message, get_translation('wikiError', [error]))
-        return
-    except PageError as pageerror:
-        edit(message, get_translation('wikiError2', [pageerror]))
-        return
-    result = summary(args)
-    if len(result) >= 4096:
-        file = open('wiki.txt', 'w+')
-        file.write(result)
-        file.close()
-        reply_doc(
+        result = search_wiki(args)
+    except BaseException as e:
+        raise e
+
+    if len(result) > 4096:
+        with open(f'{args}.txt', 'w', encoding='utf-8') as file:
+            file.write(result)
+        return reply_doc(
             message,
-            'wiki.txt',
+            f'{args}.txt',
             caption=f'`{get_translation("outputTooLarge")}`',
             delete_after_send=True,
         )
-    edit(message, get_translation('sedenQuery', ['**', '`', args, result]))
 
+    edit(message, get_translation('sedenQuery', ['**', '`', args, result]))
     send_log(get_translation('wikiLog', ['`', args]))
+
+
+def search_wiki(query):
+    url = f'https://{SEDEN_LANG or "en"}.wikipedia.org/w/api.php'
+    params = {
+        'action': 'query',
+        'format': 'json',
+        'prop': 'extracts',
+        'titles': query,
+        'exsectionformat': 'wiki',
+        'explaintext': 1,
+    }
+
+    try:
+        response = get(url, params=params)
+        response.raise_for_status()
+        data = loads(response.text)
+        pages = data.get('query', {}).get('pages', {})
+        result = ''
+
+        for page in pages.values():
+            extract = page.get('extract', '')
+            result += extract
+
+        if not result:
+            result = get_translation('wikiError')
+
+        return result
+
+    except (RequestException, JSONDecodeError) as e:
+        print(f'API Error: {e}')
+        return ''
 
 
 @sedenify(pattern='^.tts')
@@ -483,7 +502,7 @@ def translate(message):
 
 @sedenify(pattern='^.lang')
 def lang(message):
-    arr = extract_args(message).split(' ', 1)
+    arr = extract_args_split(message)
 
     if len(arr) != 2:
         edit(message, f'`{get_translation("wrongCommand")}`')
@@ -518,9 +537,7 @@ def lang(message):
 def doviz(message):
     req = get(
         'https://www.doviz.com/',
-        headers={
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.9999.0 Safari/537.36'
-        },
+        headers={'User-Agent': useragent()},
     )
     page = BeautifulSoup(req.content, 'html.parser')
     res = page.find_all('div', {'class', 'item'})
@@ -533,12 +550,10 @@ def doviz(message):
     edit(message, out)
 
 
-@sedenify(pattern='^.imei(checker)?')
+@sedenify(pattern='^.imei(|check)')
 def imeichecker(message):
-    argv = extract_args(message)
-    imei = argv.split(' ', 1)[0]
+    imei = extract_args(message)
     edit(message, f'`{get_translation("processing")}`')
-    print(len(imei))
     if len(imei) != 15:
         edit(message, f'`{get_translation("wrongCommand")}`')
         return
@@ -553,8 +568,12 @@ def imeichecker(message):
             break
         _marka = findall(r'Marka:(.+) Model', result['markaModel'])
         _model = findall(r'Model Bilgileri:(.+)', result['markaModel'])
-        marka = _marka[0].replace(',','').strip() if _marka else "Marka Bilgisi Bulunamadi"
-        model = _model[0].replace(',','').strip() if _model else "Model Bilgisi Bulunamadi"
+        marka = (
+            _marka[0].replace(',', '').strip() if _marka else "Marka Bilgisi Bulunamadi"
+        )
+        model = (
+            _model[0].replace(',', '').strip() if _model else "Model Bilgisi Bulunamadi"
+        )
         reply_text = (
             f"<b>Sorgu Tarihi</b> ⇾ <code>{result['sorguTarihi']}</code>\n"
             f"<b>IMEI</b> ⇾ <code>{result['imei'][:-5]+5*'*'}</code>\n"
@@ -568,8 +587,35 @@ def imeichecker(message):
         raise e
 
 
+@sedenify(pattern='^.currency')
+def currency_convert(message):
+    input_str = extract_args(message)
+    input_sgra = input_str.split(' ')
+    if len(input_sgra) == 3:
+        try:
+            number = float(input_sgra[0])
+            currency_from = input_sgra[1].upper()
+            currency_to = input_sgra[2].upper()
+            request_url = f'https://www.x-rates.com/calculator/?from={currency_from}&to={currency_to}&amount={number}'
+            current_response = get(request_url, headers={'User-Agent': useragent()})
+            if current_response.status_code == 200:
+                soup = BeautifulSoup(current_response.text, 'html.parser')
+                rebmun = soup.find('span', {'class': 'ccOutputRslt'})
+                result = rebmun.find('span')
+                result.extract()
+                edit(message, f'**{number} {currency_from} = {rebmun.text.strip()}**')
+            else:
+                edit(message, f'`{get_translation("currencyError")}`')
+        except Exception as e:
+            edit(message, str(e))
+    else:
+        edit(message, f'`{get_translation("syntaxError")}`')
+        return
+
+
 HELP.update({'img': get_translation('imgInfo')})
-HELP.update({'imei': get_translation('imeiInfo')})
+HELP.update({'currency': get_translation('currencyInfo')})
+HELP.update({'imeicheck': get_translation('imeiInfo')})
 HELP.update({'carbon': get_translation('carbonInfo')})
 HELP.update({'goolag': get_translation('googleInfo')})
 HELP.update({'duckduckgo': get_translation('ddgoInfo')})

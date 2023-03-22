@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -14,8 +14,8 @@ from sedenbot import HELP
 from sedenecem.core import PyroConversation, edit, get_translation, sedenify
 
 
-@sedenify(pattern='^.q$', compat=False)
-def quotly(client, message):
+@sedenify(pattern='^.q$')
+def quotly(message):
     reply = message.reply_to_message
     if reply and (reply.text or reply.photo or reply.sticker):
         edit(message, f'`{get_translation("makeQuote")}`')
@@ -26,7 +26,7 @@ def quotly(client, message):
     sleep(1)
     chat = 'QuotLyBot'
 
-    with PyroConversation(client, chat) as conv:
+    with PyroConversation(message, chat) as conv:
         response = None
         try:
             conv.forward_msg(reply)

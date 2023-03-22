@@ -24,7 +24,7 @@ class BlackListFilters(BASE):
         )
 
 
-BlackListFilters.__table__.create(checkfirst=True)
+BlackListFilters.__table__.create(bind=SESSION.get_bind(), checkfirst=True)
 
 BLACKLIST_FILTER_INSERTION_LOCK = RLock()
 

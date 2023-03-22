@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -13,11 +13,21 @@ from urllib.parse import unquote, urlparse
 
 from bs4 import BeautifulSoup
 from requests import Session, get
+from selenium.webdriver.common.by import By
+
 from sedenbot import HELP
-from sedenecem.core import edit, extract_args, get_translation, get_webdriver, reply_doc, sedenify
+from sedenecem.core import (
+    edit,
+    extract_args,
+    get_translation,
+    get_webdriver,
+    reply_doc,
+    sedenify,
+    useragent,
+)
 
 
-@sedenify(pattern=r'^.direct')
+@sedenify(pattern='^.direct')
 def direct(message):
     edit(message, f'`{get_translation("processing")}`')
     textx = message.reply_to_message
@@ -56,7 +66,7 @@ def direct(message):
                 reply += gdrive(link, message)
             elif check(link, 'zippyshare.com'):
                 reply += zippy_share(link)
-            elif check(link, 'yadi.sk'):
+            elif check(link, ['yadi.sk', 'disk.yandex.com']):
                 reply += yandex_disk(link)
             elif check(link, 'mediafire.com'):
                 reply += mediafire(link)
@@ -82,9 +92,13 @@ def gdrive(link: str, message) -> str:
     headers = {'user-agent': useragent()}
     response = get(url=dl_url, headers=headers, stream=True)
     if response.status_code == 429:
-        reply_doc(message, 'cookies.txt', caption=get_translation("directGdriveCookieUsage"))
+        reply_doc(
+            message, 'cookies.txt', caption=get_translation("directGdriveCookieUsage")
+        )
         reply += get_translation("directGdriveCookie")
-        cookies = {'__Secure-1PSID': 'OQhdhyIxvvx3wyIAlCJ3hUqpH3ttB4osdTsnFnpkDWJCtt7XqwPg5PZZKN6KNnoBsXJrQw.'}
+        cookies = {
+            '__Secure-1PSID': 'OQhdhyIxvvx3wyIAlCJ3hUqpH3ttB4osdTsnFnpkDWJCtt7XqwPg5PZZKN6KNnoBsXJrQw.'
+        }
         response = get(url=dl_url, headers=headers, cookies=cookies, stream=True)
     name = response.headers.get('Content-Disposition').split(';')[1].split('"')[1]
     size = f'{int(response.headers.get("Content-Length")) / (1024 * 1024):0.2f}'
@@ -98,11 +112,11 @@ def zippy_share(link: str) -> str:
     reply = ''
     driver = get_webdriver()
     driver.get(link)
-    left = driver.find_element_by_xpath('//div[contains(@class, "left")]')
-    font = left.find_elements_by_xpath('.//font')
+    left = driver.find_element(By.XPATH, '//div[contains(@class, "left")]')
+    font = left.find_elements(By.XPATH, './/font')
     name = font[2].text
     size = font[4].text
-    button = driver.find_element_by_xpath('//a[contains(@id, "dlbutton")]')
+    button = driver.find_element(By.XPATH, '//a[contains(@id, "dlbutton")]')
     link = button.get_attribute('href')
     reply += '{}\n'.format(get_translation('directZippyLink', [name, size, link]))
     driver.quit()
@@ -183,13 +197,12 @@ def github(link: str) -> str:
 def androidfilehost(link: str) -> str:
     fid = findall(r'\?fid=[0-9]+', link)[0]
     session = Session()
-    user_agent = useragent()
-    headers = {'user-agent': user_agent}
+    headers = {'user-agent': useragent()}
     res = session.get(link, headers=headers, allow_redirects=True)
     headers = {
         'origin': 'https://androidfilehost.com',
         'accept-language': 'en-US,en;q=0.9',
-        'user-agent': user_agent,
+        'user-agent': useragent(),
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
         'x-mod-sbb-ctype': 'xhr',
         'accept': '*/*',
@@ -219,16 +232,6 @@ def androidfilehost(link: str) -> str:
         dl_url = item['url']
         reply += f'[{name}]({dl_url})\n'
     return reply
-
-
-def useragent():
-    req = get('https://useragents.io/random')
-    soup = BeautifulSoup(req.text, 'html.parser')
-    agent = soup.find_all('td')
-    for i in agent:
-        return i.find('a').text
-
-    return 'Googlebot/2.1 (+http://www.google.com/bot.html)'
 
 
 HELP.update({'direct': get_translation('directInfo')})

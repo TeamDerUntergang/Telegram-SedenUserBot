@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -24,7 +24,7 @@ from sedenecem.core import (
     download_media_wc,
     edit,
     extract_args,
-    extract_args_arr,
+    extract_args_split,
     extract_user,
     get_download_dir,
     get_translation,
@@ -110,7 +110,7 @@ def ban_user(message):
 
 @sedenify(pattern='^.unban', private=False, admin=True)
 def unban_user(message):
-    args = extract_args_arr(message)
+    args = extract_args_split(message)
     if len(args) > 1:
         return edit(message, f'`{get_translation("wrongCommand")}`')
     reply = message.reply_to_message
@@ -263,7 +263,7 @@ def unmute_user(message):
         edit(message, f'`{get_translation("nonSqlMode")}`')
         return
 
-    args = extract_args_arr(message)
+    args = extract_args_split(message)
     if len(args) > 1:
         return edit(message, f'`{get_translation("wrongCommand")}`')
     reply = message.reply_to_message
@@ -294,8 +294,8 @@ def unmute_user(message):
             return
 
 
-@sedenify(pattern='^.promote', admin=True, private=False, compat=False)
-def promote_user(client, message):
+@sedenify(pattern='^.promote', admin=True, private=False)
+def promote_user(message):
     args = extract_args(message)
     reply = message.reply_to_message
     rank = None
@@ -336,7 +336,7 @@ def promote_user(client, message):
             if rank is not None:
                 if len(rank) > 16:
                     rank = rank[:16]
-                client.set_administrator_title(chat.id, user.id, rank)
+                message._client.set_administrator_title(chat.id, user.id, rank)
             edit(
                 message,
                 get_translation('promoteResult', ['**', user.first_name, user.id, '`']),
@@ -355,7 +355,7 @@ def promote_user(client, message):
 
 @sedenify(pattern='^.demote', private=False, admin=True)
 def demote_user(message):
-    args = extract_args_arr(message)
+    args = extract_args_split(message)
     if len(args) > 1:
         return edit(message, f'`{get_translation("wrongCommand")}`')
     reply = message.reply_to_message
@@ -441,8 +441,8 @@ def unpin_message(message):
         edit(message, f'`{get_translation("wrongCommand")}`')
 
 
-@sedenify(pattern='^.(admins|bots|user(s|sdel))$', compat=False, private=False)
-def get_users(client, message):
+@sedenify(pattern='^.(admins|bots|user(s|sdel))$', private=False)
+def get_users(message):
     args = message.text.split(' ', 1)
     users = args[0][1:5] == 'user'
     showdel = users and args[0][-3:] == 'del'
@@ -470,7 +470,7 @@ def get_users(client, message):
 
     try:
         chat_id = message.chat.id
-        find = client.get_chat_members(chat_id, filter=filtr)
+        find = message._client.get_chat_members(chat_id, filter=filtr)
         for i in find:
             if not i.user.is_deleted and showdel:
                 continue
@@ -503,8 +503,8 @@ def get_users(client, message):
         )
 
 
-@sedenify(pattern='^.zombies', private=False, compat=False)
-def zombie_accounts(client, message):
+@sedenify(pattern='^.zombies', private=False)
+def zombie_accounts(message):
     args = extract_args(message).lower()
     chat = message.chat
     count = 0
@@ -512,7 +512,7 @@ def zombie_accounts(client, message):
 
     if args != 'clean':
         edit(message, f'`{get_translation("zombiesFind")}`')
-        for i in client.get_chat_members(chat.id):
+        for i in message._client.get_chat_members(chat.id):
             if i.user.is_deleted:
                 count += 1
                 sleep(1)
@@ -528,7 +528,7 @@ def zombie_accounts(client, message):
     count = 0
     users = 0
 
-    for i in client.get_chat_members(chat.id):
+    for i in message._client.get_chat_members(chat.id):
         if i.user.is_deleted:
             try:
                 chat.ban_member(i.user.id)
@@ -601,7 +601,7 @@ def mute_check(message):
     try:
         from sedenecem.sql import mute_sql as sql
     except BaseException:
-        return
+        message.continue_propagation()
 
     chat = message.chat
     user = message.from_user

@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -19,13 +19,12 @@ class SWClient:
 
 
 @sedenify(
-    compat=False,
     outgoing=False,
     incoming=True,
     disable_edited=True,
     disable_notify=True,
 )
-def spamwatch_action(client, message):
+def spamwatch_action(message):
     if not SWClient.spamwatch_client:
         message.continue_propagation()
 
@@ -42,7 +41,7 @@ def spamwatch_action(client, message):
 
         if message.chat.type == enums.ChatType.PRIVATE:
             reply(message, text)
-            client.block_user(uid)
+            message._client.block_user(uid)
         else:
             myself = message.chat.get_member('me')
             if myself.privileges and myself.privileges.can_restrict_members:

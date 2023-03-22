@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -11,6 +11,7 @@ from os import remove
 from random import choice
 from subprocess import PIPE
 from subprocess import run as runapp
+from pyrogram import enums
 
 from image_to_ascii import ImageToAscii
 from pybase64 import b64decode, b64encode
@@ -19,6 +20,7 @@ from sedenecem.core import (
     download_media_wc,
     edit,
     extract_args,
+    extract_user,
     get_translation,
     reply,
     reply_doc,
@@ -38,13 +40,13 @@ def random(message):
 
 
 @sedenify(pattern='^.chatid$', private=False)
-def chatid(message):
+def get_chat_id(message):
     edit(message, get_translation('chatidResult', ['`', str(message.chat.id)]))
 
 
-@sedenify(pattern='^.invitelink$', compat=False, admin=True, private=False)
-def get_invite_link(client, message):
-    chat = client.get_chat(message.chat.id)
+@sedenify(pattern='^.invitelink$', admin=True, private=False)
+def get_invite_link(message):
+    chat = message._client.get_chat(message.chat.id)
     try:
         url = chat.invite_link
         edit(message, url, preview=False)
@@ -53,7 +55,7 @@ def get_invite_link(client, message):
 
 
 @sedenify(pattern='^.id$')
-def userid(message):
+def get_user_id(message):
     reply = message.reply_to_message
     if reply:
         if not reply.forward_from:
@@ -73,10 +75,10 @@ def userid(message):
         edit(message, f'`{get_translation("wrongCommand")}`')
 
 
-@sedenify(pattern='^.kickme$', compat=False, private=False)
-def kickme(client, message):
+@sedenify(pattern='^.kickme$', private=False)
+def kick_me(message):
     edit(message, f'`{get_translation("kickmeResult")}`')
-    client.leave_chat(message.chat.id, 'me')
+    message.chat.leave()
 
 
 @sedenify(pattern='^.support$')
@@ -87,25 +89,6 @@ def support(message):
 @sedenify(pattern='^.founder')
 def founder(message):
     edit(message, get_translation('founderResult', ['`', '**']), preview=False)
-
-
-@sedenify(pattern='^.readme$')
-def readme(message):
-    edit(
-        message,
-        '[Seden README.md](https://github.com/TeamDerUntergang/'
-        'Telegram-SedenUserBot/blob/seden/README.md)',
-        preview=False,
-    )
-
-
-@sedenify(pattern='^.repo$')
-def repo(message):
-    edit(
-        message,
-        '[Seden Repo](https://github.com/TeamDerUntergang/' 'Telegram-SedenUserBot)',
-        preview=False,
-    )
 
 
 @sedenify(pattern='^.repeat')
@@ -136,23 +119,25 @@ def crash(message):
     raise Exception(get_translation('testException'))
 
 
-@sedenify(pattern='^.tagall$', compat=False, private=False)
-def tagall(client, message):
+@sedenify(pattern='^.tagall$', private=False)
+def tag_all_users(message):
     msg = '@tag'
     chat = message.chat.id
     length = 0
-    for member in client.get_chat_members(chat):
+    for member in message._client.get_chat_members(chat):
         if length < 4092:
             msg += f'[\u2063](tg://user?id={member.user.id})'
             length += 1
     reply(message, msg, delete_orig=True)
 
 
-@sedenify(pattern='^.report$', compat=False, private=False)
-def report_admin(client, message):
+@sedenify(pattern='^.report$', private=False)
+def report_admin(message):
     msg = '@admin'
     chat = message.chat.id
-    for member in client.get_chat_members(chat, filter='administrators'):
+    for member in message._client.get_chat_members(
+        chat, filter=enums.ChatMembersFilter.ADMINISTRATORS
+    ):
         msg += f'[\u2063](tg://user?id={member.user.id})'
     re_msg = message.reply_to_message
     reply(re_msg if re_msg else message, msg)
@@ -235,6 +220,26 @@ def img_to_ascii(message):
         reply_doc(reply, 'output.txt', delete_after_send=True)
         message.delete()
         remove(media)
+
+
+@sedenify(pattern='^.mention')
+def mention_user(message):
+    args = extract_args(message)
+    arr = args.split(' ', 1)
+    find_user = extract_user(message)
+    if len(find_user) < 1:
+        return edit(message, f'`{get_translation("banFailUser")}`')
+    for user in find_user:
+        name = (
+            user.first_name.replace('\u2060', '') if user.first_name else user.username
+        )
+        if message.reply_to_message:
+            edit(message, f'[{args or name}](tg://user?id={user.id})')
+        elif args:
+            if len(arr) > 1:
+                edit(message, f'[{arr[1]}](tg://user?id={user.id})')
+            else:
+                edit(message, f'[{args}](tg://user?id={user.id})')
 
 
 HELP.update({'misc': get_translation('miscInfo')})

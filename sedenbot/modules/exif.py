@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -8,16 +8,12 @@
 #
 
 from math import floor, sqrt
-from os import remove, path
+from os import path, remove
 
 from exifread import process_file
+
 from sedenbot import HELP
-from sedenecem.core import (
-    download_media_wc,
-    edit,
-    get_translation,
-    sedenify,
-)
+from sedenecem.core import download_media_wc, edit, get_translation, sedenify
 
 
 @sedenify(pattern="^.exif$")
@@ -71,7 +67,6 @@ def exif_data(message):
             converted = ""
 
             if not str(data[i]) in ['0', '0/0', '[0/0, 0/0, 0/0]']:
-
                 # GPS Data
                 if "GPS" == i.split(" ")[0]:
                     converted = unit_dict[i](data[i].printable, google_coordinate)

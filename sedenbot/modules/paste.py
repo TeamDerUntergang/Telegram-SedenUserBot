@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -9,20 +9,18 @@
 
 from requests import get, post
 from requests.exceptions import HTTPError, Timeout, TooManyRedirects
+
 from sedenbot import HELP
 from sedenecem.core import edit, extract_args, get_translation, sedenify
 
 
-@sedenify(pattern="^.paste")
-def paste_hastebin(message):
-    text = message.text.strip()
+@sedenify(pattern='^.paste')
+def pastebin(message):
+    paste = extract_args(message, line=False)
     reply = message.reply_to_message
     edit(message, f'`{get_translation("processing")}`')
-    if not reply and len(text) <= 6:
-        return edit(message, f'`{get_translation("pasteErr")}`')
 
-    paste = text.replace('.paste ', '')
-    url = "https://hastebin.com/documents"
+    url = "https://dpaste.org/api/"
 
     if reply:
         if not reply.text:
@@ -32,16 +30,19 @@ def paste_hastebin(message):
     try:
         r = post(
             url=url,
-            data=paste.encode('utf-8'),
+            data={
+                'content': paste.encode('utf-8'),
+                'lexer': '_text',
+                'expires': '3600',
+            },
         )
     except BaseException as e:
-        edit(message, f'`{get_translation("pasteConErr")}`')
+        raise e
 
     try:
-        resp = r.json()
-        key = resp['key']
-        new_url = f"https://hastebin.com/{key}"
-        return edit(message, new_url, preview=False)
+        resp = r.text
+        out = resp.replace('"', '')
+        return edit(message, out, preview=False)
     except BaseException as e:
         raise e
 
@@ -55,14 +56,14 @@ def get_hastebin_text(message):
     if reply:
         args = reply.text
 
-    if args.startswith('https://hastebin.com/'):
-        args = args[len('https://hastebin.com/') :]
-    elif args.startswith("hastebin.com/"):
-        args = args[len("hastebin.com/") :]
+    if args.startswith('https://dpaste.org/'):
+        args = args[len('https://dpaste.org/') :]
+    elif args.startswith('dpaste.org/'):
+        args = args[len('dpaste.org/') :]
     else:
         return edit(message, f'`{get_translation("wrongURL")}`')
 
-    resp = get(f'https://hastebin.com/raw/{args}')
+    resp = get(f'https://dpaste.org/{args}/raw')
 
     try:
         resp.raise_for_status()
@@ -73,9 +74,7 @@ def get_hastebin_text(message):
     except TooManyRedirects as err:
         return edit(message, get_translation('banError', ['`', '**', err]))
 
-    out = f'`Hastebin içeriği başarıyla getirildi!`\n\n`İçerik:` {resp.text}'
-
-    edit(message, out)
+    edit(message, get_translation('getPasteOut', ['`', resp.text]))
 
 
-HELP.update({'hastebin': get_translation('pasteInfo')})
+HELP.update({'pastebin': get_translation('pasteInfo')})

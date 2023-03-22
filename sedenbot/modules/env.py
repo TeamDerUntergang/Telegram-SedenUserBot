@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -25,11 +25,11 @@ from sedenbot.modules.horeke import restart
 from sedenecem.core import edit, extract_args, get_translation, sedenify
 
 
-@sedenify(pattern='^.env', compat=False)
-def manage_env(client, message):
+@sedenify(pattern='^.env')
+def manage_env(message):
     action = extract_args(message).split(' ', 1)
 
-    if action[0] == 'list':
+    if action and action[0] == 'list':
         pass
     elif len(action) < 2 or action[0] not in ['get', 'set', 'rem', 'copy', 'move']:
         edit(message, f"`{get_translation('wrongCommand')}`")
@@ -83,7 +83,7 @@ def manage_env(client, message):
 
         edit(message, get_translation('envSetSuccess', ['`', '**', key]))
         sleep(2)
-        restart(client, message)
+        restart(message)
     elif action[0] == 'get':
         items = action[1].split(' ', 1)
 
@@ -121,7 +121,7 @@ def manage_env(client, message):
 
         edit(message, get_translation('envRemSuccess', ['`', '**', items[0]]))
         sleep(2)
-        restart(client, message)
+        restart(message)
     elif action[0] in ['copy', 'move']:
         items = action[1].split(' ', 1)
 
@@ -161,14 +161,14 @@ def manage_env(client, message):
                 get_translation('envMoveSuccess', ['`', '**', items[0], items[1]]),
             )
             sleep(2)
-            restart(client, message)
+            restart(message)
             return
 
         edit(
             message, get_translation('envCopySuccess', ['`', '**', items[0], items[1]])
         )
         sleep(2)
-        restart(client, message)
+        restart(message)
     elif action[0] == 'list':
         out = ''
         if heroku_mode:

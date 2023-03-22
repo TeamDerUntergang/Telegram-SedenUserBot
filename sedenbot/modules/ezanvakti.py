@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -7,12 +7,13 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from datetime import datetime
 from functools import reduce
 from re import DOTALL, sub
+from time import localtime
 
 from bs4 import BeautifulSoup
 from requests import get
+
 from sedenbot import HELP
 from sedenecem.core import edit, extract_args, sedenify
 
@@ -54,7 +55,6 @@ def ezanvakti(message):
     edit(message, vakitler)
 
 
-"""
 @sedenify(pattern='^.ramazan')
 def ramazan(message):
     konum = extract_args(message).lower()
@@ -65,51 +65,56 @@ def ramazan(message):
         result = get_result(konum)
     except BaseException:
         return edit(message, f'`{konum} için bir bilgi bulunamadı.`')
-    saat_imsak = (
-        result.find('div', {'data-vakit-name': 'imsak'})
-        .find('div', {'class': 'tpt-time'})
-        .get_text()
+    res1 = result.body.findAll('div', {'class': ['body-content']})
+    res1 = res1[0].findAll('script')
+    res1 = sub(
+        r'<script>|</script>|\r|{.*?}|\[.*?\]|\n    ', '', str(res1[0]), flags=DOTALL
     )
+    res1 = sub('\n\n', '\n', res1)[:-1].split('\n')
 
-    saat_aksam = (
-        result.find('div', {'data-vakit-name': 'aksam'})
-        .find('div', {'class': 'tpt-time'})
-        .get_text()
-    )
+    def get_val(st):
+        return [i.split('=')[1].replace('"', '').strip() for i in st[:-1].split(';')]
 
-    saat_yatsi = (
-        result.find('div', {'data-vakit-name': 'yatsi'})
-        .find('div', {'class': 'tpt-time'})
-        .get_text()
-    )
+    res2 = get_val(res1[1])
+    res3 = get_val(res1[2])
 
-    sehir = (
-        result.find('table', {'class': 'table vakit-table'})
-        .find('caption')
-        .get_text()
-        .split(' ')[0]
-    )
+    current_time = localtime()
+    current_hour = current_time.tm_hour
+    current_minute = current_time.tm_min
 
-    saatler_yarin = result.find_all('tr')[2]
-    aksam_yarin = saatler_yarin.get_text().split('\n')[6]
-    yatsi_yarin = saatler_yarin.get_text().split('\n')[7]
-    imsak_yarin = saatler_yarin.get_text().split('\n')[2]
+    sahur_vakti, iftar_vakti, teravih_vakti = res3[0], res3[4], res3[5]
 
-    iftar_saat = calculate_time(saat_aksam, aksam_yarin)
-    yatsi_saat = calculate_time(saat_yatsi, yatsi_yarin)
-    imsak_saat = calculate_time(saat_imsak, imsak_yarin)
+    def get_remaining_time(vakt, current_hour, current_minute):
+        vakt_time = vakt.split(':')
+        vakt_hour = int(vakt_time[0])
+        vakt_minute = int(vakt_time[1])
+
+        if current_hour < vakt_hour or (
+            current_hour == vakt_hour and current_minute < vakt_minute
+        ):
+            minutes_left = (vakt_hour - current_hour) * 60 + (
+                vakt_minute - current_minute
+            )
+            hours_left = minutes_left // 60
+            minutes_left = minutes_left % 60
+            return f'{vakt} ({hours_left}s {minutes_left}dk kaldı)'
+        else:
+            return f'{vakt}'
+
+    sahur = get_remaining_time(sahur_vakti, current_hour, current_minute)
+    iftar = get_remaining_time(iftar_vakti, current_hour, current_minute)
+    teravih = get_remaining_time(teravih_vakti, current_hour, current_minute)
 
     vakitler = (
         '**Diyanet Ramazan Vakitleri**\n\n'
-        + f'📍 **Yer:** `{sehir}`\n\n'
-        + f'🏙 **Sahur:** `{saat_imsak} ({imsak_saat[0]}s {imsak_saat[1]}dk kaldı)`\n'
-        + f'🌃 **İftar:** `{saat_aksam} ({iftar_saat[0]}s {iftar_saat[1]}dk kaldı)`\n'
-        + f'🌌 **Teravih:** `{saat_yatsi} ({yatsi_saat[0]}s {yatsi_saat[1]}dk kaldı)`\n\n'
+        + f'📍 **Yer:** `{res2[1]}`\n\n'
+        + (f'🏙 **Sahur:** `{sahur}`\n')
+        + (f'🌃 **İftar:** `{iftar}`\n')
+        + (f'🌌 **Teravih:** `{teravih}`\n\n')
         + '**Hayırlı Ramazanlar**'
     )
 
     edit(message, vakitler)
-"""
 
 
 def find_loc(konum):
@@ -137,30 +142,6 @@ def get_result(konum):
     request = get(f'https://namazvakitleri.diyanet.gov.tr/tr-TR/{knum}')
     return BeautifulSoup(request.content, 'html.parser')
 
-"""
-def calculate_time(saat, yarin_saat):
-    now = datetime.now().timestamp()
-    now_t = datetime.fromtimestamp(now).strftime('%d.%m.%Y')
-    iftar_vakit = datetime.strptime(f'{saat} {now_t}', '%H:%M %d.%m.%Y').timestamp()
-    if iftar_vakit < now:
-        temp = now + 24 * 60 * 60
-        tomorrow = datetime.fromtimestamp(temp).strftime('%d.%m.%Y')
-        yarin_iftar = datetime.strptime(
-            f'{yarin_saat} {tomorrow}', '%H:%M %d.%m.%Y'
-        ).timestamp()
-        sonuc = yarin_iftar - now
-        kalan_saat, kalan_dk = timedelta(sonuc)
-    else:
-        sonuc = iftar_vakit - now
-        kalan_saat, kalan_dk = timedelta(sonuc)
-    return kalan_saat, kalan_dk
-
-
-def timedelta(time):
-    saat = int(time / 3600)
-    dakika = int((time % 3600) / 60)
-    return saat, dakika
-"""
 
 sehirler = [
     '01 Adana 9146',

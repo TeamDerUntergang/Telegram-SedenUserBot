@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 # Copyright (C) 2021 kisekinopureya <https://github.com/kisekinopureya>
 #
 # This file is part of TeamDerUntergang project,
@@ -16,7 +16,7 @@ from requests import get
 from sedenbot import HELP
 from sedenecem.core import (
     edit,
-    extract_args_arr,
+    extract_args_split,
     get_download_dir,
     get_translation,
     reply_audio,
@@ -28,7 +28,7 @@ from yt_dlp import YoutubeDL
 
 @sedenify(pattern='^.y(outube|tdl)')
 def youtubedl(message):
-    args = extract_args_arr(message)
+    args = extract_args_split(message)
 
     if len(args) != 2:
         edit(message, f'`{get_translation("wrongCommand")}`')

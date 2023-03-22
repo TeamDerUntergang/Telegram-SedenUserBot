@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -13,7 +13,7 @@ from sedenbot import HELP
 from sedenecem.core import (
     edit,
     extract_args,
-    extract_args_arr,
+    extract_args_split,
     get_translation,
     increment_spam_count,
     reply,
@@ -73,7 +73,7 @@ def spam(message):
 
 @sedenify(pattern='^.picspam')
 def picspam(message):
-    arr = extract_args_arr(message)
+    arr = extract_args_split(message)
     if len(arr) < 2 or not arr[0].isdigit():
         edit(message, f'`{get_translation("spamWrong")}`')
         return

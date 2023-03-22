@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -33,17 +33,18 @@ CUSTOM_MSG = ALIVE_MSG or f"`{get_translation('sedenAlive')}`"
 
 @sedenify(pattern='^.neofetch$')
 def neofetch(message):
-    try:
+    if which('neofetch'):
         from subprocess import PIPE, Popen
 
         process = Popen(
             ['neofetch', f'HOSTNAME={HOSTNAME}', f'USER={USER}', '--stdout'],
             stdout=PIPE,
             stderr=PIPE,
+            shell=True,
         )
         result, _ = process.communicate()
         edit(message, f'`{result.decode()}`')
-    except BaseException:
+    else:
         edit(message, f'`{get_translation("neofetchNotFound")}`')
 
 
@@ -99,9 +100,9 @@ def test_echo(message):
         edit(message, f'`{get_translation("echoHelp")}`')
 
 
-@sedenify(pattern='^.dc$', compat=False)
-def data_center(client, message):
-    result = client.invoke(GetNearestDc())
+@sedenify(pattern='^.dc$')
+def data_center(message):
+    result = message._client.invoke(GetNearestDc())
 
     edit(
         message,

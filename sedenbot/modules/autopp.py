@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -27,8 +27,8 @@ KEY_AUTOPP = 'autopic'
 # ================================================
 
 
-@sedenify(pattern='^.autopp', compat=False)
-def autopic(client, message):
+@sedenify(pattern='^.autopp')
+def autopic(message):
     args = extract_args(message)
     autopic = KEY_AUTOPP in TEMP_SETTINGS
     if args == 'disable':
@@ -60,7 +60,7 @@ def autopic(client, message):
                 load.write(get(AUTO_PP).content)
         else:
             try:
-                for i in client.get_chat_photos('me', limit=1):
+                for i in message._client.get_chat_photos('me', limit=1):
                     downloaded_file_name = download_media_wc(
                         i.file_id, downloaded_file_name
                     )
@@ -83,7 +83,7 @@ def autopic(client, message):
                 fill=(255, 255, 255),
             )
             img.save(photo)
-            client.set_profile_photo(photo=photo)
+            message._client.set_profile_photo(photo=photo)
             remove(photo)
             sleep(60)
         except BaseException:

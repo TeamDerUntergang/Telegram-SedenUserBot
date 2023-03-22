@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -13,7 +13,7 @@ from time import sleep
 
 from humanize import i18n, naturaltime
 from pyrogram import ContinuePropagation, StopPropagation
-from sedenbot import HELP, PM_AUTO_BAN, SEDEN_LANG, TEMP_SETTINGS, app
+from sedenbot import HELP, PM_AUTO_BAN, SEDEN_LANG, TEMP_SETTINGS
 from sedenecem.core import (
     edit,
     extract_args,
@@ -49,7 +49,7 @@ def get_time(now, then) -> str:
     disable_notify=True,
 )
 def mention_afk(msg):
-    me = TEMP_SETTINGS['ME']
+    me = msg._client.me
     mentioned = msg.mentioned
     rep_m = msg.reply_to_message
     if mentioned or rep_m and rep_m.from_user and rep_m.from_user.id == me.id:
@@ -109,7 +109,7 @@ def mention_afk(msg):
 @sedenify(
     incoming=True,
     outgoing=False,
-    disable_errors=True,
+    disable_edited=True,
     group=False,
     bot=False,
     disable_notify=True,
@@ -126,7 +126,7 @@ def afk_on_pm(message):
         apprv = True
 
     if apprv and TEMP_SETTINGS['IS_AFK']:
-        me = TEMP_SETTINGS['ME']
+        me = message._client.me
         afk_duration = get_time(datetime.now(), TEMP_SETTINGS['AFK_TIME'])
         if message.from_user.id not in TEMP_SETTINGS['AFK_USERS']:
             if 'AFK_REASON' in TEMP_SETTINGS:
@@ -214,12 +214,14 @@ def type_afk_is_not_true(message):
             )
         )
         for i in TEMP_SETTINGS['AFK_USERS']:
-            name = app.get_chat(i)
+            name = message._client.get_chat(int(i))
             name0 = str(name.first_name)
+            userid = int(name.id)
+            reply(message, f'[{name0}](tg://user?id={userid})')
             send_log(
                 get_translation(
                     'afkMentionUsers',
-                    ['**', name0, str(i), '`', str(TEMP_SETTINGS['AFK_USERS'][i])],
+                    ['**', name0, int(i), '`', str(TEMP_SETTINGS['AFK_USERS'][i])],
                 )
             )
         TEMP_SETTINGS['COUNT_MSG'] = 0

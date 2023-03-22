@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -7,17 +7,29 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
-from os import getpid, system
+from os import getpid, kill
+from signal import SIGTERM
 from subprocess import PIPE, Popen
 from sys import exc_info
 from time import gmtime, strftime
 from traceback import format_exc
 
-from pyrogram import ContinuePropagation, StopPropagation, enums, filters
-from pyrogram.handlers import MessageHandler, EditedMessageHandler
-from pyrogram.raw.types import MessageActionContactSignUp
-from sedenbot import BLACKLIST, BOT_VERSION, BRAIN, TEMP_SETTINGS, app, get_translation
+from pyrogram import ContinuePropagation, StopPropagation, enums
+from pyrogram.handlers import EditedMessageHandler, MessageHandler
 
+from sedenbot import BOT_VERSION, BRAIN, app, get_translation
+
+from .filters import (
+    AndFilter,
+    BotFilter,
+    IncomingFilter,
+    MeFilter,
+    OrFilter,
+    RegexFilter,
+    RetardsException,
+    SedenUpdateHandler,
+    UserFilter,
+)
 from .misc import _parsed_prefix, edit, get_cmd, is_admin
 from .sedenlog import send_log_doc
 
@@ -28,7 +40,6 @@ def sedenify(**args):
     incoming = args.get('incoming', False)
     disable_edited = args.get('disable_edited', False)
     disable_notify = args.get('disable_notify', False)
-    compat = args.get('compat', True)
     brain = args.get('brain', False)
     private = args.get('private', True)
     group = args.get('group', True)
@@ -43,22 +54,12 @@ def sedenify(**args):
         args['pattern'] = pattern = f'{pattern}(?: |$)'
 
     def msg_decorator(func):
-        def wrap(client, message):
+        def wrap(message):
             if message.empty or not message.from_user:
                 return
 
             try:
-                if not TEMP_SETTINGS.get('ME'):
-                    me = app.get_me()
-                    TEMP_SETTINGS['ME'] = me
-
-                    if me.id in BLACKLIST:
-                        raise RetardsException('RETARDS CANNOT USE THIS BOT')
-
                 if message.service and not service:
-                    return
-
-                if message.service and isinstance(message.action, MessageActionContactSignUp):
                     return
 
                 if message.chat.type == enums.ChatType.CHANNEL:
@@ -87,14 +88,10 @@ def sedenify(**args):
                     if not disable_notify:
                         edit(message, f'`{get_translation("adminUsage")}`')
                     message.continue_propagation()
-
-                if not compat:
-                    func(client, message)
-                else:
-                    func(message)
+                func(message)
             except RetardsException:
                 try:
-                    system(f'kill -9 {getpid()}')
+                    kill(getpid(), SIGTERM)
                 except BaseException:
                     pass
             except (ContinuePropagation, StopPropagation) as c:
@@ -146,29 +143,29 @@ def sedenify(**args):
                 except Exception as x:
                     raise x
 
-        filter = None
+        filter = AndFilter()
         if pattern:
-            filter = filters.regex(pattern)
+            filter.add_filter(RegexFilter(pattern))
             if brain:
-                filter &= filters.user(BRAIN)
+                filter.add_filter(UserFilter(BRAIN))
             if outgoing and not incoming:
-                filter &= filters.me
+                filter.add_filter(MeFilter())
             elif incoming and not outgoing:
-                filter &= filters.incoming & ~filters.bot & ~filters.me
+                filter.add_filter(IncomingFilter(), BotFilter(True), MeFilter(True))
         else:
             if outgoing and not incoming:
-                filter = filters.me
+                filter.add_filter(MeFilter())
             elif incoming and not outgoing:
-                filter = filters.incoming & ~filters.bot & ~filters.me
+                filter.add_filter(IncomingFilter(), BotFilter(True), MeFilter(True))
             else:
-                filter = (filters.me | filters.incoming) & ~filters.bot
+                filter.add_filter(
+                    OrFilter(MeFilter(), IncomingFilter()), BotFilter(True)
+                )
 
+        handlers = [MessageHandler]
         if not disable_edited:
-            app.add_handler(EditedMessageHandler(wrap, filter))
-        app.add_handler(MessageHandler(wrap, filter))
+            handlers.append(EditedMessageHandler)
+
+        app.add_handler(SedenUpdateHandler(wrap, filter, handlers))
 
     return msg_decorator
-
-
-class RetardsException(Exception):
-    pass

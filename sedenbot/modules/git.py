@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -14,7 +14,7 @@ from sedenbot import HELP
 from sedenecem.core import edit, extract_args, get_translation, sedenify
 
 
-@sedenify(pattern='^.github')
+@sedenify(pattern='^.git(|hub)')
 def github(message):
     args = extract_args(message)
 
@@ -105,7 +105,7 @@ def github(message):
         )
         + format_info(get_translation("gitCreationDate"), created)
         + format_info(get_translation("gitDateOfUpdate"), updated)
-        + f'\n{get_translation("gitRepoList")}\n{get_repos()}',
+        + f'**\n{get_translation("gitRepoList")}\n{get_repos()}**',
         preview=False,
     )
 

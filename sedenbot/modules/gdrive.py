@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -24,6 +24,7 @@ from sedenecem.core import (
     download_media_wc,
     edit,
     extract_args,
+    extract_args_split,
     get_translation,
     reply_doc,
     sedenify,
@@ -117,11 +118,7 @@ class Gdrive:
         size = file_info.get("size")
         file_name = file_info.get("name")
 
-        if (
-            int(size) > 4294967296
-            if self.message.from_user.is_premium
-            else int(size) > 2147483648
-        ):
+        if int(size) > 4294967296 if self.message.from_user.is_premium else 2147483648:
             return edit(self.message, get_translation("tgUpLimit", ["`"]))
         else:
             file_name = self.download_from_gdrive(url)
@@ -153,7 +150,7 @@ class Gdrive:
         done = False
         while done is False:
             status, done = downloader.next_chunk()
-            edit(
+            progress = edit(
                 self.message,
                 get_translation(
                     "gdriveDown",
@@ -237,7 +234,7 @@ flow = None
 def drive_auth(message):
     global flow
     user_id = message.from_user.id
-    args = extract_args(message).split()
+    args = extract_args_split(message)
 
     if len(args) == 0:
         creds = get(user_id)

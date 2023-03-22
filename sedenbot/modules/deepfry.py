@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -24,7 +24,6 @@ from sedenecem.core import (
 
 @sedenify(pattern='^.(deepf|f)ry')
 def deepfry(message):
-
     text = (message.text or message.caption).split(' ', 1)
     fry = parse_cmd(text[0]) == 'fry'
 
@@ -61,7 +60,6 @@ def deepfry(message):
     edit(message, f'`{get_translation("deepfryDownload")}`')
     image_file = download_media_wc(reply, 'image.png')
     image = Image.open(image_file)
-    remove(image_file)
 
     # Apply effect to media
     edit(message, get_translation('deepfryApply', ['`', f'{"" if fry else "deep"}']))
@@ -73,6 +71,7 @@ def deepfry(message):
     fried_io.close()
 
     reply_img(reply or message, 'image.jpeg', delete_file=True)
+    remove(image_file)
     message.delete()
 
 
@@ -90,17 +89,17 @@ def deepfry_media(img: Image, fry: bool) -> Image:
 
     temp_num = uniform(0.8, 0.9) if fry else 0.75
     img = img.resize(
-        (int(width ** temp_num), int(height ** temp_num)), resample=Image.LANCZOS
+        (int(width**temp_num), int(height**temp_num)), resample=Image.LANCZOS
     )
 
     temp_num = uniform(0.85, 0.95) if fry else 0.88
     img = img.resize(
-        (int(width ** temp_num), int(height ** temp_num)), resample=Image.BILINEAR
+        (int(width**temp_num), int(height**temp_num)), resample=Image.BILINEAR
     )
 
     temp_num = uniform(0.89, 0.98) if fry else 0.9
     img = img.resize(
-        (int(width ** temp_num), int(height ** temp_num)), resample=Image.BICUBIC
+        (int(width**temp_num), int(height**temp_num)), resample=Image.BICUBIC
     )
     img = img.resize((width, height), resample=Image.BICUBIC)
 

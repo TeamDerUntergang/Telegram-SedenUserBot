@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -12,8 +12,8 @@ from sedenbot import HELP
 from sedenecem.core import edit, get_translation, parse_cmd, sedenify
 
 
-@sedenify(pattern=r'^.(un|)lock', compat=False, private=False, admin=True)
-def lock_unlock_chat(client, message):
+@sedenify(pattern='^.(un|)lock', private=False, admin=True)
+def lock_unlock_chat(message):
     text = (message.text or message.caption).replace(r'\s+', ' ').split(' ', 1)
 
     unlock = parse_cmd(text[0])[:2] == 'un'
@@ -76,7 +76,7 @@ def lock_unlock_chat(client, message):
             edit(message, get_translation('lockError', ['`', args]))
             return
 
-    chat = client.get_chat(message.chat.id)
+    chat = message._client.get_chat(message.chat.id)
 
     msg = get_on_none(msg, chat.permissions.can_send_messages)
     media = get_on_none(media, chat.permissions.can_send_media_messages)
@@ -88,7 +88,7 @@ def lock_unlock_chat(client, message):
     changeinfo = get_on_none(changeinfo, chat.permissions.can_change_info)
 
     try:
-        client.set_chat_permissions(
+        message._client.set_chat_permissions(
             message.chat.id,
             ChatPermissions(
                 can_send_messages=msg,

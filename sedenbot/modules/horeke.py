@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -8,16 +8,25 @@
 #
 
 from math import floor
-from os import execl, getpid
+from os import execl, getpid, kill, name
+from signal import CTRL_C_EVENT, SIGINT
 from sys import argv, executable
 
 from heroku3 import from_key
 from requests import get
+
 from sedenbot import HELP, HEROKU_APPNAME, HEROKU_KEY
-from sedenecem.core import edit, get_translation, reply_doc, sedenify, send_log
+from sedenecem.core import (
+    edit,
+    get_translation,
+    reply_doc,
+    sedenify,
+    send_log,
+    useragent,
+)
 
 
-@sedenify(pattern='^.(quo|ko)ta$')
+@sedenify(pattern='^.(qu|k)ota$')
 def dyno(message):
     if not HEROKU_KEY:
         edit(message, f"`{get_translation('notHeroku')}`")
@@ -49,7 +58,7 @@ def dyno(message):
     acc_id = heroku.account().id
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36',
+        'User-Agent': useragent(),
         'Authorization': f'Bearer {HEROKU_KEY}',
         'Accept': 'application/vnd.heroku+json; version=3.account-quotas',
     }
@@ -115,12 +124,12 @@ def dyno(message):
     )
 
 
-@sedenify(pattern='^.(restart|yb)$')
+@sedenify(pattern='^.(re(star|boo)t|yb)$')
 def _restart(message):
     return restart(message)
 
 
-@sedenify(pattern='^.d(restart|yb)$')
+@sedenify(pattern='^.d(re(star|boo)t|yb)$')
 def _drestart(message):
     return restart(message, dyno=True)
 
@@ -180,8 +189,7 @@ def shutdown(message):
 
     def std_off():
         try:
-            from sedenecem.core.misc import __status_out__
-            __status_out__(f'kill -7 {getpid()}')
+            kill(getpid(), CTRL_C_EVENT if name == 'nt' else SIGINT)
         except Exception:
             pass
 

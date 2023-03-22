@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -12,9 +12,12 @@ from re import escape, sub
 from subprocess import STDOUT, CalledProcessError, check_output
 from typing import List
 
+from bs4 import BeautifulSoup
 from pyrogram import enums
 from pyrogram.types import Message, User
-from sedenbot import BOT_PREFIX, BRAIN, LOG_VERBOSE, TEMP_SETTINGS, app
+from requests import get
+
+from sedenbot import BOT_PREFIX, BRAIN, LOG_VERBOSE, app
 
 MARKDOWN_FIX_CHAR = '\u2064'
 SPAM_COUNT = [0]
@@ -224,6 +227,20 @@ def reply(
     delete_orig=False,
     parse=enums.ParseMode.MARKDOWN,
 ):
+    """
+    Reply to a message with the given text.
+
+    Args:
+        message (pyrogram.types.Message): The message to reply to.
+        text (str): The text to send in the reply.
+        preview (bool): Whether to enable link previews for URLs in the text. Defaults to True.
+        fix_markdown (bool): Whether to add a special character to fix issues with markdown formatting. Defaults to False.
+        delete_orig (bool): Whether to delete the original message after sending the reply. Defaults to False.
+        parse (pyrogram.enums.ParseMode): The parse mode to use for the text. Defaults to `pyrogram.enums.ParseMode.MARKDOWN`.
+
+    Returns:
+        pyrogram.types.Message: The message object of the sent reply.
+    """
     try:
         if fix_markdown:
             text += MARKDOWN_FIX_CHAR
@@ -237,7 +254,18 @@ def reply(
         pass
 
 
-def extract_args(message, markdown=True):
+def extract_args(message, markdown=True, line=True):
+    """
+    Extracts arguments from a given text.
+
+    Args:
+        message (pyrogram.types.Message): The message to extract arguments from.
+        markdown (bool): Whether to treat the message text as Markdown. Defaults to True.
+        line (bool): Whether to remove line breaks from the message text. Defaults to True.
+
+    Returns:
+        str: The extracted arguments.
+    """
     if not (message.text or message.caption):
         return ''
 
@@ -247,22 +275,46 @@ def extract_args(message, markdown=True):
     if ' ' not in text:
         return ''
 
-    text = sub(r'\s+', ' ', text)
+    text = sub(r'\s+', ' ', text) if line else text
     text = text[text.find(' ') :].strip()
     return text
 
 
-def extract_args_arr(message, markdown=True):
-    return extract_args(message, markdown).split()
+def extract_args_split(message, markdown=True, line=True):
+    """
+    Extracts arguments from a given text and splits them into a list.
+
+    Args:
+        message (pyrogram.types.Message): The message to extract arguments from.
+        markdown (bool): Whether to treat the message text as Markdown. Defaults to True.
+        line (bool): Whether to remove line breaks from the message text. Defaults to True.
+
+    Returns:
+        List[str]: The extracted arguments, split into a list.
+    """
+    return extract_args(message, markdown, line).split()
 
 
 def edit(
     message, text, preview=True, fix_markdown=False, parse=enums.ParseMode.MARKDOWN
 ):
+    """
+    Edits the text of a message.
+
+    Args:
+        message (pyrogram.types.Message): The message to edit.
+        text (str): The new text to replace the message with.
+        preview (bool): Whether to enable link previews for URLs in the text. Defaults to True.
+        fix_markdown (bool): Whether to add a special character to fix issues with markdown formatting. Defaults to False.
+        parse (pyrogram.enums.ParseMode): The parse mode to use for the text. Defaults to `pyrogram.enums.ParseMode.MARKDOWN`.
+
+    Returns:
+        None
+    """
     try:
         if fix_markdown:
             text += MARKDOWN_FIX_CHAR
-        if message.from_user.id != TEMP_SETTINGS['ME'].id:
+        if message.from_user.id != message._client.me.id:
             reply(message, text, preview=preview, parse=parse)
             return
         message.edit_text(
@@ -273,6 +325,19 @@ def edit(
 
 
 def download_media(client, data, file_name=None, progress=None, sticker_orig=True):
+    """
+    Downloads media from a given message and saves it to a file.
+
+    Args:
+        client (pyrogram.Client): The client to use for downloading the media.
+        data (pyrogram.types.Message): The message containing the media to download.
+        file_name (str): The name of the file to save the media to. Defaults to None.
+        progress (callable, optional): A callback function to report the progress of the download. Defaults to None.
+        sticker_orig (bool): Whether to download the original sticker file. Defaults to True.
+
+    Returns:
+        Union[None, str]: None if media download fails, else the absolute path of downloaded file.
+    """
     if not file_name:
         if data.document:
             file_name = (
@@ -312,14 +377,37 @@ def download_media(client, data, file_name=None, progress=None, sticker_orig=Tru
 
 
 def download_media_wc(data, file_name=None, progress=None, sticker_orig=False):
+    """
+    Downloads media from a given message and saves it to a file.
+
+    Args:
+        data (pyrogram.types.Message): The message containing the media to download.
+        file_name (str): The name to save the downloaded file as. If not specified, the file will be saved with a default name based on the media type.
+        progress (callable, optional): A function to call with the download progress percentage as an argument. Useful for displaying a progress bar. The function should take a single `float` argument between 0 and 100.
+        sticker_orig (bool): If `True`, downloads the original TGS or JSON file for stickers, instead of converting to a static image format. Has no effect for non-sticker media.
+
+    Returns:
+        None: If the media type is not supported or the download fails for any reason.
+        str: The name of the file the media was saved as, if the download was successful.
+    """
     return download_media(app, data, file_name, progress, sticker_orig)
 
 
-def get_me():
-    return app.get_me()
-
-
 def forward(message, chat_id):
+    """
+    Forwards a given message to a specified chat.
+
+    Args:
+        message (pyrogram.types.Message): The message to forward.
+        chat_id (int or str): The ID of the chat to forward the message to.
+            If not specified, forwards the message to the saved messages.
+
+    Raises:
+        Exception: If the message forwarding fails.
+
+    Returns:
+        pyrogram.types.Message: The forwarded message object.
+    """
     try:
         return message.forward(chat_id or 'me')
     except Exception as e:
@@ -327,6 +415,17 @@ def forward(message, chat_id):
 
 
 def get_messages(chat_id, msg_ids=None, client=app):
+    """
+    Retrieves one or more messages from a specified chat.
+
+    Args:
+        chat_id (int or str): The ID of the chat to retrieve messages from. If not specified, retrieves messages from the saved messages.
+        msg_ids (int or List[int]): The ID or list of IDs of the messages to retrieve. If not specified, retrieves the latest message in the chat.
+        client (pyrogram.Client): The client instance used to retrieve the messages.
+
+    Returns:
+        List[pyrogram.types.Message]: A list of message objects that were retrieved, sorted in ascending order based on their IDs (oldest message first). If no messages are found or an error occurs, an empty list is returned.
+    """
     try:
         ret = client.get_messages(chat_id=(chat_id or 'me'), message_ids=msg_ids)
         return [ret] if ret and isinstance(ret, Message) else ret
@@ -335,19 +434,46 @@ def get_messages(chat_id, msg_ids=None, client=app):
 
 
 def amisudo():
-    return TEMP_SETTINGS['ME'].id in BRAIN
+    """
+    Checks if the user is authorized to execute sudo commands.
+
+    Returns:
+        bool: True if the user is authorized to execute sudo commands, False otherwise.
+    """
+    return app.me.id in BRAIN
 
 
 def increment_spam_count():
+    """
+    Increments the spam count and checks if the current spam count is within the allowed limit.
+
+    Returns:
+        bool: True if the current spam count is within the allowed limit, False otherwise.
+    """
     SPAM_COUNT[0] += 1
     return spam_allowed()
 
 
 def spam_allowed():
+    """
+    Checks if spamming is allowed based on the current spam count or user permissions.
+
+    Returns:
+        bool: True if spamming is allowed, False otherwise.
+    """
     return amisudo() or SPAM_COUNT[0] < 50
 
 
 def get_cmd(message):
+    """
+    Extracts the command from a given message.
+
+    Args:
+        message (pyrogram.types.Message): The message from which to extract the command.
+
+    Returns:
+        str: The command string without the leading slash, or an empty string if no command was found.
+    """
     text = message.text or message.caption
     if text:
         text = text.strip()
@@ -356,6 +482,15 @@ def get_cmd(message):
 
 
 def parse_cmd(text):
+    """
+    Parses a command string from the given text.
+
+    Args:
+        text (str): The text from which to parse the command.
+
+    Returns:
+        str: The parsed command string without the leading slash.
+    """
     cmd = sub(r'\s+', ' ', text)
     cmd = cmd.split()[0]
     cmd = cmd.split(_parsed_prefix)[-1] if BOT_PREFIX else cmd[1:]
@@ -363,6 +498,15 @@ def parse_cmd(text):
 
 
 def is_admin(message):
+    """
+    Checks if the sender of the given message is an admin in the chat.
+
+    Args:
+        message (pyrogram.types.Message): The message to check.
+
+    Returns:
+        bool: True if the sender is an admin, False otherwise.
+    """
     if not message.chat.type in [enums.ChatType.SUPERGROUP, enums.ChatType.GROUP]:
         return True
 
@@ -371,6 +515,15 @@ def is_admin(message):
 
 
 def is_admin_myself(chat):
+    """
+    Checks if the user is an admin in the given chat.
+
+    Args:
+        chat (pyrogram.types.Chat): The chat to check.
+
+    Returns:
+        bool: True if the bot is an admin, False otherwise.
+    """
     if not chat.type in [enums.ChatType.SUPERGROUP, enums.ChatType.GROUP]:
         return True
 
@@ -379,12 +532,27 @@ def is_admin_myself(chat):
 
 
 def get_download_dir() -> str:
+    """
+    Gets the directory path for downloaded files.
+
+    Returns:
+        str: The directory path.
+    """
     dir = './downloads'
     makedirs(dir, exist_ok=True)
     return dir
 
 
 def get_duration(media):
+    """
+    Returns the duration of a media file.
+
+    Args:
+        media (str): The file path.
+
+    Returns:
+        int: The duration in seconds or None if the duration cannot be determined.
+    """
     out = __status_out__(
         f'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "{media}"'
     )
@@ -396,6 +564,16 @@ def get_duration(media):
 
 
 def __status_out__(cmd, encoding='utf-8'):
+    """
+    Runs a shell command and captures its output.
+
+    Args:
+        cmd (str): The shell command to be run.
+        encoding (str): The encoding to use for the command's output. Defaults to 'utf-8'.
+
+    Returns:
+        tuple: A tuple containing the return code of the command and its output.
+    """
     try:
         output = check_output(
             cmd, shell=True, text=True, stderr=STDOUT, encoding=encoding
@@ -410,6 +588,15 @@ def __status_out__(cmd, encoding='utf-8'):
 
 
 def extract_user(message: Message) -> List[User]:
+    """
+    Extracts user information from a given message.
+
+    Args:
+        message (pyrogram.types.Message): Message object.
+
+    Returns:
+        List[User]: A list of User objects representing the users mentioned or replied to in the message.
+    """
     users: List[User] = []
     mentions = None
 
@@ -444,3 +631,19 @@ def extract_user(message: Message) -> List[User]:
                 pass
 
     return users
+
+
+def useragent():
+    """
+    Generate a random user agent string.
+
+    Returns:
+        str: A random user agent string.
+    """
+    req = get('https://useragents.io/random')
+    soup = BeautifulSoup(req.text, 'html.parser')
+    agent = soup.find_all('td')
+    for i in agent:
+        return i.find('a').text
+
+    return 'Googlebot/2.1 (+http://www.google.com/bot.html)'

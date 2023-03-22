@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -12,7 +12,13 @@ from json import JSONDecodeError
 from pyrogram import enums
 from requests import get
 from sedenbot import HELP
-from sedenecem.core import edit, extract_args, get_translation, parse_cmd, sedenify
+from sedenecem.core import (
+    edit,
+    extract_args_split,
+    get_translation,
+    parse_cmd,
+    sedenify,
+)
 
 
 def parseShipEntity(jsonEntity: dict) -> str:
@@ -70,31 +76,31 @@ def getShipEntity(company: str, trackId: int or str) -> dict or None:
         return None
 
 
-@sedenify(pattern='^.(yurti[çc]i|aras|ptt|mng|ups|s[üu]rat|trendyol|hepsijet)')
+@sedenify(pattern='^.(hepsijet|trendyol|yurti[cç]i|(s[uü]ra|pt)t|aras|mng|ups)')
 def shippingTrack(message):
     edit(message, f"`{get_translation('processing')}`")
-    trackId = extract_args(message)
+    trackId = extract_args_split(message)
     comp = parse_cmd(message.text)
-    if not trackId or len(trackId.split(' ')) > 1:
+    if not trackId or len(trackId) > 1:
         edit(message, f"`{get_translation('wrongCommand')}`")
         return
     match comp.replace('ç', 'c').replace('ü', 'u'):
         case 'yurtici':
-            kargo_data = getShipEntity(company='yurtici', trackId=trackId)
+            kargo_data = getShipEntity(company='yurtici', trackId=trackId[0])
         case 'aras':
-            kargo_data = getShipEntity(company='aras', trackId=trackId)
+            kargo_data = getShipEntity(company='aras', trackId=trackId[0])
         case 'ptt':
-            kargo_data = getShipEntity(company='ptt', trackId=trackId)
+            kargo_data = getShipEntity(company='ptt', trackId=trackId[0])
         case 'mng':
-            kargo_data = getShipEntity(company='mng', trackId=trackId)
+            kargo_data = getShipEntity(company='mng', trackId=trackId[0])
         case 'ups':
-            kargo_data = getShipEntity(company='ups', trackId=trackId)
+            kargo_data = getShipEntity(company='ups', trackId=trackId[0])
         case 'surat':
-            kargo_data = getShipEntity(company='surat', trackId=trackId)
+            kargo_data = getShipEntity(company='surat', trackId=trackId[0])
         case 'trendyol':
-            kargo_data = getShipEntity(company='trendyolexpress', trackId=trackId)
+            kargo_data = getShipEntity(company='trendyolexpress', trackId=trackId[0])
         case 'hepsijet':
-            kargo_data = getShipEntity(company='hepsijet', trackId=trackId)
+            kargo_data = getShipEntity(company='hepsijet', trackId=trackId[0])
     if kargo_data:
         text = parseShipEntity(kargo_data)
         edit(message, text, parse=enums.ParseMode.HTML)

@@ -14,7 +14,7 @@ class GDriveCreds(BASE):
         self.user_id = user_id
 
 
-GDriveCreds.__table__.create(checkfirst=True)
+GDriveCreds.__table__.create(bind=SESSION.get_bind(), checkfirst=True)
 
 
 def set(user_id, credentials):

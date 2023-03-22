@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -41,75 +41,72 @@ pmpermit_init()
     disable_edited=True,
     disable_notify=True,
     group=False,
-    compat=False,
     bot=False,
 )
-def permitpm(client, message):
+def permitpm(message):
     if not PM_AUTO_BAN:
         message.continue_propagation()
-    else:
-        if auto_accept(client, message) or message.from_user.is_self:
+
+    if auto_accept(message) or message.from_user.is_self:
+        message.continue_propagation()
+
+    if message.chat.id != 777000:
+        try:
+            from sedenecem.sql.pm_permit_sql import is_approved
+        except BaseException:
             message.continue_propagation()
 
-        if message.chat.id != 777000:
-            try:
-                from sedenecem.sql.pm_permit_sql import is_approved
-            except BaseException:
-                pass
+        apprv = is_approved(message.chat.id)
+        notifsoff = is_muted(-1)
 
-            apprv = is_approved(message.chat.id)
-            notifsoff = is_muted(-1)
-
-            if not apprv and message.text != UNAPPROVED_MSG:
-                if message.chat.id in TEMP_SETTINGS['PM_LAST_MSG']:
-                    prevmsg = TEMP_SETTINGS['PM_LAST_MSG'][message.chat.id]
-                    if message.text != prevmsg:
-                        for message in _find_unapproved_msg(client, message.chat.id):
-                            message.delete()
-                        if TEMP_SETTINGS['PM_COUNT'][message.chat.id] < (
-                            PM_MSG_COUNT - 1
-                        ):
-                            ret = reply(message, UNAPPROVED_MSG)
-                            TEMP_SETTINGS['PM_LAST_MSG'][message.chat.id] = ret.text
-                else:
-                    ret = reply(message, UNAPPROVED_MSG)
-                    if ret.text:
+        if not apprv and message.text != UNAPPROVED_MSG:
+            if message.chat.id in TEMP_SETTINGS['PM_LAST_MSG']:
+                prevmsg = TEMP_SETTINGS['PM_LAST_MSG'][message.chat.id]
+                if message.text != prevmsg:
+                    for i in _find_unapproved_msg(message, message.chat.id):
+                        i.delete()
+                    if TEMP_SETTINGS['PM_COUNT'][message.chat.id] < (PM_MSG_COUNT - 1):
+                        ret = reply(message, UNAPPROVED_MSG)
                         TEMP_SETTINGS['PM_LAST_MSG'][message.chat.id] = ret.text
+            else:
+                ret = reply(message, UNAPPROVED_MSG)
+                if ret.text:
+                    TEMP_SETTINGS['PM_LAST_MSG'][message.chat.id] = ret.text
 
-                if notifsoff:
-                    client.read_chat_history(message.chat.id)
+            if notifsoff:
+                message._client.read_chat_history(message.chat.id)
 
-                if message.chat.id not in TEMP_SETTINGS['PM_COUNT']:
-                    TEMP_SETTINGS['PM_COUNT'][message.chat.id] = 1
-                else:
-                    TEMP_SETTINGS['PM_COUNT'][message.chat.id] = (
-                        TEMP_SETTINGS['PM_COUNT'][message.chat.id] + 1
+            if message.chat.id not in TEMP_SETTINGS['PM_COUNT']:
+                TEMP_SETTINGS['PM_COUNT'][message.chat.id] = 1
+            else:
+                TEMP_SETTINGS['PM_COUNT'][message.chat.id] = (
+                    TEMP_SETTINGS['PM_COUNT'][message.chat.id] + 1
+                )
+
+            if TEMP_SETTINGS['PM_COUNT'][message.chat.id] > (PM_MSG_COUNT - 1):
+                reply(message, f'`{get_translation("pmpermitBlock")}`')
+
+                try:
+                    del TEMP_SETTINGS['PM_COUNT'][message.chat.id]
+                    del TEMP_SETTINGS['PM_LAST_MSG'][message.chat.id]
+                except BaseException:
+                    pass
+
+                message._client.block_user(message.chat.id)
+                peer: InputPeerUser = message._client.resolve_peer(message.chat.id)
+                message._client.invoke(ReportSpam(peer=peer))
+
+                send_log(
+                    get_translation(
+                        'pmpermitLog', [message.chat.first_name, message.chat.id]
                     )
+                )
 
-                if TEMP_SETTINGS['PM_COUNT'][message.chat.id] > (PM_MSG_COUNT - 1):
-                    reply(message, f'`{get_translation("pmpermitBlock")}`')
-
-                    try:
-                        del TEMP_SETTINGS['PM_COUNT'][message.chat.id]
-                        del TEMP_SETTINGS['PM_LAST_MSG'][message.chat.id]
-                    except BaseException:
-                        pass
-
-                    client.block_user(message.chat.id)
-                    peer: InputPeerUser = client.resolve_peer(message.chat.id)
-                    client.invoke(ReportSpam(peer=peer))
-
-                    send_log(
-                        get_translation(
-                            'pmpermitLog', [message.chat.first_name, message.chat.id]
-                        )
-                    )
-
-    message.continue_propagation()
+        message.continue_propagation()
 
 
-def auto_accept(client, message):
-    self_user = TEMP_SETTINGS['ME']
+def auto_accept(message):
+    self_user = message._client.me
     if message.chat.id not in [self_user.id, 777000]:
         try:
             from sedenecem.sql.pm_permit_sql import approve, is_approved
@@ -120,7 +117,7 @@ def auto_accept(client, message):
         if is_approved(chat.id):
             return True
 
-        for msg in client.get_chat_history(chat.id, limit=1):
+        for msg in message._client.get_chat_history(chat.id, limit=1):
             # chat.id in TEMP_SETTINGS['PM_LAST_MSG']
             #    and msg.text != UNAPPROVED_MSG
             #    and
@@ -134,8 +131,8 @@ def auto_accept(client, message):
 
                 try:
                     approve(chat.id)
-                    for message in _find_unapproved_msg(client, chat.id):
-                        message.delete()
+                    for i in _find_unapproved_msg(message, chat.id):
+                        i.delete()
                     send_log(
                         get_translation('pmAutoAccept', [chat.first_name, chat.id])
                     )
@@ -170,8 +167,8 @@ def notifon(message):
     edit(message, f'`{get_translation("pmNotifOn")}`')
 
 
-@sedenify(outgoing=True, pattern='^.approve$', compat=False)
-def approvepm(client, message):
+@sedenify(outgoing=True, pattern='^.approve$')
+def approvepm(message):
     try:
         from sedenecem.sql.pm_permit_sql import approve
     except BaseException:
@@ -199,8 +196,8 @@ def approvepm(client, message):
         approve(uid)
         edit(message, get_translation('pmApproveSuccess', [name0, uid, '`']))
         send_log(get_translation('pmApproveLog', [name0, uid]))
-        for message in _find_unapproved_msg(client, message.chat.id):
-            message.delete()
+        for i in _find_unapproved_msg(message, message.chat.id):
+            i.delete()
     except IntegrityError:
         edit(message, f'`{get_translation("pmApproveError2")}`')
         return
@@ -238,9 +235,9 @@ def disapprovepm(message):
     send_log(get_translation('pmDisapprove', [name0, uid, '`']))
 
 
-def _find_unapproved_msg(client, chat_id):
+def _find_unapproved_msg(message, chat_id):
     try:
-        return client.search_messages(
+        return message._.search_messages(
             chat_id, from_user='me', limit=10, query=UNAPPROVED_MSG
         )
     except BaseException:

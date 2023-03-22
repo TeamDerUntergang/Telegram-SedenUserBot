@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -19,7 +19,7 @@ from requests import get
 from sedenbot import HELP
 from sedenecem.core import (
     edit,
-    extract_args,
+    extract_args_split,
     get_translation,
     reply_audio,
     reply_doc,
@@ -200,7 +200,7 @@ class Spotipy:
 @sedenify(pattern='^.spoti(|fy)')
 def spotify_download(message):
     spotify = Spotipy()
-    args = extract_args(message).split()
+    args = extract_args_split(message)
 
     if len(args) == 2 and args[0] == 'dl' and not args[1] == 'zip':
         url = args[1]

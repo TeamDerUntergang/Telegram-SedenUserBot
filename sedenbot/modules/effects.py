@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -14,7 +14,7 @@ from sedenbot import HELP
 from sedenecem.core import (
     download_media_wc,
     edit,
-    extract_args,
+    extract_args_split,
     get_translation,
     reply_audio,
     reply_video,
@@ -24,70 +24,71 @@ from sedenecem.core import (
 
 @sedenify(pattern='^.earrape')
 def earrape(message):
-    args = extract_args(message).split(' ', 1)
+    args = extract_args_split(message)
     reply = message.reply_to_message
 
-    util = args[0].lower()
-    if util == 'mp4':
-        if not (
-            reply
-            and (
-                reply.video
-                or reply.video_note
-                or (reply.document and 'video' in reply.document.mime_type)
-            )
-        ):
-            edit(message, f'`{get_translation("wrongMedia")}`')
-        else:
-            edit(message, f'`{get_translation("applyEarrape")}`')
-            media = download_media_wc(reply)
-            process = Popen(
-                [
-                    'ffmpeg',
-                    '-i',
-                    f'{media}',
-                    '-af',
-                    'acrusher=.1:1:64:0:log',
-                    f'{media}.mp4',
-                ]
-            )
-            process.communicate()
-            edit(message, f'`{get_translation("uploadMedia")}`')
-            reply_video(reply or message, f'{media}.mp4', delete_file=True)
-            remove(media)
-            message.delete()
-    elif util == 'mp3':
-        if not (
-            reply
-            and (
-                reply.video
-                or reply.video_note
-                or (
-                    reply.audio
-                    or reply.voice
+    if args:
+        util = args[0].lower()
+        if util == 'mp4':
+            if not (
+                reply
+                and (
+                    reply.video
+                    or reply.video_note
                     or (reply.document and 'video' in reply.document.mime_type)
                 )
-            )
-        ):
-            edit(message, f'`{get_translation("wrongMedia")}`')
-        else:
-            edit(message, f'`{get_translation("applyEarrape")}`')
-            media = download_media_wc(reply)
-            process = Popen(
-                [
-                    'ffmpeg',
-                    '-i',
-                    f'{media}',
-                    '-af',
-                    'acrusher=.1:1:64:0:log',
-                    f'{media}.mp3',
-                ]
-            )
-            process.communicate()
-            edit(message, f'`{get_translation("uploadMedia")}`')
-            reply_audio(reply or message, f'{media}.mp3', delete_file=True)
-            remove(media)
-            message.delete()
+            ):
+                edit(message, f'`{get_translation("wrongMedia")}`')
+            else:
+                edit(message, f'`{get_translation("applyEarrape")}`')
+                media = download_media_wc(reply)
+                process = Popen(
+                    [
+                        'ffmpeg',
+                        '-i',
+                        f'{media}',
+                        '-af',
+                        'acrusher=.1:1:64:0:log',
+                        f'{media}.mp4',
+                    ]
+                )
+                process.communicate()
+                edit(message, f'`{get_translation("uploadMedia")}`')
+                reply_video(reply or message, f'{media}.mp4', delete_file=True)
+                remove(media)
+                message.delete()
+        elif util == 'mp3':
+            if not (
+                reply
+                and (
+                    reply.video
+                    or reply.video_note
+                    or (
+                        reply.audio
+                        or reply.voice
+                        or (reply.document and 'video' in reply.document.mime_type)
+                    )
+                )
+            ):
+                edit(message, f'`{get_translation("wrongMedia")}`')
+            else:
+                edit(message, f'`{get_translation("applyEarrape")}`')
+                media = download_media_wc(reply)
+                process = Popen(
+                    [
+                        'ffmpeg',
+                        '-i',
+                        f'{media}',
+                        '-af',
+                        'acrusher=.1:1:64:0:log',
+                        f'{media}.mp3',
+                    ]
+                )
+                process.communicate()
+                edit(message, f'`{get_translation("uploadMedia")}`')
+                reply_audio(reply or message, f'{media}.mp3', delete_file=True)
+                remove(media)
+                message.delete()
     else:
         edit(message, f'`{get_translation("wrongCommand")}`')
         return

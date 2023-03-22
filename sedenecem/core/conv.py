@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -14,8 +14,40 @@ from sedenbot import CONVERSATION, app
 
 
 class PyroConversation:
-    def __init__(self, client, chat_id):
-        self.client = client or app
+    """
+    A context manager for a conversation with a specific chat ID.
+
+    Args:
+        message (pyrogram.types.Message): The original message that initiated the conversation.
+        chat_id (int): The ID of the chat with which the conversation is taking place.
+
+    Methods:
+        send_msg(text: str) -> None:
+            Sends a message to the chat.
+
+        send_doc(doc: str, delete: bool = False) -> None:
+            Sends a document to the chat.
+
+        recv_msg(read: bool = True) -> pyrogram.types.Message:
+            Receives a message from the chat.
+
+        forward_msg(msg: pyrogram.types.Message) -> pyrogram.types.Message:
+            Forwards a message to the chat.
+
+        init() -> None:
+            Initializes the conversation.
+
+        stop() -> None:
+            Ends the conversation.
+
+    Usage:
+        with PyroConversation(message, chat_id) as conv:
+            conv.send_msg("Hello!")
+            reply = conv.recv_msg()
+    """
+
+    def __init__(self, message, chat_id):
+        self.client = message._client or app
         self.chat_id = chat_id
         self.count = 0
 

@@ -14,13 +14,13 @@ class PMPermit(BASE):
         self.chat_id = str(chat_id)  # ensure string
 
 
-PMPermit.__table__.create(checkfirst=True)
+PMPermit.__table__.create(bind=SESSION.get_bind(), checkfirst=True)
 
 
 def is_approved(chat_id):
     try:
         return SESSION.query(PMPermit).filter(PMPermit.chat_id == str(chat_id)).one()
-    except BaseException:
+    except BaseException as e:
         return None
     finally:
         SESSION.close()

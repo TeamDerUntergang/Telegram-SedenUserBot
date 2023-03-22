@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -62,18 +62,18 @@ def mutechat(message):
     send_log(get_translation('chatLog', [message.chat.id]))
 
 
-@sedenify(incoming=True, compat=False)
-def keep_read(client, message):
+@sedenify(incoming=True, outgoing=False)
+def keep_read(message):
     if message.from_user and message.from_user.is_self:
         message.continue_propagation()
 
     try:
         from sedenecem.sql.keep_read_sql import is_kread
     except BaseException:
-        return
+        message.continue_propagation()
 
     if is_muted(message.chat.id):
-        client.read_chat_history(message.chat.id)
+        message._client.read_chat_history(message.chat.id)
 
     message.continue_propagation()
 

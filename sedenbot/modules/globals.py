@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -11,11 +11,11 @@ from time import sleep
 
 from pyrogram import enums
 from pyrogram.types import ChatPermissions
-from sedenbot import BRAIN, HELP, LOGS, TEMP_SETTINGS
+from sedenbot import BRAIN, HELP, LOGS
 from sedenbot.modules.ban import get_reason
 from sedenecem.core import (
     edit,
-    extract_args_arr,
+    extract_args_split,
     extract_user,
     get_translation,
     sedenify,
@@ -40,8 +40,8 @@ def globals_init():
 globals_init()
 
 
-@sedenify(pattern='^.gban', compat=False)
-def gban_user(client, message):
+@sedenify(pattern='^.gban')
+def gban_user(message):
     reply = message.reply_to_message
     edit(message, f'`{get_translation("banProcess")}`')
 
@@ -76,7 +76,7 @@ def gban_user(client, message):
                 ),
             )
             try:
-                common_chats = client.get_common_chats(user.id)
+                common_chats = message._client.get_common_chats(user.id)
                 for i in common_chats:
                     i.ban_member(user.id)
             except BaseException:
@@ -94,7 +94,7 @@ def gban_user(client, message):
 
 @sedenify(pattern='^.(ung|gun)ban', compat=False)
 def ungban_user(client, message):
-    args = extract_args_arr(message)
+    args = extract_args_split(message)
     if len(args) > 1:
         return edit(message, f'`{get_translation("wrongCommand")}`')
     reply = message.reply_to_message
@@ -140,7 +140,7 @@ def ungban_user(client, message):
 
             try:
                 dialogs = client.get_dialogs()
-                me_id = TEMP_SETTINGS['ME'].id
+                me_id = message._client.me.id
                 chats = [
                     dialog.chat
                     for dialog in dialogs
@@ -245,7 +245,7 @@ def gmute_user(client, message):
 
 @sedenify(pattern='^.(ung|gun)mute', compat=False)
 def ungmute_user(client, message):
-    args = extract_args_arr(message)
+    args = extract_args_split(message)
     if len(args) > 1:
         return edit(message, f'`{get_translation("wrongCommand")}`')
     reply = message.reply_to_message

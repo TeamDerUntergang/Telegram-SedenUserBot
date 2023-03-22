@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -10,7 +10,7 @@
 from time import sleep
 
 from pyrogram.errors import FloodWait
-from sedenbot import HELP, TEMP_SETTINGS
+from sedenbot import HELP
 from sedenecem.core import (
     edit,
     extract_args,
@@ -21,8 +21,8 @@ from sedenecem.core import (
 )
 
 
-@sedenify(pattern='^.purge$', compat=False, admin=True)
-def purge(client, message):
+@sedenify(pattern='^.purge$', admin=True)
+def purge(message):
     msg = message.reply_to_message
     if msg:
         itermsg = list(range(msg.id, message.id))
@@ -35,7 +35,7 @@ def purge(client, message):
     for i in itermsg:
         try:
             count = count + 1
-            client.delete_messages(chat_id=message.chat.id, message_ids=i, revoke=True)
+            message._client.delete_messages(chat_id=message.chat.id, message_ids=i, revoke=True)
         except FloodWait as e:
             sleep(e.x)
         except Exception as e:
@@ -49,15 +49,15 @@ def purge(client, message):
     done.delete()
 
 
-@sedenify(pattern='^.purgeme', compat=False)
-def purgeme(client, message):
-    me = TEMP_SETTINGS['ME']
+@sedenify(pattern='^.purgeme')
+def purgeme(message):
+    me = message._client.me
     count = extract_args(message)
     if not count.isdigit():
         return edit(message, f'`{get_translation("purgemeUsage")}`')
     i = 1
 
-    itermsg = client.get_chat_history(message.chat.id)
+    itermsg = message._client.get_chat_history(message.chat.id)
     for message in itermsg:
         if i > int(count) + 1:
             break
@@ -72,13 +72,13 @@ def purgeme(client, message):
     smsg.delete()
 
 
-@sedenify(pattern='^.del$', compat=False, admin=True)
-def delete(client, message):
+@sedenify(pattern='^.del$', admin=True)
+def delete(message):
     msg_src = message.reply_to_message
     if msg_src:
         if msg_src.from_user.id:
             try:
-                client.delete_messages(message.chat.id, msg_src.id)
+                message._client.delete_messages(message.chat.id, msg_src.id)
                 message.delete()
                 send_log(f'`{get_translation("delResultLog")}`')
             except BaseException:

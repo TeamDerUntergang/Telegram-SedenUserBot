@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -33,9 +33,9 @@ DIZCILIK = [get_translation(f'kangstr{i+1}') for i in range(0, 12)]
 # ================= CONSTANT =================
 
 
-@sedenify(pattern='^.(d[ıi]zla|kang)', compat=False)
-def kang(client, message):
-    myacc = TEMP_SETTINGS['ME']
+@sedenify(pattern='^.(d[ıi]zla|kang)')
+def kang(message):
+    myacc = message._client.me
     kanger = myacc.username or myacc.first_name
     if myacc.username:
         kanger = f'@{kanger}'
@@ -119,7 +119,7 @@ def kang(client, message):
         try:
             set_name = InputStickerSetShortName(short_name=TEMP_SETTINGS[pname])
             set = GetStickerSet(stickerset=set_name, hash=0)
-            client.invoke(query=set)
+            message._client.invoke(query=set)
             return True
         except BaseException:
             return False
@@ -192,7 +192,7 @@ def kang(client, message):
         send_recv(conv, '/done')
         return True
 
-    with PyroConversation(client, chat) as conv:
+    with PyroConversation(message, chat) as conv:
         try:
             send_recv(conv, '/cancel')
         except YouBlockedUser:
@@ -250,8 +250,8 @@ def getsticker(message):
     message.delete()
 
 
-@sedenify(pattern='.packinfo$', compat=False)
-def packinfo(client, message):
+@sedenify(pattern='.packinfo$')
+def packinfo(message):
     reply = message.reply_to_message
     if not reply:
         edit(message, f'`{get_translation("packinfoError")}`')
@@ -263,7 +263,7 @@ def packinfo(client, message):
 
     edit(message, f'`{get_translation("processing")}`')
 
-    get_stickerset = client.invoke(
+    get_stickerset = message._client.invoke(
         GetStickerSet(
             stickerset=InputStickerSetShortName(short_name=reply.sticker.set_name),
             hash=0,

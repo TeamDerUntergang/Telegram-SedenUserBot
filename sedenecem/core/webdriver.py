@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -12,6 +12,15 @@ from selenium.webdriver import Chrome, ChromeOptions
 
 
 def get_webdriver():
+    """
+    Returns a headless Chrome webdriver object with specified options.
+
+    Returns:
+        selenium.webdriver.chrome.webdriver.WebDriver: The Chrome webdriver object.
+
+    Raises:
+        Exception: If the CHROME_DRIVER executable path is not found.
+    """
     try:
         options = ChromeOptions()
         options.add_argument('--headless')

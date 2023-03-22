@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2022 TeamDerUntergang <https://github.com/TeamDerUntergang>
+# Copyright (C) 2020-2023 TeamDerUntergang <https://github.com/TeamDerUntergang>
 #
 # This file is part of TeamDerUntergang project,
 # and licensed under GNU Affero General Public License v3.
@@ -12,6 +12,7 @@ from random import choice, getrandbits, randint
 from re import sub
 from textwrap import wrap
 from time import sleep
+from pyrogram import enums
 
 from cowpy import cow
 from PIL import Image, ImageDraw, ImageFont
@@ -21,6 +22,7 @@ from sedenecem.core import (
     download_media_wc,
     edit,
     extract_args,
+    extract_args_split,
     get_download_dir,
     get_translation,
     parse_cmd,
@@ -634,46 +636,66 @@ def lfy(message):
     )
 
 
-@sedenify(pattern=r'.scam', compat=False)
-def scam(client, message):
-    options = [
-        'typing',
-        'upload_photo',
-        'record_video',
-        'upload_video',
-        'record_audio',
-        'upload_audio',
-        'upload_document',
-        'find_location',
-        'record_video_note',
-        'upload_video_note',
-        'choose_contact',
-        'playing',
-    ]
-    input_str = extract_args(message)
-    args = input_str.split()
-    if len(args) == 0:
-        scam_action = choice(options)
-        scam_time = randint(30, 60)
-    elif len(args) == 1:
+@sedenify(pattern='.action')
+def set_action(message):
+    ACTIONS = {
+        'typing': enums.ChatAction.TYPING,
+        'photo': enums.ChatAction.UPLOAD_PHOTO,
+        'rec_video': enums.ChatAction.RECORD_VIDEO,
+        'video': enums.ChatAction.UPLOAD_VIDEO,
+        'rec_audio': enums.ChatAction.RECORD_AUDIO,
+        'audio': enums.ChatAction.UPLOAD_AUDIO,
+        'document': enums.ChatAction.UPLOAD_DOCUMENT,
+        'location': enums.ChatAction.FIND_LOCATION,
+        'rec_videonote': enums.ChatAction.RECORD_VIDEO_NOTE,
+        'videonote': enums.ChatAction.UPLOAD_VIDEO_NOTE,
+        'game': enums.ChatAction.PLAYING,
+        'contact': enums.ChatAction.CHOOSE_CONTACT,
+        'speaking': enums.ChatAction.SPEAKING,
+        'import_history': enums.ChatAction.IMPORT_HISTORY,
+        'sticker': enums.ChatAction.CHOOSE_STICKER,
+        'cancel': enums.ChatAction.CANCEL,
+    }
+    args = extract_args_split(message)
+    scam_action = None
+    scam_time = None
+
+    if len(args) == 1:
         try:
-            scam_action = str(args[0]).lower()
-            scam_time = randint(30, 60)
-        except ValueError:
-            scam_action = choice(options)
-            scam_time = int(args[0])
+            scam_action = ACTIONS[args[0].lower()]
+        except KeyError:
+            try:
+                scam_time = int(args[0])
+            except:
+                pass
     elif len(args) == 2:
-        scam_action = str(args[0]).lower()
-        scam_time = int(args[1])
+        try:
+            scam_action = ACTIONS[args[0].lower()]
+            scam_time = int(args[1])
+        except KeyError:
+            try:
+                scam_time = int(args[0])
+            except:
+                pass
+        except ValueError:
+            pass
     else:
-        edit(message, f'`{get_translation("wrongCommand")}`')
+        edit(message, f'{get_translation("wrongCommand")}')
         return
+
+    if scam_action is None:
+        scam_action = choice(list(ACTIONS.values()))
+
+    if scam_time is None:
+        scam_time = randint(30, 60)
+
     try:
         if scam_time > 0:
-            chat_id = message.chat.id
             message.delete()
-            client.send_chat_action(chat_id, scam_action)
-            sleep(scam_time)
+            while scam_time > 0:
+                message.reply_chat_action(scam_action)
+                sleep(2)
+                scam_time = scam_time - 2
     except BaseException:
         return
 
@@ -860,27 +882,20 @@ def gay_calculator(message):
         edit(message, f'**{get_translation("gayString3", [random])}**')
 
 
-@sedenify(pattern='^.react$')
-def react(message):
-    edit(message, choice(REACTS))
-
-
-@sedenify(pattern='^.shg$')
-def shg(message):
-    edit(message, choice(SHGS))
-
-
-@sedenify(pattern='^.run$')
-def run(message):
-    edit(message, choice(RUNS))
-
-
-@sedenify(pattern='^.xda$')
-def xda(message):
-    """
-    Copyright (c) @NaytSeyd, Quotes taken
-    from friendly-telegram (https://gitlab.com/friendly-telegram) | 2020"""
-    edit(message, choice(XDA_STRINGS))
+@sedenify(pattern='^.(r(eact|un)|shg|xda)$')
+def react_shg_run_xda(message):
+    options = message.text[1:]
+    if options == 'react':
+        options_list = REACTS
+    elif options == 'shg':
+        options_list = SHGS
+    elif options == 'run':
+        options_list = RUNS
+    elif options == 'xda': # Quotes taken from friendly-telegram (https://gitlab.com/friendly-telegram)
+        options_list = XDA_STRINGS
+    else:
+        return
+    edit(message, choice(options_list))
 
 
 @sedenify(pattern='^.f (.*)')
