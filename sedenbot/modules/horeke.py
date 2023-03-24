@@ -8,8 +8,8 @@
 #
 
 from math import floor
-from os import execl, getpid, kill, name
-from signal import CTRL_C_EVENT, SIGINT
+from os import execl, getpid, kill
+from signal import SIGINT
 from sys import argv, executable
 
 from heroku3 import from_key
@@ -189,7 +189,7 @@ def shutdown(message):
 
     def std_off():
         try:
-            kill(getpid(), CTRL_C_EVENT if name == 'nt' else SIGINT)
+            kill(getpid(), SIGINT)
         except Exception:
             pass
 
