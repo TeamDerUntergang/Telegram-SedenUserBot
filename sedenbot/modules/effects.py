@@ -8,13 +8,13 @@
 #
 
 from os import path, remove
-from subprocess import Popen
 
 from sedenbot import HELP
 from sedenecem.core import (
     download_media_wc,
     edit,
     extract_args_split,
+    get_status_out,
     get_translation,
     reply_audio,
     reply_video,
@@ -42,17 +42,9 @@ def earrape(message):
             else:
                 edit(message, f'`{get_translation("applyEarrape")}`')
                 media = download_media_wc(reply)
-                process = Popen(
-                    [
-                        'ffmpeg',
-                        '-i',
-                        f'{media}',
-                        '-af',
-                        'acrusher=.1:1:64:0:log',
-                        f'{media}.mp4',
-                    ]
+                get_status_out(
+                    f'ffmpeg -i {media} -af acrusher=.1:1:64:0:log {media}.mp4'
                 )
-                process.communicate()
                 edit(message, f'`{get_translation("uploadMedia")}`')
                 reply_video(reply or message, f'{media}.mp4', delete_file=True)
                 remove(media)
@@ -74,17 +66,9 @@ def earrape(message):
             else:
                 edit(message, f'`{get_translation("applyEarrape")}`')
                 media = download_media_wc(reply)
-                process = Popen(
-                    [
-                        'ffmpeg',
-                        '-i',
-                        f'{media}',
-                        '-af',
-                        'acrusher=.1:1:64:0:log',
-                        f'{media}.mp3',
-                    ]
+                get_status_out(
+                    f'ffmpeg -i {media} -af acrusher=.1:1:64:0:log {media}.mp3'
                 )
-                process.communicate()
                 edit(message, f'`{get_translation("uploadMedia")}`')
                 reply_audio(reply or message, f'{media}.mp3', delete_file=True)
                 remove(media)
@@ -115,18 +99,9 @@ def nightcore(message):
         filename = f'{media}.mp3'
         if path.exists(filename):
             remove(filename)
-
-        process = Popen(
-            [
-                'ffmpeg',
-                '-i',
-                media,
-                '-af',
-                'asetrate=44100*1.16,aresample=44100,atempo=1',
-                filename,
-            ]
+        get_status_out(
+            f'ffmpeg -i {media} -af asetrate=44100*1.16,aresample=44100,atempo=1 {filename}'
         )
-        process.communicate()
         edit(message, f'`{get_translation("uploadMedia")}`')
         reply_audio(reply or message, f'{media}.mp3', delete_file=True)
         remove(media)
@@ -155,17 +130,9 @@ def slowedtoperfection(message):
         if path.exists(filename):
             remove(filename)
 
-        process = Popen(
-            [
-                'ffmpeg',
-                '-i',
-                media,
-                '-af',
-                'aecho=1.0:0.7:20:0.5,asetrate=44100*0.84,aresample=44100,atempo=1',
-                filename,
-            ]
+        get_status_out(
+            f'ffmpeg -i {media} -af aecho=1.0:0.7:20:0.5,asetrate=44100*0.84,aresample=44100,atempo=1 {filename}'
         )
-        process.communicate()
         edit(message, f'`{get_translation("uploadMedia")}`')
         reply_audio(reply or message, f'{media}.mp3', delete_file=True)
         remove(media)

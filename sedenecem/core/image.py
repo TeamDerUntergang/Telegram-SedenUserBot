@@ -8,21 +8,20 @@
 #
 
 from math import floor
-from subprocess import Popen
 
 from PIL import Image
 
-from .misc import get_download_dir
+from .misc import get_download_dir, get_status_out
 
 
 def sticker_resize(photo):
     """
     Resizes a given sticker image file to have a maximum dimension of 512 pixels while maintaining aspect ratio.
     If the image is already smaller than 512x512 pixels, it will be resized to its original size.
-    
+
     Args:
         photo (str): The file path to the sticker image file to be resized.
-        
+
     Returns:
         str: The file path to the resized image file in PNG format, stored in a temporary directory.
     """
@@ -54,35 +53,23 @@ def sticker_resize(photo):
 def video_convert(video):
     """
     Converts a video file to a webm format with dimensions of 512x512 and duration of 3.0 seconds.
-    
+
     Args:
         video (str): Path of the video file to be converted.
-    
+
     Returns:
         str: Path of the converted webm file.
     """
-    process = Popen(
-        [
-            'ffmpeg',
-            '-i',
-            f'{video}',
-            '-vf',
-            'scale=512:512:force_original_aspect_ratio=decrease',
-            '-c:v',
-            'libvpx-vp9',
-            '-crf',
-            '30',
-            '-b:v',
-            '500k',
-            '-pix_fmt',
-            'yuv420p',
-            '-t',
-            '2.9',
-            '-an',
-            '-y',
-            f'{get_download_dir()}/temp.webm',
-        ]
+    get_status_out(
+        f'ffmpeg -i {video} \
+        -vf scale=512:512:force_original_aspect_ratio=decrease \
+        -c:v libvpx-vp9 \
+        -crf 30 \
+        -b:v 500k \
+        -pix_fmt yuv420p \
+        -t 2.9 \
+        -an \
+        -y {get_download_dir()}/temp.webm'
     )
-    _ = process.communicate()
     output = f'{get_download_dir()}/temp.webm'
     return output

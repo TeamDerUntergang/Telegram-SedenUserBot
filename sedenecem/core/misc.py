@@ -9,7 +9,7 @@
 
 from os import makedirs
 from re import escape, sub
-from subprocess import STDOUT, CalledProcessError, check_output
+from subprocess import STDOUT, DEVNULL, CalledProcessError, check_output
 from typing import List
 
 from bs4 import BeautifulSoup
@@ -553,7 +553,7 @@ def get_duration(media):
     Returns:
         int: The duration in seconds or None if the duration cannot be determined.
     """
-    out = __status_out__(
+    out = get_status_out(
         f'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "{media}"'
     )
     if LOG_VERBOSE:
@@ -563,7 +563,7 @@ def get_duration(media):
     return None
 
 
-def __status_out__(cmd, encoding='utf-8'):
+def get_status_out(cmd, encoding='utf-8'):
     """
     Runs a shell command and captures its output.
 
@@ -576,14 +576,18 @@ def __status_out__(cmd, encoding='utf-8'):
     """
     try:
         output = check_output(
-            cmd, shell=True, text=True, stderr=STDOUT, encoding=encoding
+            cmd,
+            shell=True,
+            text=True,
+            stderr=STDOUT if LOG_VERBOSE else DEVNULL,
+            encoding=encoding,
         )
         return (0, output)
     except CalledProcessError as ex:
         return (ex.returncode, ex.output)
     except BaseException as e:
         if encoding != 'latin-1':
-            return __status_out__(cmd, 'latin-1')
+            return get_status_out(cmd, 'latin-1')
         raise e
 
 

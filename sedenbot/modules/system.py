@@ -14,11 +14,13 @@ from operator import add, mul, neg, pow, sub, truediv, xor
 from shutil import which
 
 from pyrogram.raw.functions.help import GetNearestDc
-from sedenbot import ALIVE_MSG, BOT_VERSION, CHANNEL, HELP, HOSTNAME, USER
+
+from sedenbot import ALIVE_MSG, BOT_VERSION, CHANNEL, HELP
 from sedenbot.modules.ecem import ecem
 from sedenecem.core import (
     edit,
     extract_args,
+    get_status_out,
     get_translation,
     reply,
     reply_doc,
@@ -34,16 +36,8 @@ CUSTOM_MSG = ALIVE_MSG or f"`{get_translation('sedenAlive')}`"
 @sedenify(pattern='^.neofetch$')
 def neofetch(message):
     if which('neofetch'):
-        from subprocess import PIPE, Popen
-
-        process = Popen(
-            ['neofetch', f'HOSTNAME={HOSTNAME}', f'USER={USER}', '--stdout'],
-            stdout=PIPE,
-            stderr=PIPE,
-            shell=True,
-        )
-        result, _ = process.communicate()
-        edit(message, f'`{result.decode()}`')
+        _, process = get_status_out('neofetch --stdout')
+        edit(message, f'`{process}`')
     else:
         edit(message, f'`{get_translation("neofetchNotFound")}`')
 
@@ -51,21 +45,12 @@ def neofetch(message):
 @sedenify(pattern='^.botver$')
 def bot_version(message):
     if which('git'):
-        from subprocess import PIPE, Popen
-
-        changes = Popen(
-            ['git', 'rev-list', '--all', '--count'],
-            stdout=PIPE,
-            stderr=PIPE,
-            universal_newlines=True,
-        )
-        result, _ = changes.communicate()
-
+        _, changes = get_status_out('git rev-list --all --count')
         edit(
             message,
             get_translation(
                 'sedenShowBotVersion',
-                ['**', '`', CHANNEL, BOT_VERSION, result],
+                ['**', '`', CHANNEL, BOT_VERSION, changes],
             ),
             preview=False,
         )
@@ -135,9 +120,7 @@ def terminal(message):
 
     result = get_translation("termNoResult")
     try:
-        from sedenecem.core.misc import __status_out__
-
-        _, result = __status_out__(command)
+        _, result = get_status_out(command)
     except BaseException as e:
         pass
 

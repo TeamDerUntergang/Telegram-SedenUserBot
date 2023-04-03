@@ -14,7 +14,7 @@ from pyrogram.types import Message
 
 from sedenbot import LOG_VERBOSE
 
-from .misc import MARKDOWN_FIX_CHAR, __status_out__, get_download_dir, get_duration
+from .misc import MARKDOWN_FIX_CHAR, get_download_dir, get_duration, get_status_out
 
 
 def reply_img(
@@ -119,7 +119,7 @@ def reply_video(
             thumb = f'{get_download_dir()}/thumb.png'
             if path.exists(thumb):
                 remove(thumb)
-            out = __status_out__(
+            out = get_status_out(
                 f'ffmpeg -i {video} -ss 00:00:01.000 -vframes 1 {thumb}'
             )
             if LOG_VERBOSE:
