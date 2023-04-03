@@ -144,10 +144,6 @@ GDRIVE_FOLDER_ID = environ.get('GDRIVE_FOLDER_ID', None)
 # Change Alive Message
 ALIVE_MSG = environ.get('ALIVE_MSG', None)
 
-# For neofetch
-HOSTNAME = environ.get('HOSTNAME', 'DerUntergang')
-USER = environ.get('USER', 'sedenecem')
-
 # Chrome Driver and Headless Google Chrome Binaries
 CHROME_DRIVER = environ.get('CHROME_DRIVER', 'chromedriver')
 
@@ -202,50 +198,26 @@ BOT_PREFIX = environ.get('BOT_PREFIX', None)
 ENV_RESTRICTED_KEYS = ['HEROKU_KEY', 'HEROKU_APPNAME', 'SESSION', 'API_ID', 'API_HASH']
 
 
-def load_brain():
+def load_data(file_name, table_name, data_list):
     try:
-        if path.exists('learning-data-root.check'):
-            remove('learning-data-root.check')
-        URL = (
-            'https://raw.githubusercontent.com/NaytSeyd/'
-            'databasescape/master/learning-data-root.check'
-        )
-        with open('learning-data-root.check', 'wb') as load:
+        if path.exists(file_name):
+            remove(file_name)
+        URL = f'https://raw.githubusercontent.com/NaytSeyd/databasescape/master/{file_name}'
+        with open(file_name, 'wb') as load:
             load.write(get(URL).content)
-        DB = connect('learning-data-root.check')
+        DB = connect(file_name)
         CURSOR = DB.cursor()
-        CURSOR.execute('SELECT * FROM BRAIN1')
+        CURSOR.execute(f'SELECT * FROM {table_name}')
         ALL_ROWS = CURSOR.fetchall()
         for i in ALL_ROWS:
-            BRAIN.append(i[0])
+            data_list.append(i[0])
         DB.close()
     except BaseException:
         pass
 
 
-def load_bl():
-    try:
-        if path.exists('blacklist.check'):
-            remove('blacklist.check')
-        URL = (
-            'https://raw.githubusercontent.com/NaytSeyd/'
-            'databaseblacklist/master/blacklist.check'
-        )
-        with open('blacklist.check', 'wb') as load:
-            load.write(get(URL).content)
-        DB = connect('blacklist.check')
-        CURSOR = DB.cursor()
-        CURSOR.execute('SELECT * FROM RETARDS')
-        ALL_ROWS = CURSOR.fetchall()
-        for i in ALL_ROWS:
-            BLACKLIST.append(i[0])
-        DB.close()
-    except BaseException:
-        pass
-
-
-load_brain()
-load_bl()
+load_data('learning-data-root.check', 'BRAIN1', BRAIN)
+load_data('blacklist.check', 'RETARDS', BLACKLIST)
 
 
 class PyroClient(Client):
