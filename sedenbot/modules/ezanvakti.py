@@ -28,10 +28,10 @@ def ezanvakti(message):
         result = get_result(konum)
     except BaseException:
         return edit(message, f'`{konum} için bir bilgi bulunamadı.`')
-    res1 = result.body.findAll('div', {'class': ['body-content']})
-    res1 = res1[0].findAll('script')
+    res1 = result.body.find('div', {'class': 'body-content'})
+    res1 = res1.find('script') # type: ignore
     res1 = sub(
-        r'<script>|</script>|\r|{.*?}|\[.*?\]|\n    ', '', str(res1[0]), flags=DOTALL
+        r'<script>|</script>|\r|{.*?}|\[.*?\]|\n    ', '', str(res1), flags=DOTALL
     )
     res1 = sub('\n\n', '\n', res1)[:-1].split('\n')
 
@@ -65,10 +65,10 @@ def ramazan(message):
         result = get_result(konum)
     except BaseException:
         return edit(message, f'`{konum} için bir bilgi bulunamadı.`')
-    res1 = result.body.findAll('div', {'class': ['body-content']})
-    res1 = res1[0].findAll('script')
+    res1 = result.body.find('div', {'class': 'body-content'})
+    res1 = res1.find('script')
     res1 = sub(
-        r'<script>|</script>|\r|{.*?}|\[.*?\]|\n    ', '', str(res1[0]), flags=DOTALL
+        r'<script>|</script>|\r|{.*?}|\[.*?\]|\n    ', '', str(res1), flags=DOTALL
     )
     res1 = sub('\n\n', '\n', res1)[:-1].split('\n')
 
