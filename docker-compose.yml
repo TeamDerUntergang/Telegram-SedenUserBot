@@ -1,0 +1,11 @@
+version: '3.9'
+services:
+  seden:
+    init: true
+    restart: unless-stopped
+    network_mode: host
+    build:
+      context: https://github.com/TeamDerUntergang/Telegram-SedenUserBot.git#seden
+    env_file:
+      - config.env
+    command: python seden.py
