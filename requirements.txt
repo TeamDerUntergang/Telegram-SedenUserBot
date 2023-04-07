@@ -17,7 +17,7 @@ psycopg2-binary
 pybase64
 pydrive
 pylast
-pyrogram==2.0.102
+pyrogram==2.0.103
 pysmartDL
 python-barcode
 python-dotenv
