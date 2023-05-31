@@ -54,7 +54,7 @@ def ezanvakti(message):
 
     edit(message, vakitler)
 
-
+"""
 @sedenify(pattern='^.ramazan')
 def ramazan(message):
     konum = extract_args(message).lower()
@@ -115,7 +115,7 @@ def ramazan(message):
     )
 
     edit(message, vakitler)
-
+"""
 
 def find_loc(konum):
     if konum.isdigit():
