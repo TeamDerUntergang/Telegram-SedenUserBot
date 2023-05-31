@@ -88,19 +88,17 @@ def unset_local_env(key: str):
 
 
 def set_logger():
-    # Turns off out printing Session value
-    pyrogram_syncer = getLogger('pyrogram.syncer')
-    pyrogram_syncer.setLevel(CRITICAL)
+    loggers = [
+        'pyrogram.syncer',
+        'pyrogram.session.session',
+        'pyrogram.session.auth',
+        'asyncio',
+    ]
+    level = CRITICAL
 
-    # Closes some junk outputs
-    pyrogram_session = getLogger('pyrogram.session.session')
-    pyrogram_session.setLevel(CRITICAL)
-
-    pyrogram_auth = getLogger('pyrogram.session.auth')
-    pyrogram_auth.setLevel(CRITICAL)
-
-    asyncio = getLogger('asyncio')
-    asyncio.setLevel(CRITICAL)
+    for logger_name in loggers:
+        logger = getLogger(logger_name)
+        logger.setLevel(level)
 
 
 set_logger()
