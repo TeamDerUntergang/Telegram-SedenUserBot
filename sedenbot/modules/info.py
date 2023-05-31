@@ -105,20 +105,18 @@ class UserUtils:
         self.blacklist = blacklist
 
     def last_seen(self, bot, status):
+        status_list = {
+            enums.UserStatus.ONLINE: get_translation('statusOnline'),
+            enums.UserStatus.OFFLINE: get_translation('statusOffline'),
+            enums.UserStatus.RECENTLY: get_translation('statusRecently'),
+            enums.UserStatus.LAST_WEEK: get_translation('statusWeek'),
+            enums.UserStatus.LAST_MONTH: get_translation('statusMonth'),
+            enums.UserStatus.LONG_AGO: get_translation('statusLong')
+        }
         if bot:
             return 'BOT'
-        elif status == enums.UserStatus.ONLINE:
-            return get_translation('statusOnline')
-        elif status == enums.UserStatus.OFFLINE:
-            return get_translation('statusOffline')
-        elif status == enums.UserStatus.RECENTLY:
-            return get_translation('statusRecently')
-        elif status == enums.UserStatus.LAST_WEEK:
-            return get_translation('statusWeek')
-        elif status == enums.UserStatus.LAST_MONTH:
-            return get_translation('statusMonth')
-        elif status == enums.UserStatus.LONG_AGO:
-            return get_translation('statusLong')
+        elif status in status_list:
+            return status_list[status]
 
     def sudo_check(self, user_id):
         if user_id in self.brain:

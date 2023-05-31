@@ -92,8 +92,8 @@ def gban_user(message):
             return
 
 
-@sedenify(pattern='^.(ung|gun)ban', compat=False)
-def ungban_user(client, message):
+@sedenify(pattern='^.(ung|gun)ban')
+def ungban_user(message):
     args = extract_args_split(message)
     if len(args) > 1:
         return edit(message, f'`{get_translation("wrongCommand")}`')
@@ -139,7 +139,7 @@ def ungban_user(client, message):
                     return False
 
             try:
-                dialogs = client.get_dialogs()
+                dialogs = message._client.get_dialogs()
                 me_id = message._client.me.id
                 chats = [
                     dialog.chat
@@ -190,8 +190,8 @@ def gban_check(message):
     message.continue_propagation()
 
 
-@sedenify(pattern='^.gmute', compat=False)
-def gmute_user(client, message):
+@sedenify(pattern='^.gmute')
+def gmute_user(message):
     reply = message.reply_to_message
     edit(message, f'`{get_translation("muteProcess")}`')
 
@@ -226,7 +226,7 @@ def gmute_user(client, message):
                 ),
             )
             try:
-                common_chats = client.get_common_chats(user.id)
+                common_chats = message._client.get_common_chats(user.id)
                 for i in common_chats:
                     i.restrict_member(user.id, permissions=ChatPermissions())
             except BaseException:
@@ -243,8 +243,8 @@ def gmute_user(client, message):
             return
 
 
-@sedenify(pattern='^.(ung|gun)mute', compat=False)
-def ungmute_user(client, message):
+@sedenify(pattern='^.(ung|gun)mute')
+def ungmute_user(message):
     args = extract_args_split(message)
     if len(args) > 1:
         return edit(message, f'`{get_translation("wrongCommand")}`')
@@ -268,7 +268,7 @@ def ungmute_user(client, message):
                 return edit(message, f'`{get_translation("alreadyUnmuted")}`')
             sql2.ungmute(user.id)
             try:
-                common_chats = client.get_common_chats(user.id)
+                common_chats = message._client.get_common_chats(user.id)
                 for i in common_chats:
                     i.unban_member(user.id)
             except BaseException:
