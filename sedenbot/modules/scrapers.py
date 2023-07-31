@@ -18,7 +18,6 @@ from urllib.parse import quote_plus
 
 from bs4 import BeautifulSoup
 from emoji import demojize
-import emoji
 from googletrans import LANGUAGES, Translator
 from gtts import gTTS
 from gtts.lang import tts_langs
