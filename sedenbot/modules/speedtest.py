@@ -7,6 +7,7 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
+
 from datetime import datetime
 
 from sedenbot import HELP
@@ -15,82 +16,80 @@ from sedenecem.core import edit, extract_args, get_translation, reply_img, seden
 from speedtest import Speedtest
 
 
+def convert_bytes_to_human_readable(size_in_bytes):
+    power = 1024
+    size = size_in_bytes
+    units = ['bytes', 'kilobytes', 'megabytes', 'gigabytes', 'terabytes']
+
+    for unit in units:
+        if size < power:
+            return f'{size:.2f} {unit}'
+        size /= power
+
+    return f'{size:.2f} {units[-1]}'
+
+
 @sedenify(pattern='^.speedtest')
 def speed_test(message):
-    input_str = extract_args(message)
-    as_text = False
-    if input_str == 'text':
-        as_text = True
+    as_text = extract_args(message) == 'text'
     edit(message, f'`{get_translation("speedtest")}`')
-    start = datetime.now()
+    start_time = datetime.now()
     spdtst = Speedtest()
     spdtst.get_best_server()
     spdtst.download()
     spdtst.upload()
-    end = datetime.now()
-    ms = (end - start).microseconds / 1000
-    response = spdtst.results.dict()
-    download_speed = response.get('download')
-    upload_speed = response.get('upload')
-    ping_time = response.get('ping')
-    client_infos = response.get('client')
-    i_s_p = client_infos.get('isp')
-    i_s_p_rating = client_infos.get('isprating')
+    end_time = datetime.now()
+    elapsed_seconds = int((end_time - start_time).total_seconds())
+
+    results = spdtst.results.dict()
+    download_speed = results['download']
+    upload_speed = results['upload']
+    ping_time = int(results['ping'])
+    client_info = results['client']
+    isp_name = client_info['isp']
+    isp_rating = client_info['isprating']
+
     try:
         response = spdtst.results.share()
         speedtest_image = response
         if as_text:
-            edit(
-                message,
-                get_translation(
-                    'speedtestResultText',
-                    [
-                        '**',
-                        ms,
-                        convert_from_bytes(download_speed),
-                        convert_from_bytes(upload_speed),
-                        ping_time,
-                        i_s_p,
-                        i_s_p_rating,
-                        '',
-                    ],
-                ),
+            result_text = get_translation(
+                'speedtestResultText',
+                [
+                    '**',
+                    elapsed_seconds,
+                    convert_bytes_to_human_readable(download_speed),
+                    convert_bytes_to_human_readable(upload_speed),
+                    ping_time,
+                    isp_name,
+                    isp_rating,
+                    '',
+                ],
             )
+            edit(message, result_text)
         else:
             reply_img(
                 message,
                 speedtest_image,
-                caption=get_translation('speedtestResultDoc', ['**', ms]),
+                caption=get_translation('speedtestResultDoc', ['**', elapsed_seconds]),
                 delete_file=True,
                 delete_orig=True,
             )
     except Exception as exc:
-        edit(
-            message,
-            get_translation(
-                'speedtestResultText',
-                [
-                    '**',
-                    ms,
-                    convert_from_bytes(download_speed),
-                    convert_from_bytes(upload_speed),
-                    ping_time,
-                    i_s_p,
-                    i_s_p_rating,
-                    f'ERROR: {str(exc)}',
-                ],
-            ),
+        error_result_text = get_translation(
+            'speedtestResultText',
+            [
+                '**',
+                elapsed_seconds,
+                convert_bytes_to_human_readable(download_speed),
+                convert_bytes_to_human_readable(upload_speed),
+                ping_time,
+                isp_name,
+                isp_rating,
+                f'ERROR: {str(exc)}',
+            ],
         )
-
-
-def convert_from_bytes(size):
-    power = 2 ** 10
-    _ = 0
-    units = {0: '', 1: 'kilobytes', 2: 'megabytes', 3: 'gigabytes', 4: 'terabytes'}
-    while size > power:
-        size /= power
-        _ += 1
-    return f'{round(size, 2)} {units[_]}'
+        edit(message, error_result_text)
 
 
 HELP.update({'speedtest': get_translation('speedtestInfo')})
