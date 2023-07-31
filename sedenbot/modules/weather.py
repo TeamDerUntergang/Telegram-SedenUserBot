@@ -12,10 +12,7 @@ from sedenbot import HELP, SEDEN_LANG, WEATHER
 from sedenecem.core import edit, extract_args, get_translation, sedenify
 
 # ===== CONSTANT =====
-if WEATHER:
-    DEFCITY = WEATHER.capitalize()
-else:
-    DEFCITY = None
+DEFAULT_CITY = WEATHER.capitalize() if WEATHER else None
 # ====================
 
 
@@ -23,27 +20,16 @@ else:
 def weather(message):
     args = extract_args(message).capitalize()
 
-    if len(args) < 1:
-        CITY = DEFCITY
-        if not CITY:
-            edit(message, f'`{get_translation("weatherErrorCity")}`')
-            return
-    else:
-        CITY = args
-
-    if ',' in CITY:
-        CITY = CITY[: CITY.find(',')].strip()
+    CITY = DEFAULT_CITY if len(args) < 1 else args.split(',')[0].strip()
 
     try:
-        req = get(
+        response = get(
             f'http://wttr.in/{CITY}?mQT0',
             headers={'User-Agent': 'curl/7.66.0', 'Accept-Language': SEDEN_LANG},
         )
-        data = req.text
-        if '===' in data:
+        data = response.text
+        if '===' in data or '404' in data:
             raise Exception
-        if '404' in data:
-            return edit(message, f'`{get_translation("weatherErrorServer")}`')
         data = data.replace('`', '‛')
         edit(message, f'**{CITY}**\n\n`{data}`')
     except Exception:
