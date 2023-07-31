@@ -5,7 +5,7 @@ services:
     image: postgres:latest
     environment:
       - POSTGRES_USER=sedenuserbot
-      - POSTGRES_PASSWORD=TeamDerUnterGang
+      - POSTGRES_PASSWORD=TeamDerUntergang
       - POSTGRES_DB=userbotdb
     ports:
       - "5432:5432"
