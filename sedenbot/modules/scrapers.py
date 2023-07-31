@@ -18,6 +18,7 @@ from urllib.parse import quote_plus
 
 from bs4 import BeautifulSoup
 from emoji import demojize
+import emoji
 from googletrans import LANGUAGES, Translator
 from gtts import gTTS
 from gtts.lang import tts_langs
@@ -540,14 +541,29 @@ def doviz(message):
         headers={'User-Agent': useragent()},
     )
     page = BeautifulSoup(req.content, 'html.parser')
-    res = page.find_all('div', {'class', 'item'})
+    res = page.find_all('div', {'class': 'item'})
     out = '**Güncel döviz kurları:**\n\n'
-    for i in res:
-        name = i.find('span', {'class': 'name'}).text
-        value = i.find('span', {'class': 'value'}).text
-        changes = i.find('span', {'data-socket-attr': 'a'}).text
-        out += f'`•`  **{name}:** `{value}` // `{changes}`\n'
+    
+    for item in res:
+        name = item.find('span', {'class': 'name'}).text
+        value = item.find('span', {'class': 'value'}).text
+        
+        rate_elem = item.find('div', {'class': ['change-rate status down', 'change-rate status up']})
+        rate_class = rate_elem['class'][-1] if rate_elem else None
+        
+        changes_emoji = ''
+        if rate_class == 'down':
+            changes_emoji = '⬇️'
+        elif rate_class == 'up':
+            changes_emoji = '⬆️'
+
+        if changes_emoji:
+            out += f'{changes_emoji} **{name}:** `{value}`\n'
+        else:
+            out += f'**{name}:** `{value}`\n'
+    
     edit(message, out)
+
 
 
 @sedenify(pattern='^.imei(|check)')
@@ -568,20 +584,23 @@ def imeichecker(message):
             break
         _marka = findall(r'Marka:(.+) Model', result['markaModel'])
         _model = findall(r'Model Bilgileri:(.+)', result['markaModel'])
+        _pazaradi = findall(r'Pazar Adı:(.+) Marka', result['markaModel'])
         marka = (
-            _marka[0].replace(',', '').strip() if _marka else "Marka Bilgisi Bulunamadi"
+            _marka[0].replace(',', '').strip() if _marka else None
         )
         model = (
-            _model[0].replace(',', '').strip() if _model else "Model Bilgisi Bulunamadi"
+            _model[0].replace(',', '').strip() if _model else None
         )
-        reply_text = (
-            f"<b>Sorgu Tarihi</b> ⇾ <code>{result['sorguTarihi']}</code>\n"
-            f"<b>IMEI</b> ⇾ <code>{result['imei'][:-5]+5*'*'}</code>\n"
-            f"<b>Durum</b> ⇾ <code>{result['durum']}</code>\n"
-            f"<b>Marka</b> ⇾ <code>{marka}</code>\n"
-            f"<b>Model</b> ⇾ <code>{model}</code>\n\n"
-            f"<b>Powered by</b> ⇾ <a href='https://github.com/TeamDerUntergang/Telegram-SedenUserBot'>Seden ♥</a>\n"
+        pazaradi = (
+            _pazaradi[0].replace(',', '').strip() if _pazaradi else None
         )
+        reply_text = f"<b>Sorgu Tarihi:</b> <code>{result['sorguTarihi']}</code>\n\n"
+        reply_text += f"<b>IMEI:</b> <code>{result['imei'][:-5]+5*'*'}</code>\n"
+        reply_text += f"<b>Durum:</b> <code>{result['durum']}</code>\n"
+        reply_text += f"<b>Pazar Adı:</b> <code>{pazaradi}</code>\n" if pazaradi is not None else ""
+        reply_text += f"<b>Marka:</b> <code>{marka}</code>\n" if marka is not None else ""
+        reply_text += f"<b>Model:</b> <code>{model}</code>\n\n" if model is not None else ""
+
         edit(message, reply_text, parse=enums.parse_mode.ParseMode.HTML, preview=False)
     except Exception as e:
         raise e
