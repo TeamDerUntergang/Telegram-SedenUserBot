@@ -597,6 +597,7 @@ def imeichecker(message):
         reply_text = f"<b>Sorgu Tarihi:</b> <code>{result['sorguTarihi']}</code>\n\n"
         reply_text += f"<b>IMEI:</b> <code>{result['imei'][:-5]+5*'*'}</code>\n"
         reply_text += f"<b>Durum:</b> <code>{result['durum']}</code>\n"
+        reply_text += f"<b>Kaynak:</b> <code>{result['kaynak']}</code>\n"
         reply_text += f"<b>Pazar Adı:</b> <code>{pazaradi}</code>\n" if pazaradi is not None else ""
         reply_text += f"<b>Marka:</b> <code>{marka}</code>\n" if marka is not None else ""
         reply_text += f"<b>Model:</b> <code>{model}</code>\n\n" if model is not None else ""
