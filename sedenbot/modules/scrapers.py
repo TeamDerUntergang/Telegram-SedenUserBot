@@ -332,7 +332,8 @@ def urbandictionary(message):
     response = get(f'https://api.urbandictionary.com/v0/define?term={query}')
     data = loads(response.text)
     if len(data["list"]):
-        item = data['list'][randrange(9)]
+        list_size = len(data['list'])
+        item = data['list'][randrange(list_size)]
         meanlen = item['definition'] + item['example']
         if len(meanlen) >= 4096:
             edit(message, f'`{get_translation("outputTooLarge")}`')
