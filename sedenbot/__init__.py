@@ -8,7 +8,6 @@
 #
 
 
-from distutils.util import strtobool as sb
 from importlib import import_module
 from logging import CRITICAL, DEBUG, INFO, basicConfig, getLogger
 from os import environ, listdir, path, remove
@@ -68,7 +67,7 @@ TEMP_SETTINGS['PM_COUNT'] = {}
 TEMP_SETTINGS['PM_LAST_MSG'] = {}
 
 # Console verbose logging
-LOG_VERBOSE = sb(environ.get('LOG_VERBOSE', 'False'))
+LOG_VERBOSE = bool(environ.get('LOG_VERBOSE', 'False'))
 
 basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -184,7 +183,7 @@ LOG_ID = int(_LOG_ID) if _LOG_ID and resr(r'^-?\d+$', _LOG_ID) else None
 del _LOG_ID
 
 # PmPermit PM Auto Ban Stuffs
-PM_AUTO_BAN = sb(environ.get('PM_AUTO_BAN', 'False'))
+PM_AUTO_BAN = bool(environ.get('PM_AUTO_BAN', 'False'))
 _PM_MSG_COUNT = environ.get('PM_MSG_COUNT', 'default')
 PM_MSG_COUNT = int(_PM_MSG_COUNT) if _PM_MSG_COUNT.isdigit() else 5
 del _PM_MSG_COUNT
