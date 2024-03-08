@@ -8,6 +8,7 @@
 #
 
 from os import makedirs
+from random import choice
 from re import escape, sub
 from subprocess import STDOUT, DEVNULL, CalledProcessError, check_output
 from typing import List
@@ -644,10 +645,10 @@ def useragent():
     Returns:
         str: A random user agent string.
     """
-    req = get('https://useragents.io/random')
-    soup = BeautifulSoup(req.text, 'html.parser')
-    agent = soup.find_all('td')
-    for i in agent:
-        return i.find('a').text
-
-    return 'Googlebot/2.1 (+http://www.google.com/bot.html)'
+    try:
+        req = get('https://gist.githubusercontent.com/naytseyd/b4f924774f68cf57e54d646ba600abbc/raw/b8fc2569bb600fa338b26b148736007c133ef026')
+        user_agents = req.text.split('\n')
+        return choice(user_agents)
+    except Exception as e:
+        print("Error fetching user agent:", e)
+        return 'Mozilla/5.0 (X11; Linux x86_64; rv:123.0) Gecko/20100101 Firefox/123.0'

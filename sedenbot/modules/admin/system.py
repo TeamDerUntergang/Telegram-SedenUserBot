@@ -16,7 +16,7 @@ from shutil import which
 from pyrogram.raw.functions.help import GetNearestDc
 
 from sedenbot import ALIVE_MSG, BOT_VERSION, CHANNEL, HELP
-from sedenbot.modules.ecem import ecem
+from sedenbot.modules.admin.ecem import ecem
 from sedenecem.core import (
     edit,
     extract_args,

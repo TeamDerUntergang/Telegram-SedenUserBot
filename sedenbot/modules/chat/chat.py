@@ -81,8 +81,8 @@ def keep_read(message):
 @sedenify(pattern='^.call')
 def call_notes(message):
     try:
-        from sedenbot.modules.notes import get_note
-        from sedenbot.modules.snips import get_snip
+        from sedenbot.modules.deneme.notes import get_note
+        from sedenbot.modules.var.snips import get_snip
     except BaseException:
         edit(message, f'`{get_translation("nonSqlMode")}`')
         return

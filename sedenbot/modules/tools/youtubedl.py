@@ -13,6 +13,8 @@ from os import remove
 
 from PIL import Image
 from requests import get
+from yt_dlp import YoutubeDL
+
 from sedenbot import HELP
 from sedenecem.core import (
     edit,
@@ -23,7 +25,6 @@ from sedenecem.core import (
     reply_video,
     sedenify,
 )
-from yt_dlp import YoutubeDL
 
 
 @sedenify(pattern='^.y(outube|tdl)')
@@ -40,15 +41,11 @@ def youtubedl(message):
     if util == 'mp4':
         ydl_opts = {
             'outtmpl': '%(id)s.%(ext)s',
-            'format': 'bestvideo[ext=mp4][height<=?1080]+bestaudio[ext=m4a]/best',
+            'format': 'bestvideo[height<=?1080]+bestaudio[ext=m4a]/best',
             'addmetadata': True,
             'prefer_ffmpeg': True,
             'geo_bypass': True,
             'nocheckcertificate': True,
-            'postprocessors': [
-                {'key': 'FFmpegMetadata'},
-                {'key': 'FFmpegVideoConvertor', 'preferedformat': 'mp4'},
-            ],
             'quiet': True,
             'logtostderr': False,
         }
@@ -84,7 +81,7 @@ def youtubedl(message):
         edit(message, f'`{get_translation("uploadMedia")}`')
         reply_video(
             message,
-            f'{video_info["id"]}.mp4',
+            f'{video_info["id"]}.{video_info["ext"]}',
             thumb=thumb_path,
             caption=f"**{get_translation('videoTitle')}** `{title}`\n**{get_translation('videoUploader')}** `{uploader}`",
             duration=duration,
@@ -93,8 +90,8 @@ def youtubedl(message):
         )
         try:
             remove(thumb_path)
-        except BaseException:
-            pass
+        except BaseException as e:
+            raise e
 
     elif util == 'mp3':
         ydl_opts = {
@@ -136,7 +133,7 @@ def youtubedl(message):
         edit(message, f'`{get_translation("uploadMedia")}`')
         reply_audio(
             message,
-            f'{video_info["id"]}.mp3',
+            f'{video_info["id"]}.{video_info["audio_ext"]}',
             caption=f"**{get_translation('videoUploader')}** `{uploader}`",
             duration=duration,
             delete_orig=True,

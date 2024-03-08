@@ -11,7 +11,7 @@
 from importlib import import_module
 from logging import CRITICAL, DEBUG, INFO, basicConfig, getLogger
 from os import environ, listdir, path, remove
-from os.path import isfile
+from os.path import isfile, join, isdir
 from pathlib import PurePath
 from re import search as resr
 from sqlite3 import connect
@@ -92,6 +92,7 @@ def set_logger():
         'pyrogram.session.session',
         'pyrogram.session.auth',
         'asyncio',
+        'aiosqlite',
     ]
     level = CRITICAL
 
@@ -258,18 +259,27 @@ del API_HASH
 
 def __get_modules():
     folder = 'sedenbot/modules'
-    modules = [
-        f[:-3]
-        for f in listdir(folder)
-        if isfile(f'{folder}/{f}') and f[-3:] == '.py' and f != '__init__.py'
+    subdirectories = [
+        sub
+        for sub in listdir(folder)
+        if isdir(join(folder, sub))
     ]
+    modules = []
+    for subdirectory in subdirectories:
+        subfolder_path = join(folder, subdirectory)
+        py_files = [
+            f[:-3]
+            for f in listdir(subfolder_path)
+            if isfile(join(subfolder_path, f)) and f.endswith('.py')
+        ]
+        for module in py_files:
+            module_name = f"{subdirectory.replace('/', '.')}.{module}"
+            modules.append(module_name)
     return modules
 
 
 def __import_modules():
     get_modules = sorted(__get_modules())
-    modules = ', '.join(get_modules)
-    LOGS.info(get_translation('loadedModules', [modules]))
     for module in get_modules:
         try:
             import_module(f'sedenbot.modules.{module}')
@@ -277,6 +287,10 @@ def __import_modules():
             if LOG_VERBOSE:
                 LOGS.warn(format_exc())
             LOGS.warn(get_translation('loadedModulesError', [module]))
+
+    imported_modules = [module.split('.')[-1] for module in get_modules if module.count('.') > 0]
+    modules = ', '.join(imported_modules)
+    LOGS.info(get_translation('loadedModules', [modules]))
 
 
 __import_modules()

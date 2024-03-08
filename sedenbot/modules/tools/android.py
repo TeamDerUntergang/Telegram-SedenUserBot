@@ -25,6 +25,26 @@ from sedenecem.core import (
     useragent,
 )
 
+@sedenify(pattern='^.k(ernel)?su$')
+def kernelsu(message):
+    kernelsu_url = 'https://api.github.com/repos/tiann/KernelSU/releases'
+    try:
+        response = get(kernelsu_url)
+        data = response.json()
+        releases = sorted(data, key=lambda x: x['created_at'], reverse=True)[:3]
+        out = f'**{get_translation("ksuReleases")}**\n'
+        for release in releases:
+            tag_name = release['tag_name']
+            assets = release['assets']
+            apk_assets = [asset for asset in assets if asset['name'].endswith('.apk')]
+            if apk_assets:
+                latest_apk = apk_assets[0]
+                apk_name = latest_apk['name']
+                apk_download_url = latest_apk['browser_download_url']
+                out += f'`{tag_name}:` [{apk_name}]({apk_download_url})\n'
+        edit(message, out, preview=False)
+    except Exception:
+        pass
 
 @sedenify(pattern='^.magisk$')
 def magisk(message):
@@ -76,6 +96,13 @@ def phh(message):
     edit(message, releases, preview=False)
 
 
+def format_size(size_in_bytes):
+    if size_in_bytes >= 1e9:
+        return '{:.2f} GB'.format(size_in_bytes / 1e9)
+    else:
+        return '{:.2f} MB'.format(size_in_bytes / 1e6)
+
+
 @sedenify(pattern='^.l(ineage(os)?|os)')
 def get_lineageos(message):
     args = extract_args(message).lower()
@@ -96,7 +123,7 @@ def get_lineageos(message):
         build = response[0]
         time = datetime.utcfromtimestamp(int(build['datetime'])).strftime('%Y-%m-%d')
         filename = build['filename']
-        size = '{:,.2f} MB'.format(int(build['size']) / float(1 << 20))
+        size = format_size(int(build['size']))
         build_url = build['url']
         version = build['version']
     else:
@@ -345,11 +372,11 @@ def find_device(query, proxy):
     raw_query = query.lower()
 
     def replace_query(query):
-        return urlencode({'sSearch': query})
+        return urlencode({'sQuickSearch': 'yes', 'sName': query})
 
     query = replace_query(raw_query)
     req = get(
-        f'https://www.gsmarena.com/res.php3?{query}',
+        f'https://www.gsmarena.com/results.php3?{query}',
         headers={'User-Agent': useragent()},
         proxies=proxy,
     )

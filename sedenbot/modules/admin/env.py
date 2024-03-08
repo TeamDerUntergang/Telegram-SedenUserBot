@@ -21,7 +21,7 @@ from sedenbot import (
     set_local_env,
     unset_local_env,
 )
-from sedenbot.modules.horeke import restart
+from sedenbot.modules.miscs.horeke import restart
 from sedenecem.core import edit, extract_args, get_translation, sedenify
 
 

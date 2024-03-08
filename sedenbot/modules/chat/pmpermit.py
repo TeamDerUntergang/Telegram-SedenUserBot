@@ -11,7 +11,7 @@ from pyrogram import enums
 from pyrogram.raw.functions.messages import ReportSpam
 from pyrogram.raw.types import InputPeerUser
 from sedenbot import HELP, LOGS, PM_AUTO_BAN, PM_MSG_COUNT, PM_UNAPPROVED, TEMP_SETTINGS
-from sedenbot.modules.chat import is_muted
+from sedenbot.modules.chat.chat import is_muted
 from sedenecem.core import edit, get_translation, reply, sedenify, send_log
 from sqlalchemy.exc import IntegrityError
 

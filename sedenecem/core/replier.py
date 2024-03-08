@@ -83,7 +83,8 @@ def reply_audio(
             message.delete()
         if delete_file:
             remove(audio)
-    except BaseException:
+    except BaseException as e:
+        raise e
         pass
 
 

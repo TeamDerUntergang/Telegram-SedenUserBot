@@ -12,7 +12,7 @@ from time import sleep
 from pyrogram import enums
 from pyrogram.types import ChatPermissions
 from sedenbot import BRAIN, HELP, LOGS
-from sedenbot.modules.ban import get_reason
+from sedenbot.modules.chat.ban import get_reason
 from sedenecem.core import (
     edit,
     extract_args_split,
