@@ -82,43 +82,4 @@ def carbon(message):
     driver.quit()
 
 
-@sedenify(pattern='^.tts')
-def text_to_speech(message):
-    reply = message.reply_to_message
-    args = extract_args(message)
-    if args:
-        pass
-    elif reply:
-        if not reply.text:
-            return edit(message, f'`{get_translation("ttsUsage")}`')
-        args = reply.text
-    else:
-        edit(message, f'`{get_translation("ttsUsage")}`')
-        return
-
-    try:
-        gTTS(args, lang=TTS_LANG)
-    except AssertionError:
-        edit(message, f'`{get_translation("ttsBlank")}`')
-        return
-    except ValueError:
-        edit(message, f'`{get_translation("ttsNoSupport")}`')
-        return
-    except RuntimeError:
-        edit(message, f'`{get_translation("ttsError")}`')
-        return
-    tts = gTTS(args, lang=TTS_LANG)
-    tts.save('h.mp3')
-    with open('h.mp3', 'rb') as audio:
-        linelist = list(audio)
-        linecount = len(linelist)
-    if linecount == 1:
-        tts = gTTS(args, lang=TTS_LANG)
-        tts.save('h.mp3')
-    with open('h.mp3', 'r'):
-        reply_voice(reply if reply else message, 'h.mp3', delete_file=True)
-
-    message.delete()
-    send_log(get_translation('ttsLog'))
-
 HELP.update({'carbon': get_translation('carbonInfo')})
