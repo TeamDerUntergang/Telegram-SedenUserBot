@@ -7,9 +7,9 @@
 # All rights reserved. See COPYING, AUTHORS.
 #
 
+from datetime import datetime, timedelta
 from functools import reduce
 from re import DOTALL, sub
-from time import localtime
 
 from bs4 import BeautifulSoup
 from requests import get
@@ -29,7 +29,7 @@ def ezanvakti(message):
     except BaseException:
         return edit(message, f'`{konum} için bir bilgi bulunamadı.`')
     res1 = result.body.find('div', {'class': 'body-content'})
-    res1 = res1.find('script') # type: ignore
+    res1 = res1.find('script')  # type: ignore
     res1 = sub(
         r'<script>|</script>|\r|{.*?}|\[.*?\]|\n    ', '', str(res1), flags=DOTALL
     )
@@ -54,7 +54,7 @@ def ezanvakti(message):
 
     edit(message, vakitler)
 
-"""
+
 @sedenify(pattern='^.ramazan')
 def ramazan(message):
     konum = extract_args(message).lower()
@@ -78,32 +78,38 @@ def ramazan(message):
     res2 = get_val(res1[1])
     res3 = get_val(res1[2])
 
-    current_time = localtime()
-    current_hour = current_time.tm_hour
-    current_minute = current_time.tm_min
-
     sahur_vakti, iftar_vakti, teravih_vakti = res3[0], res3[4], res3[5]
 
-    def get_remaining_time(vakt, current_hour, current_minute):
-        vakt_time = vakt.split(':')
-        vakt_hour = int(vakt_time[0])
-        vakt_minute = int(vakt_time[1])
+    def get_remaining_time(vakt):
+        vakt_time = datetime.strptime(vakt, '%H:%M')
+        current_time = datetime.now()
 
-        if current_hour < vakt_hour or (
-            current_hour == vakt_hour and current_minute < vakt_minute
-        ):
-            minutes_left = (vakt_hour - current_hour) * 60 + (
-                vakt_minute - current_minute
-            )
-            hours_left = minutes_left // 60
-            minutes_left = minutes_left % 60
-            return f'{vakt} ({hours_left}s {minutes_left}dk kaldı)'
+        if current_time < vakt_time:
+            time_left = vakt_time - current_time
         else:
-            return f'{vakt}'
+            tomorrow = current_time + timedelta(days=1)
+            tomorrow_date = datetime(
+                tomorrow.year,
+                tomorrow.month,
+                tomorrow.day,
+                vakt_time.hour,
+                vakt_time.minute,
+            )
+            time_left = tomorrow_date - current_time
 
-    sahur = get_remaining_time(sahur_vakti, current_hour, current_minute)
-    iftar = get_remaining_time(iftar_vakti, current_hour, current_minute)
-    teravih = get_remaining_time(teravih_vakti, current_hour, current_minute)
+        hours_left = time_left.seconds // 3600
+        minutes_left = (time_left.seconds % 3600) // 60
+
+        if hours_left == 0:
+            return f'{vakt} ({minutes_left} dakika kaldı)'
+        elif minutes_left == 0:
+            return f'{vakt} ({hours_left} saat kaldı)'
+        else:
+            return f'{vakt} ({hours_left} saat {minutes_left} dakika kaldı)'
+
+    sahur = get_remaining_time(sahur_vakti)
+    iftar = get_remaining_time(iftar_vakti)
+    teravih = get_remaining_time(teravih_vakti)
 
     vakitler = (
         '**Diyanet Ramazan Vakitleri**\n\n'
@@ -115,7 +121,7 @@ def ramazan(message):
     )
 
     edit(message, vakitler)
-"""
+
 
 def find_loc(konum):
     if konum.isdigit():
