@@ -505,7 +505,7 @@
     "shippingMovements": "\n\n%1%3Son hareket%4%2\n\n%5Yer: %7\nDurum: %8\nTarih: %9\nZaman: %10\n\u0130\u015flem: %11%6",
     "shippingNoResult": "Takip bilgisi bulunamad\u0131!",
     "shippingResult": "%1Firma:%2 %3%5%4\n%1Takip No:%2 %3%6%4\n%1Durum:%2 %3%7%4\n%1G\u00f6nderici:%2 %3%8%4\n%1Al\u0131c\u0131:%2 %3%9%4\n%1G\u00f6nderim yeri:%2 %3%10%4\n%1Al\u0131m yeri:%2 %3%11%4\n%1G\u00f6nderi tarihi:%2 %3%12%4\n%1Teslim tarihi:%2 %3%13%4",
-    "shippingTrack": ".<firma> <takipNo>\n\nKullan\u0131m: Kargo bilgilerini g\u00f6sterir.\n\n\u00d6rnek: `.ups 1234567890`\n\nDesteklenen firmalar:\n`mng, ptt, ups, aras, surat, yurtici, trendyol, hepsijet`",
+    "shippingTrack": ".<firma> <takipNo>\n\nKullan\u0131m: Kargo bilgilerini g\u00f6sterir.\n\n\u00d6rnek: `.ups 1234567890`\n\nDesteklenen firmalar:\n`mng, ptt, ups, aras, surat, yurtici, hepsijet`",
     "showWelcome": "\u015eu anda a\u015fa\u011f\u0131daki kar\u015f\u0131lama mesaj\u0131 ile yeni kullan\u0131c\u0131lar\u0131 a\u011f\u0131rl\u0131yorum",
     "shutdown": "Ben kapan\u0131yorum, g\u00f6r\u00fc\u015f\u00fcr\u00fcz\u2026",
     "shutdownLog": "#SHUTDOWN\nBot kapat\u0131ld\u0131.",
