@@ -11,26 +11,51 @@ from emoji import demojize
 from googletrans import Translator, LANGUAGES
 from gtts import gTTS
 from gtts.lang import tts_langs
-from sedenbot import HELP
-from sedenecem.core import sedenify, extract_args, extract_args_split, edit, send_log, reply_voice, get_translation
+from sedenbot import HELP, SEDEN_LANG
+from sedenecem.core import (
+    sedenify,
+    extract_args_split,
+    edit,
+    send_log,
+    reply_voice,
+    get_translation,
+)
 
 
 @sedenify(pattern='^.tts')
 def text_to_speech(message):
     reply = message.reply_to_message
-    args = extract_args(message)
-    if args:
-        pass
-    elif reply:
-        if not reply.text:
-            return edit(message, f'`{get_translation("ttsUsage")}`')
-        args = reply.text
+    args = extract_args_split(message)
+
+    if reply and reply.text:
+        if args:
+            lang = args[0].lower()
+            text = reply.text
+        else:
+            lang = SEDEN_LANG
+            text = reply.text
+    elif args:
+        if len(args) >= 2:
+            lang = args[0].lower()
+            text = ' '.join(args[1:])
+        else:
+            lang = args[0].lower()
+            text = ''
     else:
         edit(message, f'`{get_translation("ttsUsage")}`')
         return
 
+    if lang not in tts_langs():
+        lang = SEDEN_LANG
+        text = ' '.join(args)
+
+    if not text:
+        edit(message, f'`{get_translation("ttsUsage")}`')
+        return
+
     try:
-        gTTS(args, lang=TTS_LANG)
+        tts = gTTS(text, lang=lang)
+        tts.save('h.mp3')
     except AssertionError:
         edit(message, f'`{get_translation("ttsBlank")}`')
         return
@@ -40,13 +65,12 @@ def text_to_speech(message):
     except RuntimeError:
         edit(message, f'`{get_translation("ttsError")}`')
         return
-    tts = gTTS(args, lang=TTS_LANG)
-    tts.save('h.mp3')
+
     with open('h.mp3', 'rb') as audio:
         linelist = list(audio)
         linecount = len(linelist)
     if linecount == 1:
-        tts = gTTS(args, lang=TTS_LANG)
+        tts = gTTS(text, lang=lang)
         tts.save('h.mp3')
     with open('h.mp3', 'r'):
         reply_voice(reply if reply else message, 'h.mp3', delete_file=True)
@@ -59,67 +83,49 @@ def text_to_speech(message):
 def translate(message):
     translator = Translator()
     reply = message.reply_to_message
-    args = extract_args(message)
-    if args:
-        pass
-    elif reply:
-        if not reply.text:
-            return edit(message, f'`{get_translation("trtUsage")}`')
-        args = reply.text
+    args = extract_args_split(message)
+
+    if reply and reply.text:
+        if args:
+            dest_lang = args[0].lower()
+            text = reply.text
+        else:
+            dest_lang = SEDEN_LANG
+            text = reply.text
+    elif args:
+        if len(args) == 2:
+            lang, text = args
+            if lang.lower() in LANGUAGES:
+                dest_lang = lang.lower()
+                text = text
+            else:
+                dest_lang = SEDEN_LANG
+                text = ' '.join(args)
+        else:
+            dest_lang = SEDEN_LANG
+            text = ' '.join(args)
     else:
         edit(message, f'`{get_translation("trtUsage")}`')
         return
 
     try:
-        reply_text = translator.translate(demojize(args), dest=TRT_LANG)
+        translated_text = translator.translate(demojize(text), dest=dest_lang)
     except ValueError:
         edit(message, f'`{get_translation("trtError")}`')
         return
 
-    source_lan = LANGUAGES[reply_text.src.lower()]
-    transl_lan = LANGUAGES[reply_text.dest.lower()]
-    reply_text = '{}\n{}'.format(
+    source_lang = LANGUAGES[translated_text.src.lower()]
+    transl_lang = LANGUAGES[translated_text.dest.lower()]
+    translated_text = '{}\n{}'.format(
         get_translation(
-            'transHeader', ['**', '`', source_lan.title(), transl_lan.title()]
+            'transHeader', ['**', '`', source_lang.title(), transl_lang.title()]
         ),
-        reply_text.text,
+        translated_text.text,
     )
 
-    edit(message, reply_text)
+    edit(message, translated_text)
 
-    send_log(get_translation('trtLog', [source_lan.title(), transl_lan.title()]))
+    send_log(get_translation('trtLog', [source_lang.title(), transl_lang.title()]))
 
-
-@sedenify(pattern='^.lang')
-def lang(message):
-    arr = extract_args_split(message)
-
-    if len(arr) != 2:
-        edit(message, f'`{get_translation("wrongCommand")}`')
-        return
-
-    util = arr[0].lower()
-    arg = arr[1].lower()
-    if util == 'trt':
-        scraper = get_translation('scraper1')
-        global TRT_LANG
-        if arg in LANGUAGES:
-            TRT_LANG = arg
-            LANG = LANGUAGES[arg]
-        else:
-            edit(message, get_translation('scraperTrt', ['`', LANGUAGES]))
-            return
-    elif util == 'tts':
-        scraper = get_translation('scraper2')
-        global TTS_LANG
-        if arg in tts_langs():
-            TTS_LANG = arg
-            LANG = tts_langs()[arg]
-        else:
-            edit(message, get_translation('scraperTts', ['`', tts_langs()]))
-            return
-    edit(message, get_translation('scraperResult', ['`', scraper, LANG.title()]))
-
-    send_log(get_translation('scraperLog', ['`', scraper, LANG.title()]))
 
 HELP.update({'translator': get_translation('translatorInfo')})
