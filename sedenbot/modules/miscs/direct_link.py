@@ -88,23 +88,23 @@ def direct(message):
 def gdrive(link: str, message) -> str:
     reply = ''
     url_id = link.split('/')[5]
-    dl_url = f'https://drive.google.com/u/0/uc?id={url_id}&export=download&confirm=t'
+    dl_url = f'https://drive.usercontent.google.com/download?id={url_id}&export=download&confirm=t'
     headers = {'user-agent': useragent()}
-    response = get(url=dl_url, headers=headers, stream=True)
-    if response.status_code == 429:
-        reply_doc(
-            message, 'cookies.txt', caption=get_translation("directGdriveCookieUsage")
-        )
-        reply += get_translation("directGdriveCookie")
-        cookies = {
-            '__Secure-1PSID': 'OQhdhyIxvvx3wyIAlCJ3hUqpH3ttB4osdTsnFnpkDWJCtt7XqwPg5PZZKN6KNnoBsXJrQw.'
-        }
-        response = get(url=dl_url, headers=headers, cookies=cookies, stream=True)
-    name = response.headers.get('Content-Disposition').split(';')[1].split('"')[1]
-    size = f'{int(response.headers.get("Content-Length")) / (1024 * 1024):0.2f}'
-    alternative_url = response.url
-    reply += f'[1 - {name} ({size}MB)]({dl_url})\n'
-    reply += f'[2 - {name} ({size}MB)]({alternative_url})\n'
+    reply_doc(
+        message, 'cookies.txt', caption=get_translation("directGdriveCookieUsage")
+    )
+    reply += get_translation("directGdriveCookie")
+    cookies = {
+        '__Secure-1PSID': 'g.a000hQgeotAjF0s4Bo1rG0uA-Rs--F4uvWXHlSTgXrmA1YgNa-70LASRphA1f_pHqKS5DVTCuwACgYKA'
+                          'boSAQASFQHGX2Mi1y83cqTGHara3fsXiu43ZBoVAUF8yKrxezWJON0xdZvCEZj1KgQP0076'
+    }
+    response = get(url=dl_url, headers=headers, cookies=cookies, stream=True)
+    page = BeautifulSoup(response.content, 'html.parser')
+    info = page.find('span', {'class': 'uc-name-size'}).text
+    uuid = page.find('input', {'name': 'uuid'}).get('value')
+    at = page.find('input', {'name': 'at'}).get('value')
+    dl_url += f'&uuid={uuid}&at={at}'
+    reply += f'[{info}]({dl_url})\n'
     return reply
 
 
