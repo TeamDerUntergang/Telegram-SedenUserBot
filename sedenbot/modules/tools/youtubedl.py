@@ -27,16 +27,14 @@ from sedenecem.core import (
 )
 
 
-@sedenify(pattern='^.y(outube|tdl)')
+@sedenify(pattern='^.y(outube|t)dl')
 def youtubedl(message):
     args = extract_args_split(message)
-
     if len(args) != 2:
         edit(message, f'`{get_translation("wrongCommand")}`')
         return
 
-    util = args[0].lower()
-    url = args[1]
+    util, url = args[0].lower(), args[1]
 
     if util == 'mp4':
         ydl_opts = {
@@ -133,12 +131,11 @@ def youtubedl(message):
         edit(message, f'`{get_translation("uploadMedia")}`')
         reply_audio(
             message,
-            f'{video_info["id"]}.{video_info["audio_ext"]}',
+            f'{video_info["id"]}.mp3',
             caption=f"**{get_translation('videoUploader')}** `{uploader}`",
             duration=duration,
             delete_orig=True,
             delete_file=True,
         )
-
 
 HELP.update({'youtubedl': get_translation('youtubedlInfo')})
