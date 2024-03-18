@@ -8,6 +8,8 @@
 #
 
 
+import socket
+from contextlib import closing
 from importlib import import_module
 from logging import CRITICAL, DEBUG, INFO, basicConfig, getLogger
 from os import environ, listdir, path, remove
@@ -162,6 +164,12 @@ PACKNICK = environ.get('PACKNICK', None)
 DATABASE_URL = environ.get('DATABASE_URL', None)
 if DATABASE_URL and DATABASE_URL.startswith('postgres://'):
     DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+
+# If PostgreSQL socket is not available (which is cause issues) use SQLite dialect
+host, port = DATABASE_URL.split('@')[-1].split('/')[0].split(':')
+with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
+    if sock.connect_ex((host, int(port))) != 0:
+        DATABASE_URL = environ.get('DATABASE_URL_ALTERNATIVE', None)
 
 # SedenBot Session
 SESSION = environ.get('SESSION', 'sedenify')
