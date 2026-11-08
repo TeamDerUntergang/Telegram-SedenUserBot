@@ -15,11 +15,11 @@ def sort_json(filename):
     json = f'{pwd}/{filename}'
     load = {}
 
-    with open(json, 'r+') as jfile:
+    with open(json, 'r+', encoding='utf-8') as jfile:
         load = loads(jfile.read())
 
     dump = dumps(load, indent=4, sort_keys=True)
-    with open(json, 'w+') as jfile:
+    with open(json, 'w+', encoding='utf-8') as jfile:
         jfile.write(dump)
 
 
